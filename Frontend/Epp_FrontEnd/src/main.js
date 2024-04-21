@@ -3,8 +3,15 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+import '../static/css/bulma.css'
+
+Vue.use(ElementUI)
 
 Vue.config.productionTip = false
+
+Vue.prototype.$backend_url = 'http://114.116.214.56:8000/api/'
 
 /* eslint-disable no-new */
 new Vue({
