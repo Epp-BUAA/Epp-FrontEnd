@@ -1,4 +1,5 @@
 <template>
+  <div>
     <el-row style="margin-top: 30px;">
         <!-- 侧边栏 -->
         <el-col :span="4" type="flex">
@@ -65,6 +66,7 @@
             </el-container>
         </el-col>
     </el-row>
+  </div>
 </template>
 
 <script>

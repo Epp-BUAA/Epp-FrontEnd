@@ -137,7 +137,7 @@ export default {
             var params = {
               "keyword": this.searchText,
               "page_num": current,
-               "page_size":10,
+               "page_size":20,
             }
             searchUser(params).then((oriRes) => {
               console.log('searching');
@@ -175,7 +175,7 @@ export default {
             var params = {
           "keyword": "",
           "page_num": this.pagination.current,
-          "page_size":10,
+          "page_size":20,
       }
            getSelectUser(params).then((oriRes) => {
         for (let i = 0; i < data.length; i++) {
@@ -240,7 +240,7 @@ export default {
       var params = {
           "keyword": "",
           "page_num": this.pagination.current,
-          "page_size":10,
+          "page_size":20,
       }
       getSelectUser(params).then((oriRes) => {
         for (let i = 0; i < data.length; i++) {
@@ -593,7 +593,7 @@ export default {
       var params = {
           "keyword": encode_text,
           "page_num": this.pagination.current,
-          "page_size":10,
+          "page_size":20,
       }
       this.selectedType="搜索";
       searchUser(params).then((oriRes) => {
@@ -638,7 +638,7 @@ export default {
       var params = {
           "keyword": "",
           "page_num": this.pagination.current,
-          "page_size":10,
+          "page_size":20,
       }
       getSelectUser(params).then((oriRes) => {
         console.log(oriRes);

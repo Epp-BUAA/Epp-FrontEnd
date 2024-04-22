@@ -1,7 +1,10 @@
 <template>
   <div id="app">
     <!-- <img src="./assets/logo.png"> -->
-    <NavBar />
+    <!-- <NavBar /> -->
+    <div v-if=!$route.meta.hideNavbar>
+      <NavBar />
+    </div>
     <router-view/>
   </div>
 </template>
