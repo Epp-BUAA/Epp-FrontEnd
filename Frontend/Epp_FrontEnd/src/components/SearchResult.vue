@@ -134,7 +134,7 @@ export default {
         'search_content': this.$route.query.search_content
       }
       console.log(params)
-      await axios.get(this.$backend_url + '/search/vectorQuery?search_content=' + this.$route.query.search_content)
+      await axios.get(this.$BASE_API_URL + '/search/vectorQuery?search_content=' + this.$route.query.search_content)
         .then((response) => {
           console.log('response is ...')
           this.papers = response.data.paper_infos
@@ -172,7 +172,7 @@ export default {
       // Add user message to chat
       this.addMessageToChat(chatMessage, 'user')
 
-      this.$axios.post(this.$backend_url + '/search/dialogQuery', { message: chatMessage })
+      this.$axios.post(this.$BASE_API_URL + '/search/dialogQuery', { message: chatMessage })
         .then(response => {
           this.addMessage(response.data.reply, 'ai')
         })
@@ -209,7 +209,7 @@ export default {
           type: 'warning'
         })
       }
-      axios.post(this.$backend_url + '/generateSummaryReport', {'paper_id_list': this.selectedPapers})
+      axios.post(this.$BASE_API_URL + '/generateSummaryReport', {'paper_id_list': this.selectedPapers})
         .then((response) => {
           console.log(response.data.message)
           this.$message({
@@ -229,14 +229,14 @@ export default {
           type: 'warning'
         })
       }
-      axios.post(this.$backend_url + '/batchDownload', {'paper_id_list': this.selectedPapers})
+      axios.post(this.$BASE_API_URL + '/batchDownload', {'paper_id_list': this.selectedPapers})
         .then((response) => {
           if (response.data.is_success === true) {
             this.$message({
               message: '开始下载！',
               type: 'success'
             })
-            const zipUrl = 'http://114.116.214.56:8000' + response.data.zip_url
+            const zipUrl = this.$BASE_URL + response.data.zip_url
             const link = document.createElement('a')
             link.href = zipUrl
             link.download = 'papers.zip'
