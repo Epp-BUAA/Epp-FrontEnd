@@ -12,7 +12,7 @@
                     </el-row>
                     <el-row style="margin-top: 10px;">
                         <el-col :span="24">
-                            <div style="width: 90%; margin: auto;">
+                            <div style="width: 90%; margin: auto; text-align: left;">
                                 <p><strong>摘要:</strong> {{ paper.abstract }}</p>
                             </div>
                         </el-col>
@@ -78,13 +78,13 @@
                     <div class="comments">
                         <div v-if="comments.length > 0">
                             <el-row v-for="comment in comments" :key="comment.id" class="comment-item">
-                                <el-col :span="4">
-                                    <img :src="comment.avatar" alt="user avatar" class="avatar">
+                                <el-col :span="2">
+                                    <img :src="fullURL(comment.user_image)" alt="user avatar" class="avatar">
                                 </el-col>
-                                <el-col :span="20">
+                                <el-col :span="22">
                                     <div class="comment-content">
                                         <div style="font-weight: bold;">{{ comment.username }}</div>
-                                        <div class="text">{{ comment.comment }}</div>
+                                        <div class="text">{{ comment.text }}</div>
                                         <div class="my-footer">
                                             <span class="date">{{ comment.date }}</span>
                                             <span class="actions">
@@ -109,7 +109,7 @@
 </template>
 
 <script>
-// import axios from 'axios'
+import axios from 'axios'
 export default {
   props: {
     id: {
@@ -128,46 +128,40 @@ export default {
     }
   },
   created () {
+    this.paper_id = this.$route.params.paper_id
     this.fetchPaperInfo()
     this.fetchComments()
   },
   methods: {
+    fullURL (url) {
+      return 'http://114.116.214.56:8000' + url
+    },
     fetchPaperInfo () {
       console.log('传递过来的paper id:', this.paper_id)
-      console.log(this.id)
       // 向后端传送id，返回论文结果
-      //   axios.post(this.$backend_url + '/xxxx', this.id)
-      //     .then((response) => {
-      //       console.log('response is ...')
-      //       this.paper = response.data.paper_info
-      //       console.log(this.paper)
-      //     })
-      //     .catch((error) => {
-      //       console.error('Error:', error)
-      //     })
-      this.paper = {
-        'title': 'AAAAAAAA',
-        abstract: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-        'publication_date': 'Mon, 19 Oct 2020 00:00:00 GMT',
-        'authors': 'jkm',
-        'original_url': 'http://arxiv.org/abs/2309.15477v1',
-        'score': 3.5,
-        'score_count': 99
-      }
+      axios.get(this.$backend_url + '/getPaperInfo?paper_id=' + this.paper_id)
+        .then((response) => {
+          console.log('response is ...')
+          this.paper = response.data
+          console.log(this.paper)
+        })
+        .catch((error) => {
+          console.error('Error:', error)
+        })
     },
     fetchComments () {
       // 向后端传送id，返回论文结果
-      //   axios.get(this.$backend_url + '/xxxx', this.id)
-      //     .then((response) => {
-      //       console.log('response is ...')
-      //       this.comments = response.data.comments
-      //       console.log(this.comments)
-      //     })
-      //     .catch((error) => {
-      //       console.error('Error:', error)
-      //     })
-      this.comments = [{ 'comment_id': 1, 'comment': 'commen1', 'comment_level': 1, 'username': 'jkm', 'date': '2023-01-01' },
-        { 'comment_id': 2, 'comment': 'comment2', 'comment_level': 1, 'username': 'ybw', 'date': '2024-01-01' }]
+      axios.get(this.$backend_url + '/getComment1?paper_id=' + this.paper_id)
+        .then((response) => {
+          console.log('response is ...')
+          this.comments = response.data.comments
+          console.log(this.comments)
+        })
+        .catch((error) => {
+          console.error('Error:', error)
+        })
+    //   this.comments = [{ 'comment_id': 1, 'comment': 'commen1', 'comment_level': 1, 'username': 'jkm', 'date': '2023-01-01' },
+    //     { 'comment_id': 2, 'comment': 'comment2', 'comment_level': 1, 'username': 'ybw', 'date': '2024-01-01' }]
     },
     likePaper () {
       // 实现点赞功能
@@ -220,17 +214,17 @@ p {
 }
 
 .avatar {
-    width: 100%;
+    width: 50%;
+    /* height: 24px; */
     border-radius: 50%;
 }
 
 .comment-content {
-    padding: 10px;
     text-align: left;
 }
 
 .text {
-    margin: 10px 0;
+    margin-top: 5px;
 }
 
 .my-footer {
