@@ -62,7 +62,7 @@ export default {
       this.$router.push({ name: 'search-results', query: { search_content: searchContent } })
     },
     removeRecord (searchRecordId, index) {
-      axios.post(this.$backend_url + '/userInfo/delSearchHistory', {'search_record_id': searchRecordId})
+      axios.post(this.$BASE_API_URL + '/userInfo/delSearchHistory', {'search_record_id': searchRecordId})
         .then((response) => {
           console.log(response.data.message)
         })
@@ -72,7 +72,7 @@ export default {
       this.search_records.splice(index, 1)
     },
     fetchSearchRecords () {
-      axios.get(this.$backend_url + '/userInfo/searchHistory')
+      axios.get(this.$BASE_API_URL + '/userInfo/searchHistory')
         .then((response) => {
           this.search_records = response.data.keywords
         })

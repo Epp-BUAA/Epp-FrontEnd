@@ -32,29 +32,24 @@
                 <el-container class="box">
                     <el-row>
                         <el-col :span="8" style="justify-content: center; text-align: center">
-                            <el-rate
-                                v-model="paper.score"
-                                disabled
-                                show-score
-                                text-color="#ff9900"
-                            >
+                            <el-rate v-model="paper.score" disabled show-score text-color="#ff9900">
                             </el-rate>
                             <p>{{ paper.score_count }}个评分</p>
                         </el-col>
                         <el-col :span="8">
                             <el-button type="text" icon="el-icon-edit-outline"
-                            @click="showScoreModal = true">我要评分</el-button>
+                                @click="showScoreModal = true">我要评分</el-button>
                         </el-col>
                         <el-dialog title="我要评分" :visible.sync="showScoreModal" width="50%" @close="closeScoreModal">
                             <el-form>
-                            <el-form-item>
-                                <el-rate v-model="newScore"></el-rate>
-                            </el-form-item>
-                        </el-form>
-                        <span slot="footer">
-                            <el-button @click="showScoreModal = false">取 消</el-button>
-                            <el-button type="primary" @click="submitScore">发 送</el-button>
-                        </span>
+                                <el-form-item>
+                                    <el-rate v-model="newScore"></el-rate>
+                                </el-form-item>
+                            </el-form>
+                            <span slot="footer">
+                                <el-button @click="showScoreModal = false">取 消</el-button>
+                                <el-button type="primary" @click="submitScore">发 送</el-button>
+                            </span>
                         </el-dialog>
                     </el-row>
                 </el-container>
@@ -77,28 +72,72 @@
                     <el-divider>评论区</el-divider>
                     <div class="comments">
                         <div v-if="comments.length > 0">
-                            <el-row v-for="comment in comments" :key="comment.id" class="comment-item">
-                                <el-col :span="2">
-                                    <img :src="fullURL(comment.user_image)" alt="user avatar" class="avatar">
-                                </el-col>
-                                <el-col :span="22">
-                                    <div class="comment-content">
-                                        <div style="font-weight: bold;">{{ comment.username }}</div>
-                                        <div class="text">{{ comment.text }}</div>
-                                        <div class="my-footer">
-                                            <span class="date">{{ comment.date }}</span>
-                                            <span class="actions">
-                                                <el-button type="text" icon="el-icon-chat-dot-round"
-                                                    @click="commentAction(comment.id)">评论</el-button>
-                                                <el-button type="text" icon="el-icon-thumb"
-                                                    @click="likeAction(comment.id)">点赞</el-button>
-                                                <el-button type="text" icon="el-icon-warning-outline"
-                                                    @click="likeAction(comment.id)">举报</el-button>
-                                            </span>
+                            <!-- 一级评论 -->
+                            <div v-for="comment in comments" :key="comment.comment_id" class="comment-item">
+                                <el-row>
+                                    <el-col :span="2">
+                                        <img :src="fullURL(comment.user_image)" alt="user avatar" class="avatar">
+                                    </el-col>
+                                    <el-col :span="22">
+                                        <div class="comment-content">
+                                            <div style="font-weight: bold;">{{ comment.username }}</div>
+                                            <div class="text">{{ comment.text }}</div>
+                                            <div class="my-footer">
+                                                <span class="date">{{ comment.date }}</span>
+                                                <span class="actions">
+                                                    <el-button type="text" icon="el-icon-chat-dot-round"
+                                                        @click="commentAction(comment.comment_id)">评论</el-button>
+                                                    <el-button type="text" icon="el-icon-thumb"
+                                                        @click="likeAction(comment.comment_id)">点赞</el-button>
+                                                    <el-button type="text" icon="el-icon-warning-outline"
+                                                        @click="likeAction(comment.comment_id)">举报</el-button>
+                                                    <el-button type="text" icon="el-icon-arrow-down"
+                                                        @click="showRepliesAction(comment.comment_id)">展开</el-button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </el-col>
+                                </el-row>
+
+                                <!-- 二级评论部分 -->
+                                <div v-show="showRepliesCommentId === comment.comment_id">
+                                    <div v-if="secondLevelComments.length > 0">
+                                        <div v-for="comment2 in secondLevelComments" :key="comment2.comment_id" class="comment-item">
+                                            <el-row>
+                                                <el-col :span="2" :offset="2">
+                                                    <img :src="fullURL(comment2.user_image)" alt="user avatar" class="avatar">
+                                                </el-col>
+                                                <el-col :span="20">
+                                                    <div class="comment-content">
+                                                        <div style="font-weight: bold;">{{ comment2.username }}</div>
+                                                        <div class="text">
+                                                            <!-- 后续加上跳转到用户个人中心的功能 -->
+                                                            <router-link
+                                                                v-if="comment2.to_username"
+                                                                :to="{ name: '', params: { username: comment2.to_username }}">
+                                                                @{{ comment2.to_username }}
+                                                            </router-link>
+                                                            {{ comment2.text }}
+                                                        </div>
+                                                        <div class="my-footer">
+                                                            <span class="date">{{ comment2.date }}</span>
+                                                            <span class="actions">
+                                                                <el-button type="text" icon="el-icon-chat-dot-round"
+                                                                    @click="commentAction(comment2.comment_id)">评论</el-button>
+                                                                <el-button type="text" icon="el-icon-thumb"
+                                                                    @click="likeAction(comment2.comment_id)">点赞</el-button>
+                                                                <el-button type="text" icon="el-icon-warning-outline"
+                                                                    @click="likeAction(comment2.comment_id)">举报</el-button>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </el-col>
+                                            </el-row>
                                         </div>
                                     </div>
-                                </el-col>
-                            </el-row>
+                                    <p v-else>暂无评论</p>
+                                </div>
+                            </div>
                         </div>
                         <p v-else>暂无评论</p>
                     </div>
@@ -112,9 +151,17 @@
 import axios from 'axios'
 export default {
   props: {
-    id: {
+    paper_id: {
       type: String,
       required: true
+    }
+  },
+  computed: {
+    replyPrefix (toUsername) {
+      if (toUsername) {
+        return '@' + toUsername
+      }
+      return ''
     }
   },
   data () {
@@ -124,24 +171,27 @@ export default {
       comments: [],
       showCommentModal: false,
       newScore: 0,
-      showScoreModal: false
+      showScoreModal: false,
+      showRepliesBox: false,
+      showRepliesCommentId: null,
+      secondLevelComments: []
     }
   },
   created () {
     this.paper_id = this.$route.params.paper_id
     this.fetchPaperInfo()
-    this.fetchComments()
+    this.fetchComments1()
   },
   methods: {
     fullURL (url) {
-      return 'http://114.116.214.56:8000' + url
+      return this.$BASE_URL + url
     },
     fetchPaperInfo () {
       console.log('传递过来的paper id:', this.paper_id)
       // 向后端传送id，返回论文结果
-      axios.get(this.$backend_url + '/getPaperInfo?paper_id=' + this.paper_id)
+      axios.get(this.$BASE_API_URL + '/getPaperInfo?paper_id=' + this.paper_id)
         .then((response) => {
-          console.log('response is ...')
+          console.log('paper info is ...')
           this.paper = response.data
           console.log(this.paper)
         })
@@ -149,19 +199,17 @@ export default {
           console.error('Error:', error)
         })
     },
-    fetchComments () {
+    fetchComments1 () {
       // 向后端传送id，返回论文结果
-      axios.get(this.$backend_url + '/getComment1?paper_id=' + this.paper_id)
+      axios.get(this.$BASE_API_URL + '/getComment1?paper_id=' + this.paper_id)
         .then((response) => {
-          console.log('response is ...')
+          console.log('一级评论 ...')
           this.comments = response.data.comments
           console.log(this.comments)
         })
         .catch((error) => {
           console.error('Error:', error)
         })
-    //   this.comments = [{ 'comment_id': 1, 'comment': 'commen1', 'comment_level': 1, 'username': 'jkm', 'date': '2023-01-01' },
-    //     { 'comment_id': 2, 'comment': 'comment2', 'comment_level': 1, 'username': 'ybw', 'date': '2024-01-01' }]
     },
     likePaper () {
       // 实现点赞功能
@@ -193,6 +241,26 @@ export default {
       console.log('提交的评分内容：', this.newScore)
       // 这里可以添加评论提交的逻辑
       this.showScoreModal = false // 关闭对话框
+    },
+    showRepliesAction (commentId) {
+      if (this.showRepliesCommentId === commentId) {
+        this.showRepliesCommentId = null
+        return
+      }
+      console.log('second level comment id is ' + commentId)
+      const url = this.$BASE_API_URL + '/getComment2?paper_id=' + this.paper_id + '&comment1_id=' + commentId
+      console.log(url)
+      axios.get(url)
+        .then((response) => {
+          this.secondLevelComments = response.data.comments
+          console.log(response.data.message)
+          console.log('二级评论：', response.data.comments)
+          this.showRepliesBox = !this.showRepliesBox
+          this.showRepliesCommentId = commentId
+        })
+        .catch((error) => {
+          console.error('Error:', error)
+        })
     }
   }
 }
