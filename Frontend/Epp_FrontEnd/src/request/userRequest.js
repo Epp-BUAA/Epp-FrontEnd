@@ -4,7 +4,7 @@ import axios from 'axios'
 axios.defaults.withCredentials = true
 
 Vue.prototype.$axios = axios
-const baseURL = 'http://114.116.214.56:8000/api/'
+const baseURL = 'https://epp.sanyue.site/api/'
 
 const api = axios.create({
   baseURL,
@@ -34,10 +34,22 @@ export const register = async (params) => {
   }
 }
 
-export const fetchCollectedPapers = () => {
+export const fetchCollectedPapers = async () => {
+  console.log('fetchCollectPapers')
+  return api.get('userInfo/collectedPapers')
+    .then(response => {
+      console.log(response)
+      return response
+    })
+    .catch(error => {
+      throw new Error(error.response.data.message)
+    })
+}
+
+export const deleteCollectedPapers = async (params) => {
   try {
-    console.log('fetchCollectPapers')
-    const response = api.get('userInfo/collectedPapers')
+    console.log('deleteCollectPapers')
+    const response = api.delete('userInfo/delCollectedPapers', params)
     console.log(response)
     return response
   } catch (error) {
@@ -45,7 +57,18 @@ export const fetchCollectedPapers = () => {
   }
 }
 
-export const fetchSearchHistory = () => {
+export const deleteReport = async (params) => {
+  try {
+    console.log('deleteReport')
+    const response = api.delete('userInfo/delSummaryReports', params)
+    console.log(response)
+    return response
+  } catch (error) {
+    throw new Error(error.response.data.message)
+  }
+}
+
+export const fetchSearchHistory = async () => {
   try {
     console.log('fetchSearchHistory')
     const response = api.get('userInfo/searchHistory')
@@ -55,11 +78,53 @@ export const fetchSearchHistory = () => {
     throw new Error(error.response.data.message)
   }
 }
+export const deleteSearchHistory = async (params) => {
+  try {
+    console.log('deleteReport')
+    const response = api.delete('userInfo/delSearchHistory', params)
+    console.log(response)
+    return response
+  } catch (error) {
+    throw new Error(error.response.data.message)
+  }
+}
 
-export const fetchReports = () => {
+export const fetchReports = async () => {
   try {
     console.log('fetchReports')
     const response = api.get('userInfo/summaryReports')
+    console.log(response)
+    return response
+  } catch (error) {
+    throw new Error(error.response.data.message)
+  }
+}
+
+export const fetchUserInfo = async () => {
+  try {
+    console.log('fetchInfo')
+    const response = api.get('userInfo/userInfo')
+    console.log(response)
+    return response
+  } catch (error) {
+    console.log(error)
+    throw new Error(error.response.data.message)
+  }
+}
+export const fetchChat = async () => {
+  try {
+    console.log('fetchChat')
+    const response = api.get('userInfo/conversations')
+    console.log(response)
+    return response
+  } catch (error) {
+    throw new Error(error.response.data.message)
+  }
+}
+export const deleteChat = async (params) => {
+  try {
+    console.log('deleteChat')
+    const response = api.delete('userInfo/deleteConversations', params)
     console.log(response)
     return response
   } catch (error) {

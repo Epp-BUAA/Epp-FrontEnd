@@ -1,4 +1,5 @@
 <template>
+<div class="personal">
   <div id="app">
     <sidebar @tabSelected="selectTab" />
     <div class="content">
@@ -10,6 +11,7 @@
       <!-- <CollectedPapers v-else-if="selectTab === 'collections'" /> -->
     </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -51,5 +53,14 @@ export default {
 .content {
   flex: 1;
   padding: 20px;
+}
+.personal{
+  position: absolute;
+  top: 36px; /* 假设导航栏高度为50px */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20px;
+  overflow: auto; /* 如果内容过多，添加滚动条 */
 }
 </style>

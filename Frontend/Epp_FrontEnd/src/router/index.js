@@ -67,7 +67,7 @@ export default new Router({
       component: PersonalMain,
       props: true,
       meta: {
-        hideNavbar: true// 标识不显示导航栏
+        hideNavbar: false// 标识不显示导航栏
       }
     }
   ]
