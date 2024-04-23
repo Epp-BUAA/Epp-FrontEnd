@@ -18,9 +18,12 @@
                         </el-col>
                     </el-row>
                     <el-row class="buttons">
-                        <el-button type="text" icon="el-icon-thumb" @click="likePaper">点赞</el-button>
+                        <el-button type="text" @click="likePaper">
+                            <i :class="liked ? 'fas' : 'far' " class="fa-thumbs-up"></i>
+                            {{ paper.like_count }}
+                        </el-button>
                         <el-button type="text" icon="el-icon-chat-dot-round"
-                            @click="showCommentModal = true">评论</el-button>
+                            @click="showCommentModal = true">{{ comments.length }}</el-button>
                         <el-button type="text" icon="el-icon-download" @click="downloadPaper">下载</el-button>
                         <el-button type="text" icon="el-icon-view" @click="readOnline">在线研读</el-button>
                         <el-link type="primary" :href="paper.original_url" icon="el-icon-link"
@@ -157,16 +160,12 @@ export default {
     }
   },
   computed: {
-    replyPrefix (toUsername) {
-      if (toUsername) {
-        return '@' + toUsername
-      }
-      return ''
-    }
   },
   data () {
     return {
       paper: {},
+      liked: false,
+      collected: false,
       newComment: '',
       comments: [],
       showCommentModal: false,
@@ -185,6 +184,17 @@ export default {
   methods: {
     fullURL (url) {
       return this.$BASE_URL + url
+    },
+    fetchUserPaperInfo () {
+      axios.get(this.$BASE_API_URL + '/getUserPaperInfo?paper_id' + this.paper_id)
+        .then((response) => {
+          this.liked = response.data.liked
+          this.collected = response.data.liked
+          this.user_score = response.data.score
+        })
+        .catch((error) => {
+          console.error('Error', error)
+        })
     },
     fetchPaperInfo () {
       console.log('传递过来的paper id:', this.paper_id)
@@ -212,8 +222,15 @@ export default {
         })
     },
     likePaper () {
-      // 实现点赞功能
-      alert('点赞功能尚未实现！')
+      this.liked = !this.liked
+      this.liked ? this.paper.like_count++ : this.paper.like_count--
+      axios.post(this.$BASE_API_URL + '/userLikePaper', {'paper_id': this.paper_id})
+        .catch((error) => {
+        //   this.liked ? this.paper.like_count-- : this.like_count++
+          // 可以在这里处理错误，比如显示错误消息
+          console.error('点赞操作失败:', error)
+        //   this.liked = !this.liked // 也要回滚点赞状态
+        })
     },
     downloadPaper () {
       // 实现下载功能
