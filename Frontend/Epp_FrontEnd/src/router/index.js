@@ -2,12 +2,14 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import About from '@/components/About'
+
 import Dashboard from '@/components/Main/Dashboard'
 import SearchPage from '@/components/SearchPage'
 import SearchResult from '@/components/SearchResult'
 import PaperInfo from '@/components/PaperInfo'
 import PersonalMain from '@/components/Personal/PersonalMain'
 import UploadDocument from '@/components/Personal/UploadDocument'
+
 Vue.use(Router)
 
 export default new Router({
