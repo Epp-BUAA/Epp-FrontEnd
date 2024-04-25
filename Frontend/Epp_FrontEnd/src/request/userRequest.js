@@ -4,7 +4,7 @@ import axios from 'axios'
 axios.defaults.withCredentials = true
 
 Vue.prototype.$axios = axios
-const baseURL = 'https://epp.sanyue.site/api/'
+const baseURL = 'https://epp.buaase.cn/api/'
 
 const api = axios.create({
   baseURL,
@@ -125,6 +125,37 @@ export const deleteChat = async (params) => {
   try {
     console.log('deleteChat')
     const response = api.delete('userInfo/deleteConversations', params)
+    console.log(response)
+    return response
+  } catch (error) {
+    throw new Error(error.response.data.message)
+  }
+}
+export const fetchDocument = async () => {
+  try {
+    console.log('fetchDocument')
+    const response = api.get('userInfo/documents')
+    console.log(response)
+    return response
+  } catch (error) {
+    throw new Error(error.response.data.message)
+  }
+}
+export const uploadDocument = async (formData) => {
+  try {
+    console.log('uploadDocument')
+    console.log(formData)
+    const response = await api.post('uploadPaper', formData)
+    console.log(response)
+    return response
+  } catch (error) {
+    throw new Error(error.response.data.message)
+  }
+}
+export const deleteDocument = async (params) => {
+  try {
+    console.log('deleteDocument')
+    const response = api.delete('removeUploadedPaper', params)
     console.log(response)
     return response
   } catch (error) {

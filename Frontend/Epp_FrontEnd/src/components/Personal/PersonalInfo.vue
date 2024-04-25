@@ -28,7 +28,7 @@ export default {
         console.log('getuserinformation')
         var res = (await fetchUserInfo()).data
         console.log(res)
-        this.path = 'https://epp.sanyue.site' + res.avatar
+        this.path = 'https://epp.buaase.cn' + res.avatar
         console.log(this.path)
         this.username = res.username
         this.loginTime = res.registration_date

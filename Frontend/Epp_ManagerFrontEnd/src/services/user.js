@@ -7,12 +7,19 @@ import {UserAll, BASE_URL_IP} from './api'
  * @param password 账户密码
  * @returns {Promise<AxiosResponse<T>>}
  */
-export async function login(name, password) {
-  return request(LOGIN, METHOD.POST, {
-    username: name,
-    password: password
-  })
+export async function login(params) {
+  return request(LOGIN, METHOD.POST, params)
 }
+// export const login = async (params) => {
+//   try {
+//     console.log(params)
+//     const response = api.post('login', params)
+//     console.log(response)
+//     return response
+//   } catch (error) {
+//     throw new Error(error.response.data.message)
+//   }
+// }
 
 export async function getRoutesConfig() {
   return request(ROUTES, METHOD.GET)

@@ -1,246 +1,145 @@
 <template>
-  <common-layout>
-    <div class="top">
-      <div class="header">
-        <img alt="logo" class="logo" src="@/assets/img/logo.png" />
-        <span class="title">{{ systemName }}</span>
+  <div class="login-register">
+    <!-- <h2 v-if="isLogin">登录</h2>
+    <h2 v-else>注册</h2> -->
+      <div class="input-group">
+      <label>
+        用户名:
+        <input type="text" v-model="username" required>
+      </label>
       </div>
-      <div class="desc">希望是一个好东西，也许是最好的，好东西是不会消亡的</div>
+      <div class="input-group">
+      <label>
+        密码:
+        <input type="password" v-model="password" required>
+      </label>
+      </div>
+    <!-- </form> -->
+    <form @submit.prevent="handleSubmit"  class="form">
+    <div class="button-group">
+    <button type="submit">{{ isLogin ? '登录' : '注册' }}</button>
+    <button @click="toggleMode">{{ isLogin ? '注册新账号' : '使用已有账号登录' }}</button>
     </div>
-    <div class="login">
-      <a-form @submit="onSubmit" :form="form">
-        <a-tabs
-          size="large"
-          :tabBarStyle="{ textAlign: 'center' }"
-          style="padding: 0 2px;"
-        >
-          <a-tab-pane tab="账户密码登录" key="1">
-            <a-alert
-              type="error"
-              :closable="true"
-              v-show="error"
-              :message="error"
-              showIcon
-              style="margin-bottom: 24px;"
-            />
-            <a-form-item>
-              <a-input
-                autocomplete="autocomplete"
-                size="large"
-                placeholder="用户名"
-                v-decorator="[
-                  'name',
-                  {
-                    rules: [
-                      {
-                        required: true,
-                        message: '请输入账户名',
-                        whitespace: true,
-                      },
-                    ],
-                  },
-                ]"
-              >
-                <a-icon slot="prefix" type="user" />
-              </a-input>
-            </a-form-item>
-            <a-form-item>
-              <a-input
-                size="large"
-                placeholder="密码"
-                autocomplete="autocomplete"
-                type="password"
-                v-decorator="[
-                  'password',
-                  {
-                    rules: [
-                      {
-                        required: true,
-                        message: '请输入密码',
-                        whitespace: true,
-                      },
-                    ],
-                  },
-                ]"
-              >
-                <a-icon slot="prefix" type="lock" />
-              </a-input>
-            </a-form-item>
-          </a-tab-pane>
-        </a-tabs>
-
-        <a-form-item>
-          <a-button
-            :loading="logging"
-            style="width: 100%;margin-top: 24px"
-            size="large"
-            htmlType="submit"
-            type="primary"
-            >登录</a-button
-          >
-        </a-form-item>
-      </a-form>
-    </div>
-  </common-layout>
+    </form>
+     <p :class="{ 'login-message': message }">{{ message }}</p>
+  </div>
 </template>
 
 <script>
-import CommonLayout from "@/layouts/CommonLayout";
-import { login, getRoutesConfig } from "@/services/user";
-import { setAuthorization } from "@/utils/request";
-import { loadRoutes } from "@/utils/routerUtil";
-import { mapMutations } from "vuex";
+
+import { login } from '@/services/user.js'
 
 export default {
-  name: "Login",
-  components: { CommonLayout },
-  data() {
+  data () {
     return {
-      logging: false,
-      error: "",
-      form: this.$form.createForm(this),
-    };
-  },
-  computed: {
-    systemName() {
-      return this.$store.state.setting.systemName;
-    },
+      isLogin: true,
+      username: '',
+      password: '',
+      message: ''
+    }
   },
   methods: {
-    ...mapMutations("account", ["setUser", "setPermissions", "setRoles"]),
-    onSubmit(e) {
-      console.log('res')
-      e.preventDefault();
-      this.form.validateFields((err) => {
-        
-        if (!err) {
-          this.logging = true;
-          const name = this.form.getFieldValue("name");
-          const password = this.form.getFieldValue("password");
-          if(name=="SUPERMAN"){
-            // login(name, password)
-
-            this.$message.error("账号或密码错误")
-            // this.$router.push("");
-            this.logging = false;
-          }else{
-            login(name, password).then(this.afterLogin)
-            .catch((error) => {
-              alert("账号或密码错误")
-            this.$message.error("账号或密码错误")
-            this.logging=false;
-            console.log(error);
-            // console.log(name);
-            // console.log(password);
-          });
+    async handleSubmit () {
+      try {
+        if (this.isLogin) {
+          var params = {
+            'managerName': this.username,
+            'manpassowrd': this.password
           }
-
+          var res = await login(params)
+          console.log(res.message)
+          this.message = res.data.message
+        } else {
+          params = {
+            'username': this.username,
+            'password': this.password
+          }
+          res = await register(params)
+          console.log(res)
+          this.message = res.data.message
         }
-      });
-    },
-    afterLogin(res) {
-      console.log('res')
-      if (res.data.code == 500) {
-        alert("账号或密码错误")
-        
+      } catch (error) {
+        console.log('error')
+        if (this.isLogin) {
+          this.message = '登录失败'
+        } else {
+          this.message = '注册失败'
+        }
       }
-      const positions = [
-        {
-          CN: "管理员 | O2E-TU-2-后台管理",
-          HK: "Java工程師 | 螞蟻金服-計算服務事業群-微信平台部",
-          US:
-            "Java engineer | Ant financial - Computing services business group - WeChat platform division",
-        },
-      ];
-      const user1 = {
-        name: res.data.userInfo.username,
-        avatar:
-          "https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png",
-        address: "重庆市",
-        position: positions[0],
-      };
-      const role = [{id: 'admin', operation: ['add', 'edit', 'delete']}]
-
-      this.logging = false;
-      const loginRes = res.data;
-      // console.log(res);
-      loginRes.message='欢迎回来'
-      // const { permissions, roles } = loginRes.data;
-      this.setUser(user1);
-      // this.setPermissions(permissions);
-      this.setRoles(role);
-      setAuthorization({
-        token: res.data.access_token,
-        expireAt: new Date(new Date().getTime() + 30 * 60 * 1000),
-      });
-      // 获取路由配置
-      getRoutesConfig().then((result) => {
-        const routesConfig = result.data.data;
-        loadRoutes(routesConfig);
-        this.$router.push("/dashboard");
-        this.$message.success(loginRes.message, 3);
-      });
-      // console.log(res);
     },
-  },
-};
+    toggleMode () {
+      this.isLogin = !this.isLogin
+      this.username = ''
+      this.password = ''
+      this.message = ''
+    }
+  }
+}
 </script>
 
-<style lang="less" scoped>
-.common-layout {
-  .top {
-    text-align: center;
-    .header {
-      height: 44px;
-      line-height: 44px;
-      a {
-        text-decoration: none;
-      }
-      .logo {
-        height: 44px;
-        vertical-align: top;
-        margin-right: 16px;
-      }
-      .title {
-        font-size: 33px;
-        color: @title-color;
-        font-family: "Myriad Pro", "Helvetica Neue", Arial, Helvetica,
-          sans-serif;
-        font-weight: 600;
-        position: relative;
-        top: 2px;
-      }
-    }
-    .desc {
-      font-size: 14px;
-      color: @text-color-second;
-      margin-top: 12px;
-      margin-bottom: 40px;
-    }
-  }
-  .login {
-    width: 368px;
-    margin: 0 auto;
-    @media screen and (max-width: 576px) {
-      width: 95%;
-    }
-    @media screen and (max-width: 320px) {
-      .captcha-button {
-        font-size: 14px;
-      }
-    }
-    .icon {
-      font-size: 24px;
-      color: @text-color-second;
-      margin-left: 16px;
-      vertical-align: middle;
-      cursor: pointer;
-      transition: color 0.3s;
+<style scoped>
+.login-register {
+  height: 400px;
+  width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  /* border: 1px solid #ccc; */
+  /* border-radius: 5px; */
+  /* background-image: url('../../assets/loginBoard.png'); */
+  background-size: cover;
+  background-position: center;
+}
 
-      &:hover {
-        color: @primary-color;
-      }
-    }
-  }
+.form {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group {
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.input-group label {
+  flex: 1;
+}
+
+.input-group input {
+  flex: 3;
+  padding: 5px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+.button-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.button-group button {
+  margin-bottom: 20px;
+  padding: 8px 12px;
+  font-size: 16px;
+  background-color: #0cc0df;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  width: 48%; /* 让两个按钮平分宽度 */
+}
+
+.button-group button:hover {
+  background-color: #0056b3;
+}
+
+.login-message {
+  margin-top: 10px;
+  font-size: 24px;
+  color: red;
 }
 </style>

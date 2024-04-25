@@ -13,6 +13,10 @@ import bootstrap from '@/bootstrap'
 import 'moment/locale/zh-cn'
 import ElementUI from 'element-ui'
 
+import axios from 'axios'
+axios.defaults.withCredentials = true
+
+Vue.prototype.$axios = axios
 const router = initRouter(store.state.setting.asyncRoutes)
 const i18n = initI18n('CN', 'US')
 

@@ -7,6 +7,7 @@ import SearchPage from '@/components/SearchPage'
 import SearchResult from '@/components/SearchResult'
 import PaperInfo from '@/components/PaperInfo'
 import PersonalMain from '@/components/Personal/PersonalMain'
+import UploadDocument from '@/components/Personal/UploadDocument'
 Vue.use(Router)
 
 export default new Router({
@@ -68,6 +69,15 @@ export default new Router({
       props: true,
       meta: {
         hideNavbar: false// 标识不显示导航栏
+      }
+    },
+    {
+      path: '/upload',
+      name: 'UploadDocument',
+      component: UploadDocument,
+      props: true,
+      meta: {
+        hideNavbar: false
       }
     }
   ]

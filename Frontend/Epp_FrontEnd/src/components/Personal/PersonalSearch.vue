@@ -10,7 +10,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="document in documents" :key="document.id">
+        <tr v-for="document in documents" :key="document.search_record_id
+">
           <td><router-link :to="'/document/' + document.id">{{ document.keyword }}</router-link></td>
           <!-- <td>{{ document.title }}</td> -->
           <td>{{ document.date }}</td>
