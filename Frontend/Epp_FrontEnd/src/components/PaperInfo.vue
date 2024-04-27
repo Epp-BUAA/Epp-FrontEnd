@@ -19,13 +19,19 @@
                     </el-row>
                     <el-row class="buttons">
                         <el-button type="text" @click="likePaper">
-                            <i :class="liked ? 'fas' : 'far' " class="fa-thumbs-up"></i>
+                            <i :class="liked ? 'fas' : 'far'" class="fa-thumbs-up"></i>
                             {{ paper.like_count }}
                         </el-button>
-                        <el-button type="text" icon="el-icon-chat-dot-round"
-                            @click="showCommentModal = true">{{ comments.length }}</el-button>
+                        <el-button type="text" @click="collectPaper"
+                            :icon="collected ? 'el-icon-star-on' : 'el-icon-star-off'">
+                            {{ paper.collect_count }}
+                        </el-button>
+                        <el-button type="text" icon="el-icon-chat-dot-round" @click="showCommentModal = true">{{
+                comments.length }}</el-button>
                         <el-button type="text" icon="el-icon-download" @click="downloadPaper">下载</el-button>
-                        <el-button type="text" icon="el-icon-view" @click="readOnline">在线研读</el-button>
+                        <router-link :to="{name: 'paper-reader', params: { paper_id: paper.paper_id }}">
+                            <i class="el-icon-view"></i>在线研读
+                        </router-link>
                         <el-link type="primary" :href="paper.original_url" icon="el-icon-link"
                             style="margin-left: 10px;">原文链接</el-link>
                     </el-row>
@@ -69,7 +75,7 @@
                         </el-form>
                         <span slot="footer">
                             <el-button @click="showCommentModal = false">取 消</el-button>
-                            <el-button type="primary" @click="submitComment">发 送</el-button>
+                            <el-button type="primary" @click="submitComment(1)">发 送</el-button>
                         </span>
                     </el-dialog>
                     <el-divider>评论区</el-divider>
@@ -88,16 +94,23 @@
                                             <div class="my-footer">
                                                 <span class="date">{{ comment.date }}</span>
                                                 <span class="actions">
+                                                    <el-button type="text" @click="likeComment(comment.comment_id, 1)">
+                                                        <i :class="comment.user_liked ? 'fas' : 'far'" class="fa-thumbs-up"></i>
+                                                        {{ comment.like_count }}
+                                                    </el-button>
                                                     <el-button type="text" icon="el-icon-chat-dot-round"
-                                                        @click="commentAction(comment.comment_id)">评论</el-button>
-                                                    <el-button type="text" icon="el-icon-thumb"
-                                                        @click="likeAction(comment.comment_id)">点赞</el-button>
+                                                        @click="toggleReplyInput(comment.comment_id)">回复</el-button>
                                                     <el-button type="text" icon="el-icon-warning-outline"
-                                                        @click="likeAction(comment.comment_id)">举报</el-button>
+                                                        @click="reportComment(comment.comment_id)">举报</el-button>
                                                     <el-button type="text" icon="el-icon-arrow-down"
                                                         @click="showRepliesAction(comment.comment_id)">展开</el-button>
                                                 </span>
                                             </div>
+                                        </div>
+                                        <!-- 回复评论的框 -->
+                                        <div style="display: flex; margin-bottom: 5px;">
+                                            <el-input v-if="showReplyInput == comment.comment_id" type="textarea" v-model="newComment" placeholder="请输入回复内容..." rows="1"></el-input>
+                                            <el-button v-if="showReplyInput == comment.comment_id" type="primary" size="small" @click="submitComment(2)">发送</el-button>
                                         </div>
                                     </el-col>
                                 </el-row>
@@ -105,19 +118,20 @@
                                 <!-- 二级评论部分 -->
                                 <div v-show="showRepliesCommentId === comment.comment_id">
                                     <div v-if="secondLevelComments.length > 0">
-                                        <div v-for="comment2 in secondLevelComments" :key="comment2.comment_id" class="comment-item">
+                                        <div v-for="comment2 in secondLevelComments" :key="comment2.comment_id"
+                                            class="comment-item">
                                             <el-row>
                                                 <el-col :span="2" :offset="2">
-                                                    <img :src="fullURL(comment2.user_image)" alt="user avatar" class="avatar">
+                                                    <img :src="fullURL(comment2.user_image)" alt="user avatar"
+                                                        class="avatar">
                                                 </el-col>
                                                 <el-col :span="20">
                                                     <div class="comment-content">
                                                         <div style="font-weight: bold;">{{ comment2.username }}</div>
                                                         <div class="text">
                                                             <!-- 后续加上跳转到用户个人中心的功能 -->
-                                                            <router-link
-                                                                v-if="comment2.to_username"
-                                                                :to="{ name: '', params: { username: comment2.to_username }}">
+                                                            <router-link v-if="comment2.to_username"
+                                                                :to="{ name: '', params: { username: comment2.to_username } }">
                                                                 @{{ comment2.to_username }}
                                                             </router-link>
                                                             {{ comment2.text }}
@@ -125,14 +139,21 @@
                                                         <div class="my-footer">
                                                             <span class="date">{{ comment2.date }}</span>
                                                             <span class="actions">
+                                                                <el-button type="text" @click="likeComment">
+                                                                    <i :class="comment2.user_liked ? 'fas' : 'far'" class="fa-thumbs-up"></i>
+                                                                    {{ comment2.like_count }}
+                                                                </el-button>
                                                                 <el-button type="text" icon="el-icon-chat-dot-round"
-                                                                    @click="commentAction(comment2.comment_id)">评论</el-button>
-                                                                <el-button type="text" icon="el-icon-thumb"
-                                                                    @click="likeAction(comment2.comment_id)">点赞</el-button>
+                                                                    @click="toggleReplyInput(comment2.comment_id)">回复</el-button>
                                                                 <el-button type="text" icon="el-icon-warning-outline"
-                                                                    @click="likeAction(comment2.comment_id)">举报</el-button>
+                                                                    @click="reportComment(comment2.comment_id)">举报</el-button>
                                                             </span>
                                                         </div>
+                                                    </div>
+                                                    <!-- 回复评论的框 -->
+                                                    <div style="display: flex; margin-bottom: 5px;">
+                                                        <el-input v-if="showReplyInput == comment2.comment_id" type="textarea" v-model="newComment" placeholder="请输入回复内容..." rows="1"></el-input>
+                                                        <el-button v-if="showReplyInput == comment2.comment_id" type="primary" size="small" @click="submitComment(3)">发送</el-button>
                                                     </div>
                                                 </el-col>
                                             </el-row>
@@ -171,8 +192,8 @@ export default {
       showCommentModal: false,
       newScore: 0,
       showScoreModal: false,
-      showRepliesBox: false,
       showRepliesCommentId: null,
+      showReplyInput: null, // 显示回复二级评论的输入框
       secondLevelComments: []
     }
   },
@@ -180,16 +201,17 @@ export default {
     this.paper_id = this.$route.params.paper_id
     this.fetchPaperInfo()
     this.fetchComments1()
+    this.fetchUserPaperInfo()
   },
   methods: {
     fullURL (url) {
       return this.$BASE_URL + url
     },
     fetchUserPaperInfo () {
-      axios.get(this.$BASE_API_URL + '/getUserPaperInfo?paper_id' + this.paper_id)
+      axios.get(this.$BASE_API_URL + '/getUserPaperInfo?paper_id=' + this.paper_id)
         .then((response) => {
           this.liked = response.data.liked
-          this.collected = response.data.liked
+          this.collected = response.data.collected
           this.user_score = response.data.score
         })
         .catch((error) => {
@@ -199,6 +221,7 @@ export default {
     fetchPaperInfo () {
       console.log('传递过来的paper id:', this.paper_id)
       // 向后端传送id，返回论文结果
+      //   console.log('url is...' + this.$BASE_API_URL + '/getPaperInfo?paper_id=' + this.paper_id)
       axios.get(this.$BASE_API_URL + '/getPaperInfo?paper_id=' + this.paper_id)
         .then((response) => {
           console.log('paper info is ...')
@@ -222,14 +245,31 @@ export default {
         })
     },
     likePaper () {
-      this.liked = !this.liked
-      this.liked ? this.paper.like_count++ : this.paper.like_count--
-      axios.post(this.$BASE_API_URL + '/userLikePaper', {'paper_id': this.paper_id})
+      axios.post(this.$BASE_API_URL + '/userLikePaper', { 'paper_id': this.paper_id })
+        .then(() => {
+          this.liked = !this.liked
+          this.liked ? this.paper.like_count++ : this.paper.like_count--
+        })
         .catch((error) => {
-        //   this.liked ? this.paper.like_count-- : this.like_count++
-          // 可以在这里处理错误，比如显示错误消息
           console.error('点赞操作失败:', error)
-        //   this.liked = !this.liked // 也要回滚点赞状态
+          this.$message({
+            message: '点赞操作失败',
+            type: 'error'
+          })
+        })
+    },
+    collectPaper () {
+      axios.post(this.$BASE_API_URL + '/collectPaper', { 'paper_id': this.paper_id })
+        .then(() => {
+          this.collected = !this.collected
+          this.collected ? this.paper.collect_count++ : this.paper.collect_count--
+        })
+        .catch((error) => {
+          console.error('收藏操作失败:', error)
+          this.$message({
+            message: '收藏操作失败',
+            type: 'error'
+          })
         })
     },
     downloadPaper () {
@@ -240,16 +280,49 @@ export default {
       // 实现在线阅读功能
       alert('在线研读功能尚未实现！')
     },
+    likeComment (commentId, commentLevel) {
+      axios.post(this.$BASE_API_URL + '/likeComment', { 'comment_level': commentLevel, 'comment_id': commentId })
+        .then((response) => {
+          const comment = this.comments.find(c => c.comment_id === commentId)
+          comment.user_liked = !comment.user_liked
+          comment.user_liked ? comment.like_count++ : comment.like_count--
+        })
+        .catch((error) => {
+          console.error('点赞操作失败:', error)
+          this.$message({
+            message: '点赞操作失败',
+            type: 'error'
+          })
+        })
+    },
     reportComment () {
       alert('举报功能尚未实现')
     },
     closeCommentModal () {
-      this.newComment = ''
-    },
-    submitComment () {
-      console.log('提交的评论内容：', this.newComment)
-      // 这里可以添加评论提交的逻辑
       this.showCommentModal = false // 关闭对话框
+    },
+    submitComment (commentLevel) {
+      console.log('提交的评论内容：', this.newComment)
+      axios.post(this.$BASE_API_URL + '/commentPaper', {'paper_id': this.paper_id, 'comment_level': commentLevel, 'comment': this.newComment})
+        .then((response) => {
+          if (response.data.is_success) {
+            this.$message({
+              message: '评论成功',
+              type: 'success'
+            })
+          }
+        })
+        .catch((error) => {
+          console.error('Error : ', error)
+          this.$message({
+            message: '评论失败',
+            type: 'error'
+          })
+        })
+      this.newComment = ''
+      if (commentLevel === 1) {
+        this.showCommentModal = false
+      }
     },
     closeScoreModal (done) {
       this.newScore = 0
@@ -272,12 +345,18 @@ export default {
           this.secondLevelComments = response.data.comments
           console.log(response.data.message)
           console.log('二级评论：', response.data.comments)
-          this.showRepliesBox = !this.showRepliesBox
           this.showRepliesCommentId = commentId
         })
         .catch((error) => {
           console.error('Error:', error)
         })
+    },
+    toggleReplyInput (commentId) {
+      if (this.showReplyInput === commentId) {
+        this.showReplyInput = null
+      } else {
+        this.showReplyInput = commentId
+      }
     }
   }
 }
@@ -300,8 +379,10 @@ p {
 
 .avatar {
     width: 50%;
-    /* height: 24px; */
+    aspect-ratio: 1 / 1;
     border-radius: 50%;
+    overflow: hidden;   /* 超出容器的图片部分会被隐藏 */
+    object-fit: cover;  /* 图片会覆盖整个容器，且内容会被裁剪以适应 */
 }
 
 .comment-content {

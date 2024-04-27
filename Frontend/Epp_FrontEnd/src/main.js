@@ -12,8 +12,8 @@ Vue.use(ElementUI)
 
 Vue.config.productionTip = false
 
-Vue.prototype.$BASE_URL = 'https://epp.sanyue.site'
-Vue.prototype.$BASE_API_URL = 'https://epp.sanyue.site/api'
+Vue.prototype.$BASE_URL = 'https://epp.buaase.cn'
+Vue.prototype.$BASE_API_URL = 'https://epp.buaase.cn/api'
 // Vue.prototype.$backend_url = 'http://yangyyy.yicp.fun/api'
 
 /* eslint-disable no-new */

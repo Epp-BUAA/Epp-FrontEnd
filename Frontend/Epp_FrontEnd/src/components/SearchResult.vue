@@ -243,6 +243,7 @@ export default {
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
+            this.selectedPapers = []
           }
         })
         .catch((error) => {
