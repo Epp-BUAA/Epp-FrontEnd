@@ -1,8 +1,7 @@
 <template>
   <div id="app">
     <!-- <img src="./assets/logo.png"> -->
-    <!-- <NavBar /> -->
-    <div v-if=!$route.meta.hideNavbar>
+    <div v-if="!$route.meta.hideNavbar" style="display: block;">
       <NavBar />
     </div>
     <router-view/>

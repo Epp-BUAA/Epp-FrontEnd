@@ -1,6 +1,6 @@
 <template>
 <div class="personal">
-  <div id="app">
+  <div id="personal-main">
     <sidebar @tabSelected="selectTab" />
     <div class="content">
       <personal-info v-if="selectedTab === 'personal'" />
@@ -23,7 +23,7 @@ import MyReports from '@/components/Personal/PersonalReport.vue'
 import CollectedPapers from '@/components/Personal/PersonalCollections.vue'
 
 export default {
-  name: 'App',
+  name: 'PersonalMain',
   components: {
     Sidebar,
     PersonalInfo,
@@ -46,10 +46,9 @@ export default {
 </script>
 
 <style>
-#app {
+#personal-main {
   display: flex;
 }
-
 .content {
   flex: 1;
   padding: 20px;
