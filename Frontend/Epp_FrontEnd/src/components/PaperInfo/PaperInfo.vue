@@ -29,8 +29,8 @@
                         <el-button type="text" icon="el-icon-chat-dot-round" @click="showCommentModal = true">{{
                 comments.length }}</el-button>
                         <el-button type="text" icon="el-icon-download" @click="downloadPaper">下载</el-button>
-                        <router-link :to="{name: 'paper-reader', params: { paper_id: paper.paper_id }}">
-                            <i class="el-icon-view"></i>在线研读
+                        <router-link :to="{name: 'paper-reader', params: { paper_id: paper.paper_id }}" tag="button" class="el-button el-button--text">
+                            <i class="el-icon-view"></i> 在线研读
                         </router-link>
                         <el-link type="primary" :href="paper.original_url" icon="el-icon-link"
                             style="margin-left: 10px;">原文链接</el-link>
@@ -101,7 +101,7 @@
                                                     <el-button type="text" icon="el-icon-chat-dot-round"
                                                         @click="toggleReplyInput(comment.comment_id)">回复</el-button>
                                                     <el-button type="text" icon="el-icon-warning-outline"
-                                                        @click="reportComment(comment.comment_id)">举报</el-button>
+                                                        @click="reportComment(comment.comment_id, 1)">举报</el-button>
                                                     <el-button type="text" icon="el-icon-arrow-down"
                                                         @click="showRepliesAction(comment.comment_id)">展开</el-button>
                                                 </span>
@@ -146,7 +146,7 @@
                                                                 <el-button type="text" icon="el-icon-chat-dot-round"
                                                                     @click="toggleReplyInput(comment2.comment_id)">回复</el-button>
                                                                 <el-button type="text" icon="el-icon-warning-outline"
-                                                                    @click="reportComment(comment2.comment_id)">举报</el-button>
+                                                                    @click="reportComment(comment2.comment_id, 2)">举报</el-button>
                                                             </span>
                                                         </div>
                                                     </div>
@@ -168,17 +168,22 @@
                 </el-container>
             </el-col>
         </el-row>
+        <report-modal :showReportModal="showReportModal" :commentId="reportedCommentId" :commentLevel="reportedCommentLevel"></report-modal>
     </div>
 </template>
 
 <script>
 import axios from 'axios'
+import ReportModal from './ReportModal.vue'
 export default {
   props: {
     paper_id: {
       type: String,
       required: true
     }
+  },
+  components: {
+    'report-modal': ReportModal
   },
   computed: {
   },
@@ -194,7 +199,10 @@ export default {
       showScoreModal: false,
       showRepliesCommentId: null,
       showReplyInput: null, // 显示回复二级评论的输入框
-      secondLevelComments: []
+      secondLevelComments: [],
+      showReportModal: false,
+      reportedCommentId: '',
+      reportedCommentLevel: 0
     }
   },
   created () {
@@ -276,10 +284,6 @@ export default {
       // 实现下载功能
       alert('下载功能尚未实现！')
     },
-    readOnline () {
-      // 实现在线阅读功能
-      alert('在线研读功能尚未实现！')
-    },
     likeComment (commentId, commentLevel) {
       axios.post(this.$BASE_API_URL + '/likeComment', { 'comment_level': commentLevel, 'comment_id': commentId })
         .then((response) => {
@@ -295,8 +299,10 @@ export default {
           })
         })
     },
-    reportComment () {
-      alert('举报功能尚未实现')
+    reportComment (commentId, commentLevel) {
+      this.reportedCommentId = commentId
+      this.reportedCommentLevel = commentLevel
+      this.showReportModal = true
     },
     closeCommentModal () {
       this.showCommentModal = false // 关闭对话框
@@ -323,8 +329,9 @@ export default {
       if (commentLevel === 1) {
         this.showCommentModal = false
       }
+      window.location.reload()
     },
-    closeScoreModal (done) {
+    closeScoreModal () {
       this.newScore = 0
     },
     submitScore () {

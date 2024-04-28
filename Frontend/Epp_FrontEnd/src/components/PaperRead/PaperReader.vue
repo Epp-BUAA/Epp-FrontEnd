@@ -1,21 +1,21 @@
 <template>
     <el-row :gutter="20">
       <el-col :span="16">
-        <pdf-reader :pdfUrl="pdfUrl"/>
+        <iframe :src="pdfUrl" style="width: 100%; height: 755px;" frameborder="0">
+        </iframe>
       </el-col>
       <el-col :span="8">
-        <ai-assistant :paper_id="paper_id" />
+        <read-assistant :paper_id="paper_id" />
       </el-col>
     </el-row>
 </template>
 
 <script>
-import PDFReader from './PDFReader.vue'
 import ReadAssistant from './ReadAssistant.vue'
+import axios from 'axios'
 export default {
   components: {
-    'pdf-reader': PDFReader,
-    'ai-assistant': ReadAssistant
+    'read-assistant': ReadAssistant
   },
   props: {
     paper_id: {
@@ -33,7 +33,15 @@ export default {
   },
   methods: {
     fetchPaperPDF () {
-      this.pdfUrl = '../../../static/Inductive Representation Learning on Large Graphs.pdf'
+      axios.get(this.$BASE_API_URL + '/study/getPaperPDF?paper_id=' + this.paper_id)
+        .then((response) => {
+          this.pdfUrl = this.$BASE_URL + response.data.local_url
+          //   this.pdfUrl = '../../../static/Res3ATN -- Deep 3D Residual Attention Network for Hand Gesture  Recognition in Videos.pdf'
+          console.log('论文PDF为', this.pdfUrl)
+        })
+        .catch((error) => {
+          console.log('请求论文PDF失败 ', error)
+        })
     }
   }
 
