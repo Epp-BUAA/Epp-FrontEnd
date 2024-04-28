@@ -12,14 +12,15 @@
                     </div>
                     <div v-else>
                         <p style="white-space: pre-wrap;">{{ message.text }}</p>
-                        <el-button type="text" @click="regenerateAnswer" v-show="index == chatMessages.length - 1 && answerFinished">
+                        <el-button type="text" v-show="answerFinished && index == chatMessages.length - 1"
+                        @click="regenerateAnswer">
                             <i class="fas fa-refresh"></i>
                             重新生成
                         </el-button>
                     </div>
                 </div>
                 <div v-else class="message-bubble right">
-                    <p style="white-space: pre-wrap;">{{ message.text }}</p>
+                    <p style="word-wrap: break-word;">{{ message.text }}</p>
                 </div>
             </div>
         </el-main>
@@ -36,7 +37,15 @@ import axios from 'axios'
 
 export default {
   props: {
-    paper_id: {
+    paperIds: {
+      type: Array,
+      default: null
+    },
+    keyword: {
+      type: String,
+      default: ''
+    },
+    aiReply: {
       type: String,
       default: ''
     }
@@ -53,43 +62,7 @@ export default {
   },
   methods: {
     initialize () {
-      const existingId = localStorage.getItem('fileReadingID')
-      if (existingId) {
-        this.file_reading_id = existingId
-        this.restorePaperStudy(existingId)
-      } else {
-        this.createPaperStudy()
-      }
-      this.createPaperStudy()
-    },
-    createPaperStudy () {
-      console.log('paper-id ', this.paper_id)
-      axios.post(this.$BASE_API_URL + '/study/createPaperStudy', {'paper_id': this.paper_id, 'file_type': 2})
-        .then((response) => {
-          if (response.status === 200) {
-            console.log('论文研读创建成功！')
-            this.file_reading_id = response.data.file_reading_id
-            localStorage.setItem('fileReadingID', this.file_reading_id)
-            console.log('研读对话的id, ', response.data.file_reading_id)
-          }
-        })
-        .catch((error) => {
-          console.log('Error: ', error)
-        })
-    },
-    restorePaperStudy (fileReadingID) {
-      console.log('研读对话的id, ', fileReadingID)
-      axios.post(this.$BASE_API_URL + '/study/restorePaperStudy', {'file_reading_id': fileReadingID})
-        .then((response) => {
-          const history = response.data.conversation_history.conversation
-          for (const message of history) {
-            const sender = message.role === 'user' ? 'user' : 'ai'
-            this.chatMessages.push({sender: sender, text: message.content, loading: false})
-          }
-        })
-        .catch((error) => {
-          console.error('恢复论文研读失败: ', error)
-        })
+      this.chatMessages.push({text: this.aiReply, sender: 'ai', loading: false, type: 'dialog'})
     },
     async chatToAI () {
       const chatMessage = this.chatInput.trim()
@@ -100,18 +73,19 @@ export default {
         })
         return
       }
-      this.chatMessages.push({sender: 'user', text: chatMessage, loading: false})
+      this.chatMessages.push({sender: 'user', text: chatMessage, loading: false, type: 'dialog'})
 
-      let loadingMessage = { sender: 'ai', text: 'AI正在思考...', loading: true }
+      let loadingMessage = { sender: 'ai', text: 'AI正在思考...', loading: true, type: 'dialog' }
       this.chatMessages.push(loadingMessage)
       let answer = ''
       //   Add user message to chat
       try {
-        await this.$axios.post(this.$BASE_API_URL + '/study/doPaperStudy', { 'query': chatMessage, 'file_reading_id': this.file_reading_id })
+        await this.$axios.post(this.$BASE_API_URL + '/search/dialogQuery', { 'message': chatMessage, 'paper_ids': this.paperIds, 'keyword': this.keyword })
           .then(response => {
-            answer = response.data.ai_reply
+            loadingMessage.type = response.data.dialog_type
             loadingMessage.loading = false
             loadingMessage.text = ''
+            answer = response.data.content
           })
       } catch (error) {
         console.error('Error:', error)
@@ -220,5 +194,4 @@ export default {
   clear: both;
   border-radius: 0 15px 15px 15px;
 }
-
 </style>

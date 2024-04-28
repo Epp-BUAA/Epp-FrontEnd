@@ -60,33 +60,18 @@
       </el-main>
     </el-col>
     <el-col :span="8">
-      <el-container style="height: calc(100vh - 55px);">
-        <el-header>
-          <h1>调研助手</h1>
-        </el-header>
-
-        <el-main class="chat-content">
-          <div>
-            <div v-for="(message, index) in chatMessages" :key="index" :class="message.sender">
-              <el-card :class="{ 'my-message': message.sender === 'user', 'other-message': message.sender === 'ai' }">
-                <p>{{ message.text }}</p>
-              </el-card>
-            </div>
-          </div>
-        </el-main>
-
-        <el-footer>
-          <el-input v-model="chatInput" placeholder="输入你的消息..." @keyup.enter="chatToAI"></el-input>
-          <el-button type="primary" @click="chatToAI">发送</el-button>
-        </el-footer>
-      </el-container>
+      <ai-assistant v-if="aiReply.length > 0" :aiReply="aiReply" :paperIds="paperIds" :keyword="keyword"/>
     </el-col>
   </el-row>
 </template>
 
 <script>
 import axios from 'axios'
+import SearchAssistant from './SearchAssistant.vue'
 export default {
+  components: {
+    'ai-assistant': SearchAssistant
+  },
   props: ['searchForm'],
   data () {
     return {
@@ -94,8 +79,9 @@ export default {
       filterYear: '',
       sortOrder: 'asc',
       filteredPapers: [],
-      chatInput: '',
-      chatMessages: [],
+      aiReply: '',
+      paperIds: [],
+      keyword: '',
       selectedPapers: []
     }
   },
@@ -130,66 +116,31 @@ export default {
     },
     async fetchPapers () {
       console.log('Fetching papers...')
+      const loadingInstance = this.$loading({
+        lock: true,
+        text: 'Loading...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
       const params = {
         'search_content': this.$route.query.search_content
       }
       console.log(params)
-      await axios.get(this.$BASE_API_URL + '/search/vectorQuery?search_content=' + this.$route.query.search_content)
+      await axios.post(this.$BASE_API_URL + '/search/vectorQuery', {'search_content': this.$route.query.search_content})
         .then((response) => {
           console.log('response is ...')
           this.papers = response.data.paper_infos
+          // 添加ai回答的逻辑
+          this.aiReply = response.data.ai_reply
+          console.log('ai的回复: ', this.aiReply)
+          // 取前五个paper id，不足五个就传所有
+          this.paperIds = this.papers.slice(0, 5).map(paper => paper.paper_id)
+          this.keyword = this.$route.query.search_content
+          loadingInstance.close()
         })
         .catch((error) => {
           console.error('Error:', error)
         })
-      this.papers = [{
-        'paper_id': '0000f570-04bc-49fa-b2d4-56447ca1bd9b',
-        'title': 'Quantization of Deep Neural Networks for Accurate Edge Computing',
-        'authors': 'Wentao Chen,Hailong Qiu,Jian Zhuang,Chutong Zhang,Yu Hu,Qing Lu,Tianchen Wang,Yiyu Shi,Meiping Huang,Xiaowe Xu,',
-        'abstract': '  Deep neural networks (DNNs) have demonstrated their great potential in recent\nyears, exceeding the per-formance of human experts in a wide range of\napplications. Due to their large sizes, however, compressiontechniques such as\nweight quantization and pruning are usually applied before they can be\naccommodated onthe edge. It is generally believed that quantization leads to\nperformance degradation, and plenty of existingworks have explored quantization\nstrategies aiming at minimum accuracy loss. In this paper, we argue\nthatquantization, which essentially imposes regularization on weight\nrepresentations, can sometimes help toimprove accuracy. We conduct\ncomprehensive experiments on three widely used applications: fully con-nected\nnetwork (FCN) for biomedical image segmentation, convolutional neural network\n(CNN) for imageclassification on ImageNet, and recurrent neural network (RNN)\nfor automatic speech recognition, and experi-mental results show that\nquantization can improve the accuracy by 1%, 1.95%, 4.23% on the three\napplicationsrespectively with 3.5x-6.4x memory reduction.\n',
-        'publication_date': '2021-04-25',
-        'journal': null,
-        'citation_count': 38,
-        'read_count': 479,
-        'like_count': 2,
-        'collect_count': 3,
-        'download_count': 901,
-        'score': 3.33,
-        'original_url': 'http://arxiv.org/abs/2104.12046v2',
-        'is_success': true
-      }]
-    },
-    chatToAI () {
-      const chatMessage = this.chatInput.trim()
-      if (!chatMessage) {
-        this.$message({
-          message: '请输入你的问题',
-          type: 'warning'
-        })
-        return
-      }
-
-      // Add user message to chat
-      this.addMessageToChat(chatMessage, 'user')
-
-      this.$axios.post(this.$BASE_API_URL + '/search/dialogQuery', { message: chatMessage })
-        .then(response => {
-          this.addMessage(response.data.reply, 'ai')
-        })
-        .catch(error => {
-          console.error('Error:', error)
-          this.addMessage('Error: Unable to send message.', 'error')
-        })
-        .finally(() => {
-          this.userInput = ''
-        })
-
-      this.addMessageToChat('阿巴阿巴阿巴阿巴阿巴', 'ai')
-      this.chatInput = ''
-    },
-    addMessageToChat (message, sender) {
-      this.messageIdCounter += 1
-      this.chatMessages.push({ id: this.messageIdCounter, text: message, sender: sender })
     },
     handleCheckboxChange (paperId) {
       const index = this.selectedPapers.indexOf(paperId)

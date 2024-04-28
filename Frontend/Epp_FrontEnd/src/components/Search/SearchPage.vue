@@ -20,7 +20,8 @@
             <el-tag v-for="(record, index) in search_records" :key="index" closable
             @close="removeRecord(record.search_record_id, index)" @click="submitSearch(record.keyword)"
             id="record">
-              {{ record.keyword }}
+              <p>{{ record.keyword }}</p>
+              <p style="color: grey; font-size: smaller; margin-left: 10px;"> {{ record.date }}</p>
             </el-tag>
           </div>
         </div>
@@ -58,16 +59,21 @@ export default {
         })
         return
       }
-      console.log(searchContent)
       this.$router.push({ name: 'search-results', query: { search_content: searchContent } })
     },
     removeRecord (searchRecordId, index) {
-      axios.post(this.$BASE_API_URL + '/userInfo/delSearchHistory', {'search_record_id': searchRecordId})
+      console.log(searchRecordId)
+      axios.delete(this.$BASE_API_URL + '/userInfo/delSearchHistory',
+        {
+          data: {
+            'search_record_id': searchRecordId
+          }
+        })
         .then((response) => {
           console.log(response.data.message)
         })
         .catch((error) => {
-          console.error('Error:', error)
+          console.error('删除历史记录失败', error)
         })
       this.search_records.splice(index, 1)
     },
@@ -79,21 +85,6 @@ export default {
         .catch((error) => {
           console.error('Error', error)
         })
-      this.search_records = [{
-        'search_record_id': '52168613-163d-435c-b71b-223cc0f5ad23',
-        'keyword': 'mamba out',
-        'date': '2024-04-16 15:01:52'
-      },
-      {
-        'search_record_id': '52168613-163d-435c-b71b-223cc0f5ad23',
-        'keyword': '孩子们这并不好笑',
-        'date': '2024-04-16 15:01:52'
-      },
-      {
-        'search_record_id': '52168613-163d-435c-b71b-223cc0f5ad23',
-        'keyword': 'man!',
-        'date': '2024-04-16 15:01:52'
-      }]
     },
     handleOutsideClick (event) {
       // 如果点击事件不是发生在搜索容器内部，隐藏搜索历史
