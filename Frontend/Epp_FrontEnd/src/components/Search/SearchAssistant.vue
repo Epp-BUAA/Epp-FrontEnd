@@ -17,11 +17,11 @@
                             <paper-card :paper="paper" />
                           </div>
                         </div>
-                        <el-button type="text" v-show="answerFinished && index == chatMessages.length - 1"
+                        <!-- <el-button type="text" v-show="answerFinished && index == chatMessages.length - 1"
                         @click="regenerateAnswer">
                             <i class="fas fa-refresh"></i>
                             重新生成
-                        </el-button>
+                        </el-button> -->
                         <el-button v-show="message.type === 'query' && answerFinished && chatMessages.length - 1"
                         type="text" @click="searchPaperByAssistant">
                           <i class="fas fa-compass"></i>
@@ -54,13 +54,17 @@ export default {
       type: Array,
       default: null
     },
-    searchRecordId: {
+    searchRecordID: {
       type: String,
       default: ''
     },
     aiReply: {
-      type: String,
-      default: ''
+      type: Array,
+      default: null
+    },
+    restoreHistory: {
+      type: Boolean,
+      defrault: false
     }
   },
   data () {
@@ -72,12 +76,19 @@ export default {
     }
   },
   created () {
-    this.initialize()
+    if (this.restoreHistory) {
+      console.log(22222)
+      this.restoreDialogSearch()
+    } else {
+      this.createDialogStudy()
+    }
   },
   methods: {
-    initialize () {
+    createDialogStudy () {
       this.paperIds = this.paperIds.slice(0, 1)
-      this.chatMessages.push({text: this.aiReply, sender: 'ai', loading: true, type: 'dialog'})
+      for (const message of this.aiReply) {
+        this.chatMessages.push(message)
+      }
       this.createKB()
     },
     async chatToAI () {
@@ -95,8 +106,8 @@ export default {
       let answer = ''
       this.chatInput = ''
       try {
-        console.log('search-record-id: ', this.searchRecordId)
-        await this.$axios.post(this.$BASE_API_URL + '/search/dialogQuery', { 'message': chatMessage, 'paper_ids': this.paperIds, 'search_record_id': this.searchRecordId, 'kb_id': this.kb_id })
+        console.log('search-record-id: ', this.searchRecordID)
+        await this.$axios.post(this.$BASE_API_URL + '/search/dialogQuery', { 'message': chatMessage, 'paper_ids': this.paperIds, 'search_record_id': this.searchRecordID, 'kb_id': this.kb_id })
           .then(response => {
             loadingMessage.type = response.data.dialog_type
             console.log(loadingMessage.type)
@@ -156,14 +167,14 @@ export default {
       lastMessage.loading = true
       this.answerFinished = false
       let answer = ''
-      await axios.post(this.$BASE_API_URL + '/search/dialogQuery', { 'message': lastMessage, 'paper_ids': this.paperIds, 'keyword': this.keyword, 'kb_id': this.kbId })
+      await axios.post(this.$BASE_API_URL + '/search/dialogQuery', { 'message': lastMessage, 'paper_ids': this.paperIds, 'search_record_id': this.searchRecordID, 'kb_id': this.kbId })
         .then((response) => {
           answer = response.data.ai_reply
           lastMessage.text = ''
           lastMessage.loading = false
         })
         .catch((error) => {
-          console.error('Error:', error)
+          console.error('重新生成对话式检索结果失败: ', error)
           lastMessage.text = ''
           answer = '抱歉, 无法从AI获取回应。'
           lastMessage.loading = false
@@ -177,8 +188,9 @@ export default {
       this.answerFinished = true
     },
     createKB () {
-      console.log(this.paperIds)
+      console.log('创建知识库的论文ids', this.paperIds)
       let firstMessage = this.chatMessages[this.chatMessages.length - 1]
+      firstMessage.loading = true
       axios.post(this.$BASE_API_URL + '/search/rebuildKB', {'paper_id_list': this.paperIds})
         .then((response) => {
           this.kbId = response.data.kb_id
@@ -199,6 +211,11 @@ export default {
     },
     searchPaperByAssistant () {
       this.$emit('find-paper', this.papers)
+    },
+    restoreDialogSearch () {
+      for (const message of this.aiReply) {
+        this.chatMessages.push(message)
+      }
     }
   }
 

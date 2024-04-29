@@ -43,7 +43,7 @@
     </el-col>
     <el-col :span="8">
       <ai-assistant v-if="aiReply.length > 0" :aiReply="aiReply" :paperIds="paperIds"
-        :searchRecordId="searchRecordId" @find-paper="searchPaperByAssistant"/>
+        :searchRecordID="searchRecordID" :restoreHistory="restoreHistory" @find-paper="searchPaperByAssistant"/>
     </el-col>
   </el-row>
 </template>
@@ -64,9 +64,10 @@ export default {
       filterYear: '',
       sortOrder: 'asc',
       filteredPapers: [],
-      aiReply: '',
+      aiReply: [],
       paperIds: [],
-      searchRecordId: '',
+      searchRecordID: '',
+      restoreHistory: false,
       selectedPapers: []
     }
   },
@@ -104,19 +105,15 @@ export default {
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       })
-      const params = {
-        'search_content': this.$route.query.search_content
-      }
-      console.log(params)
       await axios.post(this.$BASE_API_URL + '/search/vectorQuery', {'search_content': this.$route.query.search_content})
         .then((response) => {
           console.log('response is ...')
           this.papers = response.data.paper_infos
           // 添加ai回答的逻辑
-          this.aiReply = response.data.ai_reply
+          this.aiReply.push({sender: 'ai', text: response.data.ai_reply, loading: false, type: 'dialog'})
           console.log('ai的回复: ', this.aiReply)
           this.paperIds = this.papers.map(paper => paper.paper_id)
-          this.searchRecordId = response.data.search_record_id
+          this.searchRecordID = response.data.search_record_id
           loadingInstance.close()
         })
         .catch((error) => {
@@ -125,6 +122,23 @@ export default {
       // 写死数据
       // this.createFakeData()
       // loadingInstance.close()
+    },
+    async fetchPapersFromHistory () {
+      await axios.get(this.$BASE_API_URL + '/search/restoreSearchRecord?search_record_id=' + this.$route.query.searchRecordID)
+        .then((response) => {
+          this.papers = response.data.paper_infos
+          console.log('历史记录的论文', this.papers)
+          for (const message of response.data.conversation) {
+            const sender = message.role === 'user' ? 'user' : 'ai'
+            this.aiReply.push({sender: sender, text: message.content, loading: false, type: 'dialog'})
+          }
+          console.log('历史记录对话信息 ', this.aiReply)
+          this.paperIds = this.papers.map(paper => paper.paper_id)
+          this.restoreHistory = true
+        })
+        .catch((error) => {
+          console.error('恢复历史记录失败: ', error)
+        })
     },
     handleCheckboxChange (paperId) {
       const index = this.selectedPapers.indexOf(paperId)
@@ -135,7 +149,6 @@ export default {
         // 如果不存在，则添加
         this.selectedPapers.push(paperId)
       }
-      console.log(this.selectedPapers)
     },
     generateSummaryReport () {
       if (this.selectedPapers.length === 0) {
@@ -193,7 +206,11 @@ export default {
     }
   },
   async mounted () {
-    await this.fetchPapers()
+    if (this.$route.query.searchRecordID) {
+      await this.fetchPapersFromHistory()
+    } else {
+      await this.fetchPapers()
+    }
     this.applyFilter()
   }
 }

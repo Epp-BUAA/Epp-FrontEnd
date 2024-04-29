@@ -62,7 +62,7 @@ export default {
         })
     },
     closeReportModal () {
-      this.showReportModal = false
+      this.$emit('close-report-modal', false)
     }
   }
 }
