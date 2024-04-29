@@ -49,7 +49,7 @@
                             <el-button type="text" icon="el-icon-edit-outline"
                                 @click="showScoreModal = true">我要评分</el-button>
                         </el-col>
-                        <el-dialog title="我要评分" :visible.sync="showScoreModal" width="50%" @close="closeScoreModal">
+                        <el-dialog title="我要评分" :visible.sync="showScoreModal" width="50%" @close="showScoreModal = false">
                             <el-form>
                                 <el-form-item>
                                     <el-rate v-model="newScore"></el-rate>
@@ -103,7 +103,7 @@
                                                     <el-button type="text" icon="el-icon-warning-outline"
                                                         @click="reportComment(comment.comment_id, 1)">举报</el-button>
                                                     <el-button type="text" icon="el-icon-arrow-down"
-                                                        @click="showRepliesAction(comment.comment_id)">展开</el-button>
+                                                        @click="fetchComments2(comment.comment_id)">展开</el-button>
                                                 </span>
                                             </div>
                                         </div>
@@ -168,7 +168,8 @@
                 </el-container>
             </el-col>
         </el-row>
-        <report-modal :showReportModal="showReportModal" :commentId="reportedCommentId" :commentLevel="reportedCommentLevel"></report-modal>
+        <report-modal :showReportModal="showReportModal" :commentId="reportedCommentId"
+        :commentLevel="reportedCommentLevel" @close-report-modal="showReportModal = false"></report-modal>
     </div>
 </template>
 
@@ -220,7 +221,7 @@ export default {
         .then((response) => {
           this.liked = response.data.liked
           this.collected = response.data.collected
-          this.user_score = response.data.score
+          this.newScore = response.data.score
         })
         .catch((error) => {
           console.error('Error', error)
@@ -306,8 +307,10 @@ export default {
     },
     closeCommentModal () {
       this.showCommentModal = false // 关闭对话框
+      this.newComment = ''
     },
     submitComment (commentLevel) {
+      console.log('评论级别', commentLevel)
       console.log('提交的评论内容：', this.newComment)
       axios.post(this.$BASE_API_URL + '/commentPaper', {'paper_id': this.paper_id, 'comment_level': commentLevel, 'comment': this.newComment})
         .then((response) => {
@@ -325,21 +328,39 @@ export default {
             type: 'error'
           })
         })
-      this.newComment = ''
-      if (commentLevel === 1) {
-        this.showCommentModal = false
-      }
-      window.location.reload()
-    },
-    closeScoreModal () {
-      this.newScore = 0
+        .finally(() => {
+          this.newComment = ''
+          if (commentLevel === 1) {
+            this.showCommentModal = false
+          }
+          // window.location.reload()
+        })
     },
     submitScore () {
       console.log('提交的评分内容：', this.newScore)
       // 这里可以添加评论提交的逻辑
-      this.showScoreModal = false // 关闭对话框
+      axios.post(this.$BASE_API_URL + '/userScoring', {'paper_id': this.paper_id, 'score': this.newScore})
+        .then((response) => {
+          if (response.status === 200) {
+            this.$message({
+              message: '评分成功',
+              type: 'success'
+            })
+          }
+        })
+        .catch((error) => {
+          console.error('评分失败', error)
+          this.$message({
+            message: '评分失败',
+            type: 'error'
+          })
+        })
+        .finally(() => {
+          this.showScoreModal = false // 关闭对话框
+          // window.location.reload()
+        })
     },
-    showRepliesAction (commentId) {
+    fetchComments2 (commentId) {
       if (this.showRepliesCommentId === commentId) {
         this.showRepliesCommentId = null
         return

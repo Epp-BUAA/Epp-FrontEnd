@@ -66,7 +66,6 @@ export default {
       } else {
         this.createPaperStudy()
       }
-      this.createPaperStudy()
     },
     createPaperStudy () {
       console.log('paper-id ', this.paper_id)
@@ -107,6 +106,7 @@ export default {
         return
       }
       this.chatInput = ''
+      this.answerFinished = false
       this.chatMessages.push({sender: 'user', text: chatMessage, loading: false})
 
       let loadingMessage = { sender: 'ai', text: 'AI正在思考...', loading: true }

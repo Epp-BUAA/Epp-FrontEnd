@@ -18,7 +18,7 @@
           </el-input>
           <div v-if="showHistory" class="history">
             <el-tag v-for="(record, index) in search_records" :key="index" closable
-            @close="removeRecord(record.search_record_id, index)" @click="submitSearch(record.keyword)"
+            @close="removeRecord(record.search_record_id, index)" @click="searchFromHistory(record.search_record_id)"
             id="record">
               <p>{{ record.keyword }}</p>
               <p style="color: grey; font-size: smaller; margin-left: 10px;"> {{ record.date }}</p>
@@ -60,6 +60,9 @@ export default {
         return
       }
       this.$router.push({ name: 'search-results', query: { search_content: searchContent } })
+    },
+    searchFromHistory (searchRecordID) {
+      this.$router.push({ name: 'search-results', query: { searchRecordID: searchRecordID } })
     },
     removeRecord (searchRecordId, index) {
       console.log(searchRecordId)
