@@ -36,31 +36,14 @@
               <div class="column is-narrow checkbox">
                 <el-checkbox @change="handleCheckboxChange(paper.paper_id)"></el-checkbox>
               </div>
-              <div class="column paper-card">
-                <div>
-                  <router-link :to="{ name: 'paper-info', params: { paper_id: paper.paper_id } }"
-                    class="is-size-5 has-text-weight-bold" style="text-align: left; display: block;">
-                    {{ paper.title }}
-                  </router-link>
-                </div>
-                <div style="text-align: left;">
-                  <el-tag size="mini">
-                    {{ getPublicationYear(paper.publication_date) }}
-                  </el-tag>
-                  <span class="is-size-6">- {{ paper.authors }}</span>
-                </div>
-                <div style="text-align: left;">
-                  <span class="is-size-7">
-                    <span class="mr-3 truncate-multiline">{{ paper.abstract }}</span>
-                  </span>
-                </div>
-              </div>
+              <paper-card :paper="paper"/>
             </div>
           </div>
       </el-main>
     </el-col>
     <el-col :span="8">
-      <ai-assistant v-if="aiReply.length > 0" :aiReply="aiReply" :paperIds="paperIds" :keyword="keyword"/>
+      <ai-assistant v-if="aiReply.length > 0" :aiReply="aiReply" :paperIds="paperIds"
+        :searchRecordId="searchRecordId" @find-paper="searchPaperByAssistant"/>
     </el-col>
   </el-row>
 </template>
@@ -68,20 +51,22 @@
 <script>
 import axios from 'axios'
 import SearchAssistant from './SearchAssistant.vue'
+import PaperCard from './PaperCard.vue'
 export default {
   components: {
-    'ai-assistant': SearchAssistant
+    'ai-assistant': SearchAssistant,
+    'paper-card': PaperCard
   },
   props: ['searchForm'],
   data () {
     return {
-      papers: [], // 假设这是从API获取的论文数据
+      papers: [],
       filterYear: '',
       sortOrder: 'asc',
       filteredPapers: [],
       aiReply: '',
       paperIds: [],
-      keyword: '',
+      searchRecordId: '',
       selectedPapers: []
     }
   },
@@ -111,9 +96,6 @@ export default {
       this.filteredPapers = results
       console.log('filter papers: ', this.filteredPapers)
     },
-    getPublicationYear (dateString) {
-      return new Date(dateString).getFullYear()
-    },
     async fetchPapers () {
       console.log('Fetching papers...')
       const loadingInstance = this.$loading({
@@ -133,14 +115,16 @@ export default {
           // 添加ai回答的逻辑
           this.aiReply = response.data.ai_reply
           console.log('ai的回复: ', this.aiReply)
-          // 取前五个paper id，不足五个就传所有
-          this.paperIds = this.papers.slice(0, 5).map(paper => paper.paper_id)
-          this.keyword = this.$route.query.search_content
+          this.paperIds = this.papers.map(paper => paper.paper_id)
+          this.searchRecordId = response.data.search_record_id
           loadingInstance.close()
         })
         .catch((error) => {
           console.error('Error:', error)
         })
+      // 写死数据
+      // this.createFakeData()
+      // loadingInstance.close()
     },
     handleCheckboxChange (paperId) {
       const index = this.selectedPapers.indexOf(paperId)
@@ -201,6 +185,11 @@ export default {
           console.error('Error:', error)
         })
       this.selectedPapers = []
+    },
+    searchPaperByAssistant (papers) {
+      console.log('循征之后的论文', papers)
+      this.papers = papers
+      this.applyFilter()
     }
   },
   async mounted () {
@@ -216,29 +205,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.paper-card {
-  background-color: white;
-  border-radius: 6px;
-  box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
-  color: #4a4a4a;
-  display: block;
-  padding: 1.25rem;
-  margin-bottom: 20px;
-  /* word-break: break-word; */
-}
-
-.truncate-multiline {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  /* 设置为2行文本 */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: normal;
-  /* 重写可能的 nowrap */
-  max-height: 3em;
-  /* 可选，基于行高和所需行数调整 */
 }
 
 /* 对话式检索部分 */

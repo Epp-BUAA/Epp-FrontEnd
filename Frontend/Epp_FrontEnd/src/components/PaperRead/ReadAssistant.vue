@@ -22,6 +22,11 @@
                     <p style="white-space: pre-wrap;">{{ message.text }}</p>
                 </div>
             </div>
+            <div style="margin-top: 10px;">
+              <div v-show="answerFinished" v-for="(question, index) in probQuestions" :key="index" class="prob-question" @click="sendProbQuestion(question)">
+                {{ question }}
+              </div>
+            </div>
         </el-main>
 
         <el-footer>
@@ -45,7 +50,8 @@ export default {
     return {
       chatInput: '',
       chatMessages: [],
-      answerFinished: false
+      answerFinished: false,
+      probQuestions: []
     }
   },
   created () {
@@ -100,6 +106,7 @@ export default {
         })
         return
       }
+      this.chatInput = ''
       this.chatMessages.push({sender: 'user', text: chatMessage, loading: false})
 
       let loadingMessage = { sender: 'ai', text: 'AI正在思考...', loading: true }
@@ -110,6 +117,7 @@ export default {
         await this.$axios.post(this.$BASE_API_URL + '/study/doPaperStudy', { 'query': chatMessage, 'file_reading_id': this.file_reading_id })
           .then(response => {
             answer = response.data.ai_reply
+            this.probQuestions = response.data.prob_question
             loadingMessage.loading = false
             loadingMessage.text = ''
           })
@@ -119,13 +127,12 @@ export default {
         answer = '抱歉, 无法从AI获取回应。'
         loadingMessage.loading = false
       } finally {
-        this.chatInput = ''
         this.answerFinished = false
         let cur = 0
         while (cur < answer.length) {
           loadingMessage.text += answer.charAt(cur)
           cur++
-          await this.delay(100)
+          await this.delay(50)
         }
         this.answerFinished = true
       }
@@ -144,6 +151,7 @@ export default {
       await axios.post(this.$BASE_API_URL + '/study/reDoPaperStudy', {'file_reading_id': this.file_reading_id})
         .then((response) => {
           answer = response.data.ai_reply
+          this.probQuestions = response.data.prob_question
           lastMessage.text = ''
           lastMessage.loading = false
         })
@@ -157,9 +165,12 @@ export default {
       while (cur < answer.length) {
         lastMessage.text += answer.charAt(cur)
         cur++
-        await this.delay(100)
+        await this.delay(50)
       }
       this.answerFinished = true
+    },
+    sendProbQuestion (question) {
+      this.chatInput = question
     }
   }
 
@@ -215,10 +226,22 @@ export default {
 .left {
   background-color: white;
   color: black;
-  border-color: #ccc;
   float: left;
   clear: both;
   border-radius: 0 15px 15px 15px;
+}
+
+.prob-question {
+  background-color: white;
+  color: black;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 5px 20px;
+  text-align: left;
+  margin-bottom: 5px;
+  font-size: small;
+  max-width: 90%;
+  cursor: pointer
 }
 
 </style>
