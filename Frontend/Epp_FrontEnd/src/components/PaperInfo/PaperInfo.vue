@@ -75,7 +75,7 @@
                         </el-form>
                         <span slot="footer">
                             <el-button @click="showCommentModal = false">取 消</el-button>
-                            <el-button type="primary" @click="submitComment(1)">发 送</el-button>
+                            <el-button type="primary" @click="submitComment1(1)">发 送</el-button>
                         </span>
                     </el-dialog>
                     <el-divider>评论区</el-divider>
@@ -110,7 +110,7 @@
                                         <!-- 回复评论的框 -->
                                         <div style="display: flex; margin-bottom: 5px;">
                                             <el-input v-if="showReplyInput == comment.comment_id" type="textarea" v-model="newComment" placeholder="请输入回复内容..." rows="1"></el-input>
-                                            <el-button v-if="showReplyInput == comment.comment_id" type="primary" size="small" @click="submitComment(2)">发送</el-button>
+                                            <el-button v-if="showReplyInput == comment.comment_id" type="primary" size="small" @click="submitComment2(comment.comment_id)">发送</el-button>
                                         </div>
                                     </el-col>
                                 </el-row>
@@ -153,7 +153,7 @@
                                                     <!-- 回复评论的框 -->
                                                     <div style="display: flex; margin-bottom: 5px;">
                                                         <el-input v-if="showReplyInput == comment2.comment_id" type="textarea" v-model="newComment" placeholder="请输入回复内容..." rows="1"></el-input>
-                                                        <el-button v-if="showReplyInput == comment2.comment_id" type="primary" size="small" @click="submitComment(3)">发送</el-button>
+                                                        <el-button v-if="showReplyInput == comment2.comment_id" type="primary" size="small" @click="submitComment3(comment.comment_id, comment2.comment_id)">发送</el-button>
                                                     </div>
                                                 </el-col>
                                             </el-row>
@@ -309,10 +309,10 @@ export default {
       this.showCommentModal = false // 关闭对话框
       this.newComment = ''
     },
-    submitComment (commentLevel) {
-      console.log('评论级别', commentLevel)
+    submitComment1 () {
+      console.log('评论级别', 1)
       console.log('提交的评论内容：', this.newComment)
-      axios.post(this.$BASE_API_URL + '/commentPaper', {'paper_id': this.paper_id, 'comment_level': commentLevel, 'comment': this.newComment})
+      axios.post(this.$BASE_API_URL + '/commentPaper', {'paper_id': this.paper_id, 'comment_level': 1, 'comment': this.newComment})
         .then((response) => {
           if (response.data.is_success) {
             this.$message({
@@ -330,9 +330,66 @@ export default {
         })
         .finally(() => {
           this.newComment = ''
-          if (commentLevel === 1) {
-            this.showCommentModal = false
+          this.showCommentModal = false
+          // window.location.reload()
+        })
+    },
+    submitComment2 (level1CommentId) {
+      console.log('1级评论', this.level1CommentId)
+      console.log('提交的评论内容：', this.newComment)
+      axios.post(this.$BASE_API_URL + '/commentPaper', {
+        'paper_id': this.paper_id,
+        'comment_level': 2,
+        'level1_comment_id': level1CommentId,
+        'comment': this.newComment
+      })
+        .then((response) => {
+          if (response.data.is_success) {
+            this.$message({
+              message: '评论成功',
+              type: 'success'
+            })
           }
+        })
+        .catch((error) => {
+          console.error('Error : ', error)
+          this.$message({
+            message: '评论失败',
+            type: 'error'
+          })
+        })
+        .finally(() => {
+          this.newComment = ''
+          // window.location.reload()
+        })
+    },
+    submitComment3 (level1CommentId, level2CommentId) {
+      console.log('评论级别', 3)
+      console.log('提交的评论内容：', this.newComment)
+      axios.post(this.$BASE_API_URL + '/commentPaper', {
+        'paper_id': this.paper_id,
+        'comment_level': 2,
+        'level1_comment_id': level1CommentId,
+        'reply_comment_id': level2CommentId,
+        'comment': this.newComment
+      })
+        .then((response) => {
+          if (response.data.is_success) {
+            this.$message({
+              message: '评论成功',
+              type: 'success'
+            })
+          }
+        })
+        .catch((error) => {
+          console.error('Error : ', error)
+          this.$message({
+            message: '评论失败',
+            type: 'error'
+          })
+        })
+        .finally(() => {
+          this.newComment = ''
           // window.location.reload()
         })
     },
