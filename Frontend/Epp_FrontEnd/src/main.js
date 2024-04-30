@@ -8,6 +8,8 @@ import 'element-ui/lib/theme-chalk/index.css'
 import '../static/css/bulma.css'
 import '@fortawesome/fontawesome-free/css/all.css'
 
+export const EventBus = new Vue()
+
 Vue.use(ElementUI)
 
 Vue.config.productionTip = false

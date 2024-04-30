@@ -155,7 +155,7 @@ export const uploadDocument = async (formData) => {
 export const deleteDocument = async (params) => {
   try {
     console.log('deleteDocument')
-    const response = api.delete('removeUploadedPaper', params)
+    const response = api.post('removeUploadedPaper', params)
     console.log(response)
     return response
   } catch (error) {
