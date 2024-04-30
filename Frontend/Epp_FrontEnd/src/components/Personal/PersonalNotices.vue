@@ -1,25 +1,20 @@
 <template>
   <div class="collections">
-    <h1>文件列表</h1>
+    <h1>通知消息</h1>
     <table>
       <thead>
         <tr>
           <th>标题</th>
           <th>日期</th>
-          <th>大小</th>
-          <th>格式</th>
           <th>操作</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="document in documents" :key="document.document_id">
-          <td><router-link :to="'/paper/localReader/' + document.document_id">{{ truncateTitle(document.title, 75) }}</router-link></td>
+        <tr v-for="notification in notifications" :key="notification.notification_id">
+          <td><router-link :to="'/document/' + notification.id">{{ notification.title }}</router-link></td>
           <!-- <td>{{ document.title }}</td> -->
-          <td>{{ document.date }}</td>
-          <td>{{ document.size }}B</td>
-          <td>{{ document.format}}
-           <td><a href="#" @click="deleteDocument(document.document_id)">删除</a></td> <!-- 删除链接 -->
-           <!-- <td><a href='#' @click="downloadDocument(document.document_id)">下载</a></td> -->
+          <td>{{ notification.date }}</td>
+           <td><a href="#" @click="deleteDocument(notification.notification_id)">删除</a></td> <!-- 删除链接 -->
         </tr>
       </tbody>
     </table>
@@ -30,22 +25,16 @@
 </template>
 
 <script>
-import { fetchDocument, deleteDocument } from '@/request/userRequest.js'
-import { EventBus } from '@/main.js'
-
+import { fetchNotification, deleteNotification, readNotification } from '@/request/userRequest.js'
 export default {
   data () {
     return {
-      documents: [],
+      notifications: [],
       currentPage: 1,
       totalPages: 1,
-      itemsPerPage: 10
+      itemsPerPage: 10,
+      unreadSum: 0
     }
-  },
-  created () {
-    EventBus.$on('fetchDocuments', () => {
-      this.fetchDocuments()
-    })
   },
   computed: {
     displayedDocuments () {
@@ -55,36 +44,51 @@ export default {
     }
   },
   methods: {
-    async fetchDocuments () {
+    async fetchDocuments (id) {
       try {
-        var res = (await fetchDocument()).data
-        this.documents = res.documents
+        var params = { mode: id }
+        if (id === 1) {
+          console.log(1)
+          var res = (await fetchNotification(params)).data
+          this.notifications = res.notifications
+        } else {
+          res = (await fetchNotification(params)).data
+          this.unreadSum = res.total
+        }
       } catch (error) {
-        console.log('error')
+        console.log('error:fetchDocuments')
       }
     },
     async deleteDocument (id) {
       try {
-        var params = {'paper_id': id}
-        var res = await deleteDocument(params)
+        // eslint-disable-next-line camelcase
+        var notification_ids = []
+        notification_ids.push(id)
+        var params = {notification_ids}
+        var res = await deleteNotification(params)
         console.log(res)
       } catch (error) {
-        console.log('error')
+        console.log('error:deleteNotification')
       }
-      this.fetchDocuments()
+      this.fetchDocuments(1)
+      this.fetchDocuments(2)
+    },
+    async read (id) {
+      try {
+        var params = {notification_id: id}
+        await readNotification(params)
+        this.fetchDocuments(2)
+      } catch (error) {
+        console.log('error:read')
+      }
     },
     changePage (page) {
       this.currentPage = page
-    },
-    truncateTitle (abstract, maxLength) {
-      if (abstract.length > maxLength) {
-        return abstract.substring(0, maxLength) + '...'
-      }
-      return abstract
     }
   },
   mounted () {
-    this.fetchDocuments()
+    this.fetchDocuments(1)
+    this.fetchDocuments(2)
   }
 }
 </script>

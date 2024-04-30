@@ -3,12 +3,12 @@
   <div id="personal-main">
     <sidebar @tabSelected="selectTab" />
     <div class="content">
-      <personal-info v-if="selectedTab === 'personal'" />
-      <ai-conversations v-else-if="selectedTab === 'ai'" />
-      <search-records v-else-if="selectedTab === 'search'" />
-      <my-reports v-else-if="selectedTab === 'reports'" />
+      <PersonalInfo v-if="selectedTab === 'personal'" />
+      <AiConversations v-else-if="selectedTab === 'ai'" />
+      <SearchRecords v-else-if="selectedTab === 'search'" />
+      <MyReports v-else-if="selectedTab === 'reports'" />
       <CollectedPapers v-else-if="selectedTab === 'collections'" />
-      <!-- <CollectedPapers v-else-if="selectTab === 'collections'" /> -->
+      <Notifications v-else-if="selectedTab === 'notices'" />
     </div>
   </div>
 </div>
@@ -21,6 +21,7 @@ import AiConversations from '@/components/Personal/PersonalChat.vue'
 import SearchRecords from '@/components/Personal/PersonalSearch.vue'
 import MyReports from '@/components/Personal/PersonalReport.vue'
 import CollectedPapers from '@/components/Personal/PersonalCollections.vue'
+import Notifications from '@/components/Personal/PersonalNotices.vue'
 
 export default {
   name: 'PersonalMain',
@@ -30,7 +31,8 @@ export default {
     AiConversations,
     SearchRecords,
     MyReports,
-    CollectedPapers
+    CollectedPapers,
+    Notifications
   },
   data () {
     return {
@@ -40,6 +42,7 @@ export default {
   methods: {
     selectTab (tabName) {
       this.selectedTab = tabName
+      console.log(this.selectedTab)
     }
   }
 }

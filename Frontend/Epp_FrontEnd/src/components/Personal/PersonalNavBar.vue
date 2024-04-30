@@ -7,6 +7,7 @@
       <li @click="selectTab('search')">搜索记录</li>
       <li @click="selectTab('reports')">我的报告</li>
       <li @click="selectTab('collections')">收藏夹</li>
+      <li @click="selectTab('notices')">消息通知</li>
     </ul>
   </div>
 </template>

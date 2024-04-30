@@ -10,6 +10,7 @@ import PaperInfo from '@/components/PaperInfo/PaperInfo'
 import PersonalMain from '@/components/Personal/PersonalMain'
 import UploadDocument from '@/components/Personal/UploadDocument'
 import PaperReader from '@/components/PaperRead/PaperReader'
+import LocalPaperReader from '@/components/PaperRead/LocalPaperReader'
 
 Vue.use(Router)
 
@@ -69,6 +70,15 @@ export default new Router({
       path: '/paper/reader/:paper_id',
       name: 'paper-reader',
       component: PaperReader,
+      props: true,
+      meta: {
+        hideNavbar: false// 标识显示导航栏
+      }
+    },
+    {
+      path: '/paper/localReader/:paper_id',
+      name: 'localPaper-reader',
+      component: LocalPaperReader,
       props: true,
       meta: {
         hideNavbar: false// 标识显示导航栏

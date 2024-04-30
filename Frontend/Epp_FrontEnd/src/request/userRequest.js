@@ -162,3 +162,35 @@ export const deleteDocument = async (params) => {
     throw new Error(error.response.data.message)
   }
 }
+export const fetchNotification = async (params) => {
+  try {
+    console.log('fetchNotification')
+    console.log(params)
+    const response = api.get('userInfo/notices', params)
+    console.log('response')
+    console.log(response)
+    return response
+  } catch (error) {
+    throw new Error(error.response.data.message)
+  }
+}
+export const deleteNotification = async (params) => {
+  try {
+    console.log('deleteDocument')
+    const response = api.delete('userInfo/delNotices', params)
+    console.log(response)
+    return response
+  } catch (error) {
+    throw new Error(error.response.data.message)
+  }
+}
+export const readNotification = async (params) => {
+  try {
+    console.log('readNotification')
+    const response = api.post('userInfo/readNotices', params)
+    console.log(response)
+    return response
+  } catch (error) {
+    throw new Error(error.response.data.message)
+  }
+}
