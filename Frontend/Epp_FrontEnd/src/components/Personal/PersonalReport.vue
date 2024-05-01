@@ -28,38 +28,12 @@
 
 <script>
 import { fetchReports, deleteReport, fetchReportContent } from '@/request/userRequest.js'
+// import marked from 'marked'
+// import JsPDF from 'jspdf'
 import markdownIt from 'markdown-it'
-import html2pdf from 'html2pdf'
-// import pdfjsLib from 'pdfjs-dist'
+import html2pdf from 'html2pdf.js'
 
 const md = markdownIt()
-
-function convertMarkdownToPdf (markdownContent, id) {
-  const htmlContent = md.render(markdownContent)
-
-  html2pdf().from(htmlContent).toPdf().get('pdf').then(function (pdf) {
-    // 将生成的 PDF 对象传递给展示函数
-    renderPdf(pdf, id)
-  })
-}
-
-function renderPdf (pdf, id) {
-  // 获取第一页
-  pdf.getData().then(function (data) {
-    var blob = new Blob([data], { type: 'application/pdf' })
-
-    // 创建一个指向该 Blob 的 URL
-    var url = URL.createObjectURL(blob)
-
-    // 跳转到新页面显示 PDF
-    window.open(`/pdf-viewer/${id}`, '_blank')
-
-    // 在窗口关闭时释放 URL 对象
-    window.addEventListener('unload', function () {
-      URL.revokeObjectURL(url)
-    })
-  })
-}
 
 export default {
   data () {
@@ -111,12 +85,24 @@ export default {
       }
       return abstract
     },
+    convertMarkdownToPdf (markdownContent) {
+      const htmlContent = md.render(markdownContent)
+      const replacedHtmlContent = htmlContent.replace(/<h3>/g, '<h4>').replace(/<\/h3>/g, '</h4>')
+        .replace(/<h2>/g, '<h3>').replace(/<\/h2>/g, '</h3>')
+        .replace(/<h1>/g, '<h2>').replace(/<\/h1>/g, '</h2>')
+      try {
+        html2pdf().from(replacedHtmlContent).set({ margin: [15, 20, 20, 20] }).toPdf().save('report.pdf')
+      } catch (error) {
+        console.log('markdown2pdf error')
+        console.log(error)
+      }
+    },
     async viewReport (id) {
       try {
         var params = {report_id: id}
         const markdownContent = (await fetchReportContent({params})).data.summary
         console.log(markdownContent)
-        convertMarkdownToPdf(markdownContent, id)
+        this.convertMarkdownToPdf(markdownContent)
       } catch (error) {
         console.log('error')
       }
