@@ -1,19 +1,24 @@
 <template>
   <div class="collections">
     <h1>通知消息</h1>
+    <div  class="unread">未读消息总数：{{ unreadSum }}</div>
     <table>
       <thead>
         <tr>
           <th>标题</th>
           <th>日期</th>
+          <th>状态</th>
           <th>操作</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="notification in notifications" :key="notification.notification_id">
-          <td><router-link :to="'/document/' + notification.id">{{ notification.title }}</router-link></td>
+          <td><a href="#" @click="showModal(notification)">{{ notification.title }}</a></td>
           <!-- <td>{{ document.title }}</td> -->
           <td>{{ notification.date }}</td>
+          <td>
+            <b-form-checkbox v-model="notification.is_read" switch @change="toggleRead(notification)"></b-form-checkbox>
+          </td>
            <td><a href="#" @click="deleteDocument(notification.notification_id)">删除</a></td> <!-- 删除链接 -->
         </tr>
       </tbody>
@@ -21,6 +26,9 @@
     <div v-if="totalPages > 1" class="pagination">
       <button v-for="page in totalPages" :key="page" @click="changePage(page)" :class="{ active: currentPage === page }">{{ page }}</button>
     </div>
+     <b-modal v-model="modalShow" title="消息内容">
+      <p>{{ selectedNotification.content }}</p>
+    </b-modal>
   </div>
 </template>
 
@@ -33,7 +41,9 @@ export default {
       currentPage: 1,
       totalPages: 1,
       itemsPerPage: 10,
-      unreadSum: 0
+      unreadSum: 0,
+      modalShow: false,
+      selectedNotification: {}
     }
   },
   computed: {
@@ -46,13 +56,14 @@ export default {
   methods: {
     async fetchDocuments (id) {
       try {
-        var params = { mode: id }
-        if (id === 1) {
-          console.log(1)
-          var res = (await fetchNotification(params)).data
+        var params = { mode: parseInt(id) }
+        if (id === 2) {
+          console.log(2)
+          var res = (await fetchNotification({params})).data
           this.notifications = res.notifications
         } else {
-          res = (await fetchNotification(params)).data
+          console.log(id)
+          res = (await fetchNotification({params})).data
           this.unreadSum = res.total
         }
       } catch (error) {
@@ -64,8 +75,8 @@ export default {
         // eslint-disable-next-line camelcase
         var notification_ids = []
         notification_ids.push(id)
-        var params = {notification_ids}
-        var res = await deleteNotification(params)
+        var data = {notification_ids}
+        var res = await deleteNotification({data})
         console.log(res)
       } catch (error) {
         console.log('error:deleteNotification')
@@ -75,15 +86,25 @@ export default {
     },
     async read (id) {
       try {
-        var params = {notification_id: id}
-        await readNotification(params)
-        this.fetchDocuments(2)
+        var data = {notification_id: id}
+        await readNotification(data)
+        this.fetchDocuments(1)
       } catch (error) {
         console.log('error:read')
       }
     },
     changePage (page) {
       this.currentPage = page
+    },
+    showModal (notification) {
+      this.read(notification.notification_id)
+      this.selectedNotification = notification
+      this.toggleRead(notification)
+      this.modalShow = true
+    },
+    toggleRead (notification) {
+      notification.is_read = true
+      this.read(notification.notification_id)
     }
   },
   mounted () {
@@ -108,11 +129,11 @@ table {
 }
 
 th{
-  border: 1px solid rgb(15, 224, 190);
+  border: 1px solid rgb(75, 168, 245);
   padding: 8px;
   text-align: left;
   font-size:18px;
-  background: rgb(15, 224, 190);
+  background: rgb(75, 168, 245);
 }
 
 /* 鼠标悬停时的样式 */

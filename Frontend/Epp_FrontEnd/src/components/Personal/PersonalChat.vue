@@ -5,18 +5,18 @@
       <thead>
         <tr>
           <th>标题</th>
-          <th>摘要</th>
+          <th>得分</th>
           <th>日期</th>
           <th>操作</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="document in documents" :key="document.id">
-          <td><router-link :to="'/document/' + document.id">{{ document.title }}</router-link></td>
-          <!-- <td>{{ document.title }}</td> -->
-          <td>{{ truncateAbstract(document.abstract, 100) }}</td>
+        <tr v-for="document in documents" :key="document.paper_id">
+          <td><router-link :to="'/document/' + document.paper_id">{{ document.paper_title }}</router-link></td>
+          <td>{{ document.paper_score }}</td>
+          <!-- <td>{{ truncateAbstract(document.abstract, 100) }}</td> -->
           <td>{{ document.date }}</td>
-           <td><a href="#" @click="deleteDocument(document.id)">删除</a></td> <!-- 删除链接 -->
+           <td><a href="#" @click="deleteDocument(document.paper_id)">删除</a></td> <!-- 删除链接 -->
         </tr>
       </tbody>
     </table>
@@ -31,8 +31,7 @@ import { fetchChat, deleteChat } from '@/request/userRequest.js'
 export default {
   data () {
     return {
-      documents: [{id: '0000f570-04bc-49fa-b2d4-56447ca1bd9b', title: 'Quantization of Deep Neural Networks for Accurate Edge Computing', score: '9', author: 'Wentao Chen', date: '2021-04-25', abstract: 'Deep neural networks (DNNs) have demonstrated their great potential in recent\nyears, exceeding the per-formance of human experts in a wide range of\napplications. Due to their large sizes, however, compressiontechniques such as\nweight quantization and pruning are usually applied before they can be\naccommodated onthe edge. It is generally believed that quantization leads to\nperformance degradation, and plenty of existingworks have explored quantization\nstrategies aiming at minimum accuracy loss. In this paper, we argue\nthatquantization, which essentially imposes regularization on weight\nrepresentations, can sometimes help toimprove accuracy. We conduct\ncomprehensive experiments on three widely used applications: fully con-nected\nnetwork (FCN) for biomedical image segmentation, convolutional neural network\n(CNN) for imageclassification on ImageNet, and recurrent neural network (RNN)\nfor automatic speech recognition, and experi-mental results show that\nquantization can improve the accuracy by 1%, 1.95%, 4.23% on the three\napplicationsrespectively with 3.5x-6.4x memory reduction.\n'},
-        {id: '0000f570-04bc-49fa-b2d4-56447ca1bd9b', title: 'Quantization of Deep Neural Networks for Accurate Edge Computing', score: '9', author: 'Wentao Chen', date: '2021-04-25', abstract: 'Deep neural networks (DNNs) have demonstrated their great potential in recent\nyears, exceeding the per-formance of human experts in a wide range of\napplications. Due to their large sizes, however, compressiontechniques such as\nweight quantization and pruning are usually applied before they can be\naccommodated onthe edge. It is generally believed that quantization leads to\nperformance degradation, and plenty of existingworks have explored quantization\nstrategies aiming at minimum accuracy loss. In this paper, we argue\nthatquantization, which essentially imposes regularization on weight\nrepresentations, can sometimes help toimprove accuracy. We conduct\ncomprehensive experiments on three widely used applications: fully con-nected\nnetwork (FCN) for biomedical image segmentation, convolutional neural network\n(CNN) for imageclassification on ImageNet, and recurrent neural network (RNN)\nfor automatic speech recognition, and experi-mental results show that\nquantization can improve the accuracy by 1%, 1.95%, 4.23% on the three\napplicationsrespectively with 3.5x-6.4x memory reduction.\n'}],
+      documents: [],
       currentPage: 1,
       totalPages: 1,
       itemsPerPage: 10
@@ -49,15 +48,18 @@ export default {
     async fetchDocuments () {
       try {
         var res = (await fetchChat()).data
-        this.documents = res.papers
+        this.documents = res.paper_reading_list
       } catch (error) {
         console.log('error')
       }
     },
     async deleteDocument (id) {
       try {
-        var params = {chat_id: id}
-        var res = await deleteChat(params)
+        // eslint-disable-next-line camelcase
+        var paper_ids = []
+        paper_ids.push(id)
+        var data = {paper_ids}
+        var res = (await deleteChat({data}))
         console.log(res)
       } catch (error) {
         console.log('error')
@@ -87,7 +89,7 @@ export default {
   font-size: 2px;
   font-weight: bold;
   margin-bottom: 20px;
-  color:aquamarine;
+  color:rgb(36, 120, 231);
 }
 table {
   width: 100%;
@@ -95,11 +97,11 @@ table {
 }
 
 th{
-  border: 1px solid rgb(15, 224, 190);
+  border: 1px solid rgb(75, 168, 245);
   padding: 8px;
   text-align: left;
   font-size:18px;
-  background: rgb(15, 224, 190);
+  background: rgb(75, 168, 245);
 }
 
 /* 鼠标悬停时的样式 */

@@ -1,6 +1,7 @@
 // api.js
 import Vue from 'vue'
 import axios from 'axios'
+// import { cat } from 'shelljs'
 axios.defaults.withCredentials = true
 
 Vue.prototype.$axios = axios
@@ -46,10 +47,10 @@ export const fetchCollectedPapers = async () => {
     })
 }
 
-export const deleteCollectedPapers = async (params) => {
+export const deleteCollectedPapers = async (data) => {
   try {
     console.log('deleteCollectPapers')
-    const response = api.delete('userInfo/delCollectedPapers', params)
+    const response = api.delete('userInfo/delCollectedPapers', data)
     console.log(response)
     return response
   } catch (error) {
@@ -57,10 +58,10 @@ export const deleteCollectedPapers = async (params) => {
   }
 }
 
-export const deleteReport = async (params) => {
+export const deleteReport = async (data) => {
   try {
     console.log('deleteReport')
-    const response = api.delete('userInfo/delSummaryReports', params)
+    const response = api.delete('userInfo/delSummaryReports', data)
     console.log(response)
     return response
   } catch (error) {
@@ -114,17 +115,18 @@ export const fetchUserInfo = async () => {
 export const fetchChat = async () => {
   try {
     console.log('fetchChat')
-    const response = api.get('userInfo/conversations')
+    const response = api.get('userInfo/paperReading')
     console.log(response)
     return response
   } catch (error) {
     throw new Error(error.response.data.message)
   }
 }
-export const deleteChat = async (params) => {
+export const deleteChat = async (data) => {
   try {
     console.log('deleteChat')
-    const response = api.delete('userInfo/deleteConversations', params)
+    console.log(data)
+    const response = api.delete('userInfo/delPaperReading', data)
     console.log(response)
     return response
   } catch (error) {
@@ -162,11 +164,11 @@ export const deleteDocument = async (params) => {
     throw new Error(error.response.data.message)
   }
 }
-export const fetchNotification = async (params) => {
+export const fetchNotification = async (mode) => {
   try {
     console.log('fetchNotification')
-    console.log(params)
-    const response = api.get('userInfo/notices', params)
+    console.log(mode)
+    const response = api.get('userInfo/notices', mode)
     console.log('response')
     console.log(response)
     return response
@@ -174,20 +176,31 @@ export const fetchNotification = async (params) => {
     throw new Error(error.response.data.message)
   }
 }
-export const deleteNotification = async (params) => {
+export const deleteNotification = async (data) => {
   try {
     console.log('deleteDocument')
-    const response = api.delete('userInfo/delNotices', params)
+    const response = api.delete('userInfo/delNotices', data)
     console.log(response)
     return response
   } catch (error) {
     throw new Error(error.response.data.message)
   }
 }
-export const readNotification = async (params) => {
+export const readNotification = async (data) => {
   try {
     console.log('readNotification')
-    const response = api.post('userInfo/readNotices', params)
+    const response = api.post('userInfo/readNotices', data)
+    console.log(response)
+    return response
+  } catch (error) {
+    throw new Error(error.response.data.message)
+  }
+}
+export const fetchReportContent = async (params) => {
+  try {
+    console.log(params)
+    console.log('fetchReportContent')
+    const response = api.get('userInfo/getSummary', params)
     console.log(response)
     return response
   } catch (error) {

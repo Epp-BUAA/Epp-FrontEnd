@@ -5,18 +5,18 @@
       <thead>
         <tr>
           <th>标题</th>
-          <th>摘要</th>
+          <!-- <th>摘要</th> -->
           <th>日期</th>
           <th>操作</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="document in documents" :key="document.id">
-          <td><router-link :to="'/document/' + document.id">{{ document.title }}</router-link></td>
+        <tr v-for="document in documents" :key="document.report_id">
+          <td><a href="#" @click="viewReport(document.report_id)">{{ document.title }}</a></td>
           <!-- <td>{{ document.title }}</td> -->
-          <td>{{ truncateAbstract(document.abstract, 100) }}</td>
+          <!-- <td>{{ truncateAbstract(document.abstract, 100) }}</td> -->
           <td>{{ document.date }}</td>
-          <td><a href="#" @click="deleteReport(document.id)">删除</a></td> <!-- 删除链接 -->
+          <td><a href="#" @click="deleteReport(document.report_id)">删除</a></td> <!-- 删除链接 -->
         </tr>
       </tbody>
     </table>
@@ -27,12 +27,18 @@
 </template>
 
 <script>
-import { fetchReports, deleteReport } from '@/request/userRequest.js'
+import { fetchReports, deleteReport, fetchReportContent } from '@/request/userRequest.js'
+// import marked from 'marked'
+// import JsPDF from 'jspdf'
+import markdownIt from 'markdown-it'
+import html2pdf from 'html2pdf.js'
+
+const md = markdownIt()
+
 export default {
   data () {
     return {
-      documents: [{title: 'Quantization of Deep Neural Networks for Accurate Edge Computing', date: '2021-04-25', abstract: 'Deep neural networks (DNNs) have demonstrated their great potential in recent\nyears, exceeding the per-formance of human experts in a wide range of\napplications. Due to their large sizes, however, compressiontechniques such as\nweight quantization and pruning are usually applied before they can be\naccommodated onthe edge. It is generally believed that quantization leads to\nperformance degradation, and plenty of existingworks have explored quantization\nstrategies aiming at minimum accuracy loss. In this paper, we argue\nthatquantization, which essentially imposes regularization on weight\nrepresentations, can sometimes help toimprove accuracy. We conduct\ncomprehensive experiments on three widely used applications: fully con-nected\nnetwork (FCN) for biomedical image segmentation, convolutional neural network\n(CNN) for imageclassification on ImageNet, and recurrent neural network (RNN)\nfor automatic speech recognition, and experi-mental results show that\nquantization can improve the accuracy by 1%, 1.95%, 4.23% on the three\napplicationsrespectively with 3.5x-6.4x memory reduction.\n'},
-        {title: 'Quantization of Deep Neural Networks for Accurate Edge Computing', date: '2021-04-25', abstract: 'Deep neural networks (DNNs) have demonstrated their great potential in recent\nyears, exceeding the per-formance of human experts in a wide range of\napplications. Due to their large sizes, however, compressiontechniques such as\nweight quantization and pruning are usually applied before they can be\naccommodated onthe edge. It is generally believed that quantization leads to\nperformance degradation, and plenty of existingworks have explored quantization\nstrategies aiming at minimum accuracy loss. In this paper, we argue\nthatquantization, which essentially imposes regularization on weight\nrepresentations, can sometimes help toimprove accuracy. We conduct\ncomprehensive experiments on three widely used applications: fully con-nected\nnetwork (FCN) for biomedical image segmentation, convolutional neural network\n(CNN) for imageclassification on ImageNet, and recurrent neural network (RNN)\nfor automatic speech recognition, and experi-mental results show that\nquantization can improve the accuracy by 1%, 1.95%, 4.23% on the three\napplicationsrespectively with 3.5x-6.4x memory reduction.\n'}],
+      documents: [],
       currentPage: 1,
       totalPages: 1,
       itemsPerPage: 10,
@@ -58,9 +64,12 @@ export default {
       }
     },
     async deleteReport (id) {
-      var params = {report_id: id}
+      // eslint-disable-next-line camelcase
+      var report_ids = []
+      report_ids.push(id)
+      var data = {report_ids}
       try {
-        var res = (await deleteReport(params))
+        var res = (await deleteReport({data}))
         console.log(res)
       } catch (error) {
         console.log('error')
@@ -75,6 +84,28 @@ export default {
         return abstract.substring(0, maxLength) + '...'
       }
       return abstract
+    },
+    convertMarkdownToPdf (markdownContent) {
+      const htmlContent = md.render(markdownContent)
+      const replacedHtmlContent = htmlContent.replace(/<h3>/g, '<h4>').replace(/<\/h3>/g, '</h4>')
+        .replace(/<h2>/g, '<h3>').replace(/<\/h2>/g, '</h3>')
+        .replace(/<h1>/g, '<h2>').replace(/<\/h1>/g, '</h2>')
+      try {
+        html2pdf().from(replacedHtmlContent).set({ margin: [15, 20, 20, 20] }).toPdf().save('report.pdf')
+      } catch (error) {
+        console.log('markdown2pdf error')
+        console.log(error)
+      }
+    },
+    async viewReport (id) {
+      try {
+        var params = {report_id: id}
+        const markdownContent = (await fetchReportContent({params})).data.summary
+        console.log(markdownContent)
+        this.convertMarkdownToPdf(markdownContent)
+      } catch (error) {
+        console.log('error')
+      }
     }
   },
   mounted () {
@@ -97,11 +128,11 @@ table {
 }
 
 th{
-  border: 1px solid rgb(15, 224, 190);
+  border: 1px solid rgb(75, 168, 245);
   padding: 8px;
   text-align: left;
   font-size:18px;
-  background: rgb(15, 224, 190);
+  background: rgb(75, 168, 245);
 }
 
 /* 鼠标悬停时的样式 */

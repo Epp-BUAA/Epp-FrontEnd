@@ -102,5 +102,10 @@ export default new Router({
         hideNavbar: false
       }
     }
+    // {
+    //   path: '/pdf-viewer/:reportId',
+    //   name: 'PdfViewer',
+    //   component: PdfViewer
+    // }
   ]
 })
