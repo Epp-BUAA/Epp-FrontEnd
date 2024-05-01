@@ -11,6 +11,7 @@ import PersonalMain from '@/components/Personal/PersonalMain'
 import UploadDocument from '@/components/Personal/UploadDocument'
 import PaperReader from '@/components/PaperRead/PaperReader'
 import LocalPaperReader from '@/components/PaperRead/LocalPaperReader'
+import PdfViewer from '@/components/Personal/PdfViewer'
 
 Vue.use(Router)
 
@@ -101,6 +102,11 @@ export default new Router({
       meta: {
         hideNavbar: false
       }
+    },
+    {
+      path: '/pdf-viewer/:reportId',
+      name: 'PdfViewer',
+      component: PdfViewer
     }
   ]
 })

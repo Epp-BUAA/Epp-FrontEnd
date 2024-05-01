@@ -43,16 +43,17 @@ export default {
   margin-left: 50px;
   margin-right: 25px;
   padding: 10px 20px; /* 调大按钮的大小 */
-  font-size: 16px;
-  background-color: #11998E; /* 设置按钮背景色为浅绿色 */
+  font-size: 18px;
+  background-color: #14aef5; /* 设置按钮背景色为浅绿色 */
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s; /* 添加按钮背景色过渡效果 */
+  border: 3px solid #156dd1;
 }
 
 .button-group button:hover {
-  background-color: green; /* 鼠标悬停时背景色变为绿色 */
+  background-color: #207ee9; /* 鼠标悬停时背景色变为绿色 */
 }
 </style>

@@ -36,7 +36,7 @@ export default {
   margin-bottom: 20px; /* 与导航栏之间的间距 */
   border-bottom: 1px solid #ccc; /* 添加底部边框 */
   font-size: 30px;
-  color:#0cc0df;
+  color:#206af3;
 }
 
 .sidebar ul {
@@ -49,15 +49,15 @@ export default {
   color: aliceblue;
   padding: 10px;
   cursor: pointer;
-  background: #15d189;
+  background: #2a98f1;
   transition: background-color 0.3s, border-color 0.3s; /* 添加border-color的过渡效果 */
-  border: 1px solid #15d163; /* 初始状态下边框透明 */
+  border: 1px solid #156dd1; /* 初始状态下边框透明 */
   border-radius: 15px;
 }
 
 .sidebar li:hover {
-  background-color: #248cec; /* 鼠标悬停时的背景色 */
-  border-color: #1900ff; /* 鼠标悬停时的边框颜色 */
+  background-color: #2427ec; /* 鼠标悬停时的背景色 */
+  border-color: #0400ff; /* 鼠标悬停时的边框颜色 */
 }
 
 .sidebar li:active {

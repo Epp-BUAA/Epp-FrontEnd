@@ -14,13 +14,13 @@
       </thead>
       <tbody>
         <tr v-for="document in documents" :key="document.paper_id">
-          <td><router-link :to="'/document/' + document.paper_id">{{ document.title }}</router-link></td>
+          <td><router-link :to="'/paper/localReader/' + document.paper_id">{{ document.title }}</router-link></td>
           <!-- <td>{{ document.title }}</td> -->
           <td>{{ transauthors(document.authors)}}</td>
           <td>{{ truncateAbstract(document.abstract, 100) }}</td>
           <td>{{ document.publication_date }}</td>
           <td>{{ document.score }}</td>
-           <td><a href="#" @click="deleteDocument(document.id)">删除</a></td> <!-- 删除链接 -->
+           <td><a href="#" @click="deleteDocument(document.paper_id)">删除</a></td> <!-- 删除链接 -->
         </tr>
       </tbody>
     </table>
@@ -35,7 +35,6 @@ import { fetchCollectedPapers, deleteCollectedPapers } from '@/request/userReque
 export default {
   data () {
     return {
-      paper_ids: [],
       documents: [{paper_id: '0000f570-04bc-49fa-b2d4-56447ca1bd9b', title: 'Quantization of Deep Neural Networks for Accurate Edge Computing', score: '9', author: 'Wentao Chen', date: '2021-04-25', abstract: 'Deep neural networks (DNNs) have demonstrated their great potential in recent\nyears, exceeding the per-formance of human experts in a wide range of\napplications. Due to their large sizes, however, compressiontechniques such as\nweight quantization and pruning are usually applied before they can be\naccommodated onthe edge. It is generally believed that quantization leads to\nperformance degradation, and plenty of existingworks have explored quantization\nstrategies aiming at minimum accuracy loss. In this paper, we argue\nthatquantization, which essentially imposes regularization on weight\nrepresentations, can sometimes help toimprove accuracy. We conduct\ncomprehensive experiments on three widely used applications: fully con-nected\nnetwork (FCN) for biomedical image segmentation, convolutional neural network\n(CNN) for imageclassification on ImageNet, and recurrent neural network (RNN)\nfor automatic speech recognition, and experi-mental results show that\nquantization can improve the accuracy by 1%, 1.95%, 4.23% on the three\napplicationsrespectively with 3.5x-6.4x memory reduction.\n'},
         {paper_id: 'f570111-04bc-49fa-b2d4-56447ca1bd9b', title: 'Quantization of Deep Neural Networks for Accurate Edge Computing', score: '9', author: 'Wentao Chen', date: '2021-04-25', abstract: 'Deep neural networks (DNNs) have demonstrated their great potential in recent\nyears, exceeding the per-formance of human experts in a wide range of\napplications. Due to their large sizes, however, compressiontechniques such as\nweight quantization and pruning are usually applied before they can be\naccommodated onthe edge. It is generally believed that quantization leads to\nperformance degradation, and plenty of existingworks have explored quantization\nstrategies aiming at minimum accuracy loss. In this paper, we argue\nthatquantization, which essentially imposes regularization on weight\nrepresentations, can sometimes help toimprove accuracy. We conduct\ncomprehensive experiments on three widely used applications: fully con-nected\nnetwork (FCN) for biomedical image segmentation, convolutional neural network\n(CNN) for imageclassification on ImageNet, and recurrent neural network (RNN)\nfor automatic speech recognition, and experi-mental results show that\nquantization can improve the accuracy by 1%, 1.95%, 4.23% on the three\napplicationsrespectively with 3.5x-6.4x memory reduction.\n'}],
       currentPage: 1,
@@ -79,10 +78,12 @@ export default {
       }
     },
     async deleteDocument (id) {
-      this.paper_ids.push(id)
+      // eslint-disable-next-line camelcase
+      var paper_ids = []
+      paper_ids.push(id)
       try {
-        var params = {paper_ids: this.paper_ids}
-        var res = await deleteCollectedPapers(params)
+        var data = {paper_ids}
+        var res = await deleteCollectedPapers({data})
         console.log(res)
         this.paper_ids = []
       } catch (error) {
@@ -129,11 +130,11 @@ table {
 }
 
 th{
-  border: 1px solid rgb(15, 224, 190);
+  border: 1px solid rgb(36, 120, 231);
   padding: 8px;
   text-align: left;
   font-size:18px;
-  background: rgb(15, 224, 190);
+  background: rgb(75, 168, 245);
 }
 
 /* 鼠标悬停时的样式 */

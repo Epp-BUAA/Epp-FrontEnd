@@ -15,7 +15,7 @@
           <td><router-link :to="'/document/' + document.id">{{ document.keyword }}</router-link></td>
           <!-- <td>{{ document.title }}</td> -->
           <td>{{ document.date }}</td>
-          <td><a href="#" @click="deleteReport(document.id)">删除</a></td> <!-- 删除链接 -->
+          <td><a href="#" @click="deleteReport(document.search_record_id)">删除</a></td> <!-- 删除链接 -->
         </tr>
       </tbody>
     </table>
@@ -30,8 +30,7 @@ import { fetchSearchHistory, deleteSearchHistory } from '@/request/userRequest.j
 export default {
   data () {
     return {
-      documents: [{id: '111', title: 'Quantization of Deep Neural Networks for Accurate Edge Computing', date: '2021-04-25', abstract: 'Deep neural networks (DNNs) have demonstrated their great potential in recent\nyears, exceeding the per-formance of human experts in a wide range of\napplications. Due to their large sizes, however, compressiontechniques such as\nweight quantization and pruning are usually applied before they can be\naccommodated onthe edge. It is generally believed that quantization leads to\nperformance degradation, and plenty of existingworks have explored quantization\nstrategies aiming at minimum accuracy loss. In this paper, we argue\nthatquantization, which essentially imposes regularization on weight\nrepresentations, can sometimes help toimprove accuracy. We conduct\ncomprehensive experiments on three widely used applications: fully con-nected\nnetwork (FCN) for biomedical image segmentation, convolutional neural network\n(CNN) for imageclassification on ImageNet, and recurrent neural network (RNN)\nfor automatic speech recognition, and experi-mental results show that\nquantization can improve the accuracy by 1%, 1.95%, 4.23% on the three\napplicationsrespectively with 3.5x-6.4x memory reduction.\n'},
-        {id: '121', title: 'Quantization of Deep Neural Networks for Accurate Edge Computing', date: '2021-04-25', abstract: 'Deep neural networks (DNNs) have demonstrated their great potential in recent\nyears, exceeding the per-formance of human experts in a wide range of\napplications. Due to their large sizes, however, compressiontechniques such as\nweight quantization and pruning are usually applied before they can be\naccommodated onthe edge. It is generally believed that quantization leads to\nperformance degradation, and plenty of existingworks have explored quantization\nstrategies aiming at minimum accuracy loss. In this paper, we argue\nthatquantization, which essentially imposes regularization on weight\nrepresentations, can sometimes help toimprove accuracy. We conduct\ncomprehensive experiments on three widely used applications: fully con-nected\nnetwork (FCN) for biomedical image segmentation, convolutional neural network\n(CNN) for imageclassification on ImageNet, and recurrent neural network (RNN)\nfor automatic speech recognition, and experi-mental results show that\nquantization can improve the accuracy by 1%, 1.95%, 4.23% on the three\napplicationsrespectively with 3.5x-6.4x memory reduction.\n'}],
+      documents: [],
       currentPage: 1,
       totalPages: 1,
       itemsPerPage: 10,
@@ -56,9 +55,10 @@ export default {
       }
     },
     async deleteReport (id) {
-      var params = {search_id: id}
+      // eslint-disable-next-line camelcase
+      var data = {search_record_id: id}
       try {
-        var res = (await deleteSearchHistory(params))
+        var res = (await deleteSearchHistory({data}))
         console.log(res)
       } catch (error) {
         console.log('error')
@@ -95,11 +95,11 @@ table {
 }
 
 th{
-  border: 1px solid rgb(15, 224, 190);
+  border: 1px solid rgb(75, 168, 245);
   padding: 8px;
   text-align: left;
   font-size:18px;
-  background: rgb(15, 224, 190);
+  background: rgb(75, 168, 245);
 }
 
 /* 鼠标悬停时的样式 */

@@ -79,13 +79,14 @@ export default {
 
 <style scoped>
 .login-register {
+  margin-left: 10px;
   height: 400px;
   width: 400px;
   margin: 0 auto;
   padding: 20px;
   /* border: 1px solid #ccc; */
   /* border-radius: 5px; */
-  background-image: url('../../assets/loginBoard.png');
+  background-image: url('../../assets/loginBoard2.png');
   background-size: cover;
   background-position: center;
 }
@@ -125,16 +126,17 @@ export default {
   margin-bottom: 20px;
   padding: 8px 12px;
   font-size: 16px;
-  background-color: #0cc0df;
+  background-color: #14aef5;
   color: white;
   border: none;
   border-radius: 3px;
   cursor: pointer;
   width: 48%; /* 让两个按钮平分宽度 */
+  border: 3px solid #156dd1;
 }
 
 .button-group button:hover {
-  background-color: #0056b3;
+  background-color: #207ee9;
 }
 
 .login-message {

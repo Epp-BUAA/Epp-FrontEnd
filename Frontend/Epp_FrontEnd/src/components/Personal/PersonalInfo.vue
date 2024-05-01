@@ -49,8 +49,9 @@ export default {
 
 <style>
 .user-info {
+  margin-left: 10px;
   height: 400px;
-  width: 1000px;
+  width: 980px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -58,14 +59,14 @@ export default {
   /* border: 1px solid #ccc; */
   border-radius: 10px;
   /* background-color: #f9f9f9; */
-  background-image: url('../../assets/card.png');
+  background-image: url('../../assets/card2.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
 }
 
 .avatar {
-  margin-left: 50px;
+  margin-left: 30px;
   width: 100px; /* 设置头像的宽度 */
   height: 90px; /* 设置头像的高度 */
   border-radius: 50%; /* 设置头像为圆形 */
@@ -75,7 +76,7 @@ export default {
 .user-info p {
   margin: 5px 0;
   font-size: 18px;
-  color: #5271ff;
+  color: #f6f7f8;
 }
 
 .user-info p:first-child {
@@ -83,7 +84,7 @@ export default {
   font-weight: bold;
 }
 .text-container {
-  margin-left: 50px; /* 设置文字与容器左端的距离 */
+  margin-left: 30px; /* 设置文字与容器左端的距离 */
   text-align: left;
 }
 

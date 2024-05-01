@@ -9,7 +9,7 @@ export default {
   name: 'ImageCarousel',
   data () {
     return {
-      imagePath: require('@/assets/dashboard.png')
+      imagePath: require('@/assets/logo2.jpg')
     }
   }
 }
@@ -17,6 +17,7 @@ export default {
 
 <style scoped>
 .image-container {
+  margin-left:50px;
   width: 100%;
   height: 100%;
   overflow: hidden;
