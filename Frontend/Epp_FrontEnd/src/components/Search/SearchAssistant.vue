@@ -77,7 +77,6 @@ export default {
   },
   created () {
     if (this.restoreHistory) {
-      console.log(22222)
       this.restoreDialogSearch()
     } else {
       this.createDialogStudy()

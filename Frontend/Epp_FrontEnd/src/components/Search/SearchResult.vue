@@ -1,7 +1,7 @@
 <template>
   <el-row>
     <!-- 侧边栏 -->
-    <el-col :span="4" type="flex" style="margin-top: 30px;">
+    <el-col :span="4" type="flex" style="margin-top: 30px; position: sticky; top: 30px">
       <el-aside>
         <el-form label-position="top">
           <el-form-item label="年份过滤">
@@ -9,7 +9,7 @@
               <el-option label="所有年份" value=""></el-option>
               <el-option label="2024年以来" value="2024"></el-option>
               <el-option label="2022年以来" value="2022"></el-option>
-              <el-option label="2022年以来" value="2020"></el-option>
+              <el-option label="2020年以来" value="2020"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="排序方式">
@@ -41,7 +41,7 @@
           </div>
       </el-main>
     </el-col>
-    <el-col :span="8">
+    <el-col :span="8" style="height: 100vh; position: sticky; top: 55px">
       <ai-assistant v-if="aiReply.length > 0" :aiReply="aiReply" :paperIds="paperIds"
         :searchRecordID="searchRecordID" :restoreHistory="restoreHistory" @find-paper="searchPaperByAssistant"/>
     </el-col>
@@ -156,8 +156,14 @@ export default {
           message: '请选择论文',
           type: 'warning'
         })
+        return
       }
-      axios.post(this.$BASE_API_URL + '/generateSummaryReport', {'paper_id_list': this.selectedPapers})
+      this.$message({
+        message: '正在生成综述报告',
+        type: 'success'
+      })
+      console.log('选中的论文:', this.selectedPapers)
+      axios.post(this.$BASE_API_URL + '/summary/generateSummaryReport', {'paper_id_list': this.selectedPapers}, {timeout: 300000})
         .then((response) => {
           console.log(response.data.message)
           this.$message({
@@ -207,6 +213,7 @@ export default {
   },
   async mounted () {
     if (this.$route.query.searchRecordID) {
+      this.searchRecordID = this.$route.query.searchRecordID
       await this.fetchPapersFromHistory()
     } else {
       await this.fetchPapers()

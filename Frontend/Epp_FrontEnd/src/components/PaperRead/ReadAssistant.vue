@@ -59,10 +59,10 @@ export default {
   },
   methods: {
     initialize () {
-      const existingId = localStorage.getItem('fileReadingID')
-      if (existingId) {
-        this.file_reading_id = existingId
-        this.restorePaperStudy(existingId)
+      const existingPaperId = localStorage.getItem('paperID')
+      if (existingPaperId === this.paperID) {
+        this.file_reading_id = localStorage.getItem('fileReadingID')
+        this.restorePaperStudy(existingPaperId)
       } else {
         this.createPaperStudy()
       }
@@ -75,6 +75,7 @@ export default {
             console.log('论文研读创建成功！')
             this.file_reading_id = response.data.file_reading_id
             localStorage.setItem('fileReadingID', this.file_reading_id)
+            localStorage.setItem('paperID', this.paper_id)
             console.log('研读对话的id, ', response.data.file_reading_id)
           }
         })
