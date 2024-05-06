@@ -88,7 +88,6 @@ export default {
       for (const message of this.aiReply) {
         this.chatMessages.push(message)
       }
-      this.createKB()
     },
     async chatToAI () {
       const chatMessage = this.chatInput.trim()
@@ -106,7 +105,7 @@ export default {
       this.chatInput = ''
       try {
         console.log('search-record-id: ', this.searchRecordID)
-        await this.$axios.post(this.$BASE_API_URL + '/search/dialogQuery', { 'message': chatMessage, 'paper_ids': this.paperIds, 'search_record_id': this.searchRecordID, 'kb_id': this.kb_id })
+        await this.$axios.post(this.$BASE_API_URL + '/search/dialogQuery', { 'message': chatMessage, 'paper_ids': this.paperIds, 'search_record_id': this.searchRecordID })
           .then(response => {
             loadingMessage.type = response.data.dialog_type
             console.log(loadingMessage.type)
@@ -166,7 +165,7 @@ export default {
       lastMessage.loading = true
       this.answerFinished = false
       let answer = ''
-      await axios.post(this.$BASE_API_URL + '/search/dialogQuery', { 'message': lastMessage, 'paper_ids': this.paperIds, 'search_record_id': this.searchRecordID, 'kb_id': this.kbId })
+      await axios.post(this.$BASE_API_URL + '/search/dialogQuery', { 'message': lastMessage, 'paper_ids': this.paperIds, 'search_record_id': this.searchRecordID })
         .then((response) => {
           answer = response.data.ai_reply
           lastMessage.text = ''
@@ -186,28 +185,28 @@ export default {
       }
       this.answerFinished = true
     },
-    createKB () {
-      console.log('创建知识库的论文ids', this.paperIds)
-      let firstMessage = this.chatMessages[this.chatMessages.length - 1]
-      firstMessage.loading = true
-      axios.post(this.$BASE_API_URL + '/search/rebuildKB', {'paper_id_list': this.paperIds})
-        .then((response) => {
-          this.kbId = response.data.kb_id
-          firstMessage.loading = false
-          this.$message({
-            message: '创建知识库成功',
-            type: 'success'
-          })
-        })
-        .catch((error) => {
-          console.error('创建知识库失败', error)
-          firstMessage.loading = false
-          this.$message({
-            message: '创建知识库失败',
-            type: 'error'
-          })
-        })
-    },
+    // createKB () {
+    //   console.log('创建知识库的论文ids', this.paperIds)
+    //   let firstMessage = this.chatMessages[this.chatMessages.length - 1]
+    //   firstMessage.loading = true
+    //   axios.post(this.$BASE_API_URL + '/search/rebuildKB', {'paper_id_list': this.paperIds})
+    //     .then((response) => {
+    //       this.kbId = response.data.kb_id
+    //       firstMessage.loading = false
+    //       this.$message({
+    //         message: '创建知识库成功',
+    //         type: 'success'
+    //       })
+    //     })
+    //     .catch((error) => {
+    //       console.error('创建知识库失败', error)
+    //       firstMessage.loading = false
+    //       this.$message({
+    //         message: '创建知识库失败',
+    //         type: 'error'
+    //       })
+    //     })
+    // },
     searchPaperByAssistant () {
       this.$emit('find-paper', this.papers)
     },
