@@ -44,6 +44,10 @@ export default {
     paper_id: {
       type: String,
       default: ''
+    },
+    fileReadingID: {
+      type: Number,
+      defaults: ''
     }
   },
   data () {
@@ -55,7 +59,11 @@ export default {
     }
   },
   created () {
-    this.initialize()
+    if (this.fileReadingID > 0) {
+      this.restorePaperStudy(this.fileReadingID)
+    } else {
+      this.initialize()
+    }
   },
   methods: {
     initialize () {
@@ -73,8 +81,8 @@ export default {
         .then((response) => {
           if (response.status === 200) {
             console.log('论文研读创建成功！')
-            this.file_reading_id = response.data.file_reading_id
-            localStorage.setItem('fileReadingID', this.file_reading_id)
+            this.fileReadingID = response.data.file_reading_id
+            localStorage.setItem('fileReadingID', this.fileReadingID)
             localStorage.setItem('paperID', this.paper_id)
             console.log('研读对话的id, ', response.data.file_reading_id)
           }
@@ -83,14 +91,15 @@ export default {
           console.log('Error: ', error)
         })
     },
-    restorePaperStudy (fileReadingID) {
-      console.log('研读对话的id, ', fileReadingID)
-      axios.post(this.$BASE_API_URL + '/study/restorePaperStudy', {'file_reading_id': fileReadingID})
+    restorePaperStudy () {
+      console.log('研读对话的id, ', this.fileReadingID)
+      axios.post(this.$BASE_API_URL + '/study/restorePaperStudy', {'file_reading_id': this.fileReadingID})
         .then((response) => {
           const history = response.data.conversation_history.conversation
           for (const message of history) {
             const sender = message.role === 'user' ? 'user' : 'ai'
             this.chatMessages.push({sender: sender, text: message.content, loading: false})
+            localStorage.setItem('fileReadingID', this.fileReadingID)
           }
         })
         .catch((error) => {
@@ -115,7 +124,7 @@ export default {
       let answer = ''
       //   Add user message to chat
       try {
-        await this.$axios.post(this.$BASE_API_URL + '/study/doPaperStudy', { 'query': chatMessage, 'file_reading_id': this.file_reading_id })
+        await this.$axios.post(this.$BASE_API_URL + '/study/doPaperStudy', { 'query': chatMessage, 'file_reading_id': this.fileReadingID })
           .then(response => {
             answer = response.data.ai_reply
             this.probQuestions = response.data.prob_question

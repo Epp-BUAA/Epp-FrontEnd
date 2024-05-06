@@ -124,7 +124,8 @@ export default {
       // loadingInstance.close()
     },
     async fetchPapersFromHistory () {
-      await axios.get(this.$BASE_API_URL + '/search/restoreSearchRecord?search_record_id=' + this.$route.query.searchRecordID)
+      console.log('search record ID: ', this.$route.query.searchRecordID)
+      await axios.get(this.$BASE_API_URL + '/search/restoreSearchRecord?search_record_id=' + this.$route.query.searchRecordID, {timeout: 1000 * 60 * 5})
         .then((response) => {
           this.papers = response.data.paper_infos
           console.log('历史记录的论文', this.papers)
@@ -135,6 +136,7 @@ export default {
           console.log('历史记录对话信息 ', this.aiReply)
           this.paperIds = this.papers.map(paper => paper.paper_id)
           this.restoreHistory = true
+          this.kbID = response.data.kb_id
         })
         .catch((error) => {
           console.error('恢复历史记录失败: ', error)

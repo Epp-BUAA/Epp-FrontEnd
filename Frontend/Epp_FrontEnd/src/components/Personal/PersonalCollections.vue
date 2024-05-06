@@ -14,7 +14,7 @@
       </thead>
       <tbody>
         <tr v-for="document in documents" :key="document.paper_id">
-          <td><router-link :to="'/paper/localReader/' + document.paper_id">{{ document.title }}</router-link></td>
+          <td><router-link :to="{name: 'paper-info', params: {paper_id: document.paper_id}}">{{ document.title }}</router-link></td>
           <!-- <td>{{ document.title }}</td> -->
           <td>{{ transauthors(document.authors)}}</td>
           <td>{{ truncateAbstract(document.abstract, 100) }}</td>

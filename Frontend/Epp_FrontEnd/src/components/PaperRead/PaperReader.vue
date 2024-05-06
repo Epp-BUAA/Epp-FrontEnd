@@ -5,7 +5,7 @@
         </iframe>
       </el-col>
       <el-col :span="8">
-        <read-assistant :paper_id="paper_id" />
+        <read-assistant :paper_id="paper_id" :fileReadingID="fileReadingID" />
       </el-col>
     </el-row>
 </template>
@@ -25,10 +25,12 @@ export default {
   },
   data () {
     return {
-      pdfUrl: ''
+      pdfUrl: '',
+      fileReadingID: this.fileReadingID
     }
   },
   created () {
+    this.fileReadingID = this.$route.query.fileReadingID
     this.fetchPaperPDF()
   },
   methods: {
