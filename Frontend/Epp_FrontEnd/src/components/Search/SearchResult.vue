@@ -136,7 +136,6 @@ export default {
           console.log('历史记录对话信息 ', this.aiReply)
           this.paperIds = this.papers.map(paper => paper.paper_id)
           this.restoreHistory = true
-          this.kbID = response.data.kb_id
         })
         .catch((error) => {
           console.error('恢复历史记录失败: ', error)
@@ -211,6 +210,17 @@ export default {
       console.log('循征之后的论文', papers)
       this.papers = papers
       this.applyFilter()
+      const paperIDs = papers.map(paper => paper.paper_id)
+      axios.post(this.$BASE_API_URL + '/search/changeRecordPapers', {search_record_id: this.searchRecordID, paper_id_list: paperIDs})
+        .then((response) => {
+          console.log(response.status)
+          if (response.status === 200) {
+            console.log('论文循征成功, ', response.data.msg)
+          }
+        })
+        .catch((error) => {
+          console.error('论文循征失败, ', error)
+        })
     }
   },
   async mounted () {
