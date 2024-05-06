@@ -11,8 +11,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="document in documents" :key="document.paper_id">
-          <td><router-link :to="'/document/' + document.paper_id">{{ document.paper_title }}</router-link></td>
+        <tr v-for="document in documents" :key="document.file_reading_id">
+          <td><router-link :to="{name: 'paper-reader', params: {paper_id: document.paper_id}, query: {fileReadingID: document.file_reading_id}}">{{ document.paper_title }}</router-link></td>
           <td>{{ document.paper_score }}</td>
           <!-- <td>{{ truncateAbstract(document.abstract, 100) }}</td> -->
           <td>{{ document.date }}</td>

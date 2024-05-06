@@ -8,21 +8,22 @@
     <el-row style="margin-top: 30px;">
       <el-col :span="20" :offset="2">
         <div ref="searchContainer">
-          <el-input v-model="searchContent" placeholder="请输入搜索内容"
-          @focus="showHistory = true" @keyup.enter="submitSearch(searchContent)"
-          @input="updateInput">
+          <el-input v-model="searchContent" placeholder="请输入搜索内容" @focus="showHistory = true"
+            @keyup.enter="submitSearch(searchContent)" @input="updateInput">
             <template #append>
               <el-button type="primary" @click="submitSearch(searchContent)">搜索</el-button>
             </template>
             <i slot="prefix" class="el-input__icon el-icon-search"></i>
           </el-input>
-          <div v-if="showHistory" class="history">
-            <el-tag v-for="(record, index) in search_records" :key="index" closable
-            @close="removeRecord(record.search_record_id, index)" @click="searchFromHistory(record.search_record_id)"
-            id="record">
-              <p>{{ record.keyword }}</p>
-              <p style="color: grey; font-size: smaller; margin-left: 10px;"> {{ record.date }}</p>
-            </el-tag>
+          <div v-if="showHistory" class="history-box">
+            <div class="history">
+              <el-tag v-for="(record, index) in search_records" :key="index" closable
+                @close="removeRecord(record.search_record_id, index)"
+                @click="searchFromHistory(record.search_record_id)" id="record">
+                {{ record.keyword }}
+                <div style="color: grey; font-size: smaller; margin-left: 10px;"> {{ record.date }}</div>
+              </el-tag>
+            </div>
           </div>
         </div>
       </el-col>
@@ -107,26 +108,40 @@ export default {
 </script>
 
 <style>
-.history .el-tag{
-  display: flex; /* 启用flex布局 */
-  justify-content: space-between; /* 两端对齐 */
+.history .el-tag {
+  display: flex;
+  /* 启用flex布局 */
+  justify-content: space-between;
+  /* 两端对齐 */
   background: white;
-  width: 100%; /* 充满容器 */
-  box-sizing: border-box; /* 边距包含在宽度内 */
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  border: none; /* 移除边框 */
+  width: 100%;
+  /* 充满容器 */
+  box-sizing: border-box;
+  /* 边距包含在宽度内 */
+  border: none;
+  /* 移除边框 */
   /* flex-grow: 1; 让文本占据多余空间 */
-  text-align: left; /* 文本左对齐 */
-  font-size: 14px; /* 增大字体大小 */
-  color: black; /* 字体颜色为黑色 */
+  text-align: left;
+  /* 文本左对齐 */
+  font-size: 14px;
+  /* 增大字体大小 */
+  color: black;
+  /* 字体颜色为黑色 */
   align-items: center;
 }
 
 .history .el-tag .el-tag__close {
-  margin-left: auto; /* 推到右边 */
-  color: black; /* 设置颜色为黑色 */
+  margin-left: auto;
+  /* 推到右边 */
+  color: black;
+  /* 设置颜色为黑色 */
   background-color: white;
-  font-size: 18px; /* 设置更大的字体大小 */
+  font-size: 18px;
+  /* 设置更大的字体大小 */
   /* cursor: pointer; 更明确的指示这是一个可点击的元素 */
+}
+
+.history-box {
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 </style>

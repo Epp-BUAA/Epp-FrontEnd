@@ -12,7 +12,7 @@
       <tbody>
         <tr v-for="document in documents" :key="document.search_record_id
 ">
-          <td><router-link :to="'/document/' + document.id">{{ document.keyword }}</router-link></td>
+          <td><router-link :to="{name: 'search-results', query: {searchRecordID: document.search_record_id}}">{{ document.keyword }}</router-link></td>
           <!-- <td>{{ document.title }}</td> -->
           <td>{{ document.date }}</td>
           <td><a href="#" @click="deleteReport(document.search_record_id)">删除</a></td> <!-- 删除链接 -->
