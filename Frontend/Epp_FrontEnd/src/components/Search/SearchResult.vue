@@ -1,8 +1,8 @@
 <template>
-  <el-row>
+  <el-row style="">
     <!-- 侧边栏 -->
     <el-col :span="4" type="flex" style="margin-top: 30px; position: sticky; top: 30px">
-      <el-aside>
+      <el-aside style="">
         <el-form label-position="top">
           <el-form-item label="年份过滤">
             <el-select v-model="filterYear" placeholder="请选择年份" @change="applyFilter">
@@ -21,7 +21,7 @@
         </el-form>
       </el-aside>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="12" style="margin-top: 55px;">
       <el-main>
         <div style="display: flex; justify-content: right">
           <el-button type="success" icon="el-icon-download" @click="downloadPapers" size="small">
@@ -39,6 +39,7 @@
               <paper-card :paper="paper"/>
             </div>
           </div>
+        <el-backtop target=".page-component__scroll .el-scrollbar__wrap"></el-backtop>
       </el-main>
     </el-col>
     <el-col :span="8" style="height: 100vh; position: sticky; top: 55px">
@@ -117,7 +118,7 @@ export default {
           loadingInstance.close()
         })
         .catch((error) => {
-          console.error('Error:', error)
+          console.error('语义检索失败:', error)
         })
       // 写死数据
       // this.createFakeData()

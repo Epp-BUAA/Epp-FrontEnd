@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="my-container">
     <div class="top">
       <div class="image">
         <ImageCarousel />
@@ -30,7 +30,7 @@ export default {
 </script>
 
 <style>
-.container {
+.my-container {
   display: flex;
   flex-direction: column;
   height: 100vh;

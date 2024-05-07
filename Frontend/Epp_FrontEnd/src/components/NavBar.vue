@@ -1,6 +1,6 @@
 <template>
-  <el-menu class="navbar has-shadow" role="navigation" aria-label="">
-    <div class=" container">
+  <el-menu class="navbar has-shadow" role="navigation" aria-label="" style="position: fixed; width: 100%;">
+    <div class="container">
       <div class="navbar-brand">
         <a href="" class="navbar-item">
           <span style="margin-left: 10px">Epp</span>
