@@ -3,7 +3,7 @@
         <el-row type="flex" justify="center">
             <el-col :span="20">
                 <!-- 论文部分 -->
-                <el-container class="box" style="margin-top: 20px;">
+                <el-container class="box" style="margin-top: 60px;">
                     <el-row class="header">
                         {{ paper.title }}
                     </el-row>
@@ -454,7 +454,8 @@ export default {
 }
 
 .buttons {
-    margin-top: 20px;
+    margin-left: 20px;
+    justify-content: flex-start;
 }
 
 p {

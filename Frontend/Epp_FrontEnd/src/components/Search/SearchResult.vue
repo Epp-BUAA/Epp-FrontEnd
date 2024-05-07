@@ -1,7 +1,7 @@
 <template>
   <el-row style="">
     <!-- 侧边栏 -->
-    <el-col :span="4" type="flex" style="margin-top: 30px; position: sticky; top: 30px">
+    <el-col :span="4" type="flex" style="margin-top: 60px; position: sticky; top: 30px">
       <el-aside style="">
         <el-form label-position="top">
           <el-form-item label="年份过滤">
@@ -39,7 +39,7 @@
               <paper-card :paper="paper"/>
             </div>
           </div>
-        <el-backtop target=".page-component__scroll .el-scrollbar__wrap"></el-backtop>
+        <el-backtop :visibility-height="100"></el-backtop>
       </el-main>
     </el-col>
     <el-col :span="8" style="height: 100vh; position: sticky; top: 55px">

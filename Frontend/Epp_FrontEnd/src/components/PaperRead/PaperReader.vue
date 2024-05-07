@@ -1,10 +1,10 @@
 <template>
     <el-row :gutter="20">
-      <el-col :span="16">
+      <el-col :span="16" style="margin-top: 60px;">
         <iframe :src="pdfUrl" style="width: 100%; height: 755px;" frameborder="0">
         </iframe>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="8" style="margin-top: 60px">
         <read-assistant :paper_id="paper_id" :fileReadingID="fileReadingID" />
       </el-col>
     </el-row>

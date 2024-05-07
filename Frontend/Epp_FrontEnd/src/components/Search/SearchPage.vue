@@ -1,8 +1,8 @@
 <template>
   <div>
-    <el-row style="margin-top: 60px;">
+    <el-row>
       <el-col :span="24">
-        <el-header style="font-size: 40px; line-height: 60px;">文献调研</el-header>
+        <el-header style="font-size: 40px; line-height: 60px; margin-top: 100px">文献调研</el-header>
       </el-col>
     </el-row>
     <el-row style="margin-top: 30px;">
