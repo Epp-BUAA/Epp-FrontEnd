@@ -1,7 +1,7 @@
 <template>
   <div class="button-group">
     <button @click="goTo('literature')">文献调研</button>
-    <button @click="goTo('paper')">论文研读</button>
+    <button @click="goTo('paper')">论文上传</button>
     <button @click="goTo('personal')">个人中心</button>
   </div>
 </template>
@@ -17,7 +17,7 @@ export default {
         this.$router.push('/search')
         break
       case 'paper':
-        this.$router.push('/paper')
+        this.$router.push('/upload')
         break
       case 'personal':
         this.$router.push('/personal')
