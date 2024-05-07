@@ -1,7 +1,7 @@
 <template>
     <el-container style="height: calc(100vh - 55px);">
         <el-header>
-          <h1>调研助手</h1>
+          <h3>调研助手</h3>
         </el-header>
 
         <el-main class="chat-content">
