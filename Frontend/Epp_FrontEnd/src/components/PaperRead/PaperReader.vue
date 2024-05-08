@@ -5,7 +5,7 @@
         </iframe>
       </el-col>
       <el-col :span="8" style="margin-top: 60px">
-        <read-assistant :paper_id="paper_id" :fileReadingID="fileReadingID" />
+        <read-assistant :paperID="paper_id" :fileReadingID="fileReadingID" />
       </el-col>
     </el-row>
 </template>
