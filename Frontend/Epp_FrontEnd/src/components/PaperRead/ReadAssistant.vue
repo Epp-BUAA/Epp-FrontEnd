@@ -71,7 +71,7 @@ export default {
   created () {
     this.fileReadingID = this.fileReadingId
     if (this.fileReadingID > 0) {
-      this.restorePaperStudy(this.fileReadingID)
+      this.restorePaperStudy()
     } else {
       this.initialize()
     }
@@ -211,7 +211,7 @@ export default {
       }
       this.answerFinished = true
     },
-    async findReplySource () {
+    findReplySource () {
       if (this.docs.length === 0) {
         return
       }
