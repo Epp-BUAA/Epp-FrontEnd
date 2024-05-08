@@ -29,7 +29,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .my-container {
   position: relative;
   width: 100vw;
