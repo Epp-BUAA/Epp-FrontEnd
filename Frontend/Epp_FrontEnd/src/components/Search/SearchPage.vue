@@ -20,8 +20,11 @@
               <el-tag v-for="(record, index) in search_records" :key="index" closable
                 @close="removeRecord(record.search_record_id, index)"
                 @click="searchFromHistory(record.search_record_id)" id="record">
-                {{ record.keyword }}
-                <div style="color: grey; font-size: smaller; margin-left: 10px;"> {{ record.date }}</div>
+                <div style="display: flex;">
+                  {{ record.keyword }}
+                  <div style="color: grey; font-size: smaller; margin-left: 10px;
+                  justify-content: flex-start;"> {{ record.date }}</div>
+                </div>
               </el-tag>
             </div>
           </div>

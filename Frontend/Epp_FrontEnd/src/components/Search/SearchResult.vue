@@ -1,7 +1,7 @@
 <template>
   <el-row style="">
     <!-- 侧边栏 -->
-    <el-col :span="4" type="flex" style="margin-top: 60px; position: sticky; top: 30px">
+    <el-col :span="4" type="flex" style="margin-top: 60px; position: sticky; top: 60px">
       <el-aside style="">
         <el-form label-position="top">
           <el-form-item label="年份过滤">
@@ -174,7 +174,11 @@ export default {
           })
         })
         .catch((error) => {
-          console.error('Error:', error)
+          console.error('综述报告生成失败:', error)
+          this.$message({
+            message: '综述报告生成失败',
+            type: 'error'
+          })
         })
       this.selectedPapers = []
     },

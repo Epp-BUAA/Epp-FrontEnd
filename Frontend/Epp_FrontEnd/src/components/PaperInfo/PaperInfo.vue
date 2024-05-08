@@ -283,7 +283,26 @@ export default {
     },
     downloadPaper () {
       // 实现下载功能
-      alert('下载功能尚未实现！')
+      axios.post(this.$BASE_API_URL + '/batchDownload', {'paper_id_list': [this.paper_id]})
+        .then((response) => {
+          if (response.data.is_success === true) {
+            this.$message({
+              message: '开始下载！',
+              type: 'success'
+            })
+            const zipUrl = this.$BASE_URL + response.data.zip_url
+            const link = document.createElement('a')
+            link.href = zipUrl
+            link.download = 'papers.zip'
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            this.selectedPapers = []
+          }
+        })
+        .catch((error) => {
+          console.error('Error:', error)
+        })
     },
     likeComment (commentId, commentLevel) {
       axios.post(this.$BASE_API_URL + '/likeComment', { 'comment_level': commentLevel, 'comment_id': commentId })
@@ -312,26 +331,30 @@ export default {
     submitComment1 () {
       console.log('评论级别', 1)
       console.log('提交的评论内容：', this.newComment)
+      let isSuccessful = false
       axios.post(this.$BASE_API_URL + '/commentPaper', {'paper_id': this.paper_id, 'comment_level': 1, 'comment': this.newComment})
         .then((response) => {
-          if (response.data.is_success) {
-            this.$message({
-              message: '评论成功',
-              type: 'success'
-            })
-          }
+          isSuccessful = true
         })
         .catch((error) => {
           console.error('Error : ', error)
-          this.$message({
-            message: '评论失败',
-            type: 'error'
-          })
+          isSuccessful = false
         })
         .finally(() => {
           this.newComment = ''
           this.showCommentModal = false
-          // window.location.reload()
+          window.location.reload()
+          if (isSuccessful) {
+            this.$message({
+              message: '评论成功',
+              type: 'success'
+            })
+          } else {
+            this.$message({
+              message: '评论失败',
+              type: 'error'
+            })
+          }
         })
     },
     submitComment2 (level1CommentId) {

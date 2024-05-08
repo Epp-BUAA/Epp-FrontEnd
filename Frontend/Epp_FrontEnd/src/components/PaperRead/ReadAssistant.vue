@@ -53,7 +53,7 @@ export default {
       type: String,
       default: ''
     },
-    fileReadingID: {
+    fileReadingId: {
       type: Number,
       defaults: 0
     }
@@ -69,6 +69,7 @@ export default {
     }
   },
   created () {
+    this.fileReadingID = this.fileReadingId
     if (this.fileReadingID > 0) {
       this.restorePaperStudy(this.fileReadingID)
     } else {
@@ -91,11 +92,14 @@ export default {
       axios.post(this.$BASE_API_URL + '/study/createPaperStudy', {'paper_id': this.paperID, 'file_type': 2})
         .then((response) => {
           if (response.status === 200) {
-            console.log('论文研读创建成功！')
             this.fileReadingID = response.data.file_reading_id
             localStorage.setItem('fileReadingID', this.fileReadingID)
             localStorage.setItem('paperID', this.paperID)
             console.log('研读对话的id, ', response.data.file_reading_id)
+            this.$message({
+              message: '论文研读知识库创建成功！',
+              type: 'success'
+            })
           }
         })
         .catch((error) => {
@@ -111,6 +115,10 @@ export default {
             const sender = message.role === 'user' ? 'user' : 'ai'
             this.chatMessages.push({sender: sender, text: message.content, loading: false})
           }
+          this.$message({
+            message: '已恢复研读对话',
+            type: 'success'
+          })
         })
         .catch((error) => {
           console.error('恢复论文研读失败: ', error)
@@ -133,6 +141,18 @@ export default {
       this.chatMessages.push(loadingMessage)
       let answer = ''
       //   Add user message to chat
+      // 有一些很奇怪的bug
+      if (!this.fileReadingID) {
+        if (localStorage.getItem('fileReadingID')) {
+          console.log('遇到了一些bug')
+          this.fileReadingID = localStorage.getItem('fileReadingID')
+        } else {
+          this.$message({
+            message: '找不到对话ID',
+            type: 'error'
+          })
+        }
+      }
       console.log('file reading id is...', this.fileReadingID)
       try {
         await this.$axios.post(this.$BASE_API_URL + '/study/doPaperStudy', { 'query': chatMessage, 'file_reading_id': this.fileReadingID })

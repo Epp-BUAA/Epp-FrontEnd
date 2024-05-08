@@ -1,5 +1,5 @@
 <template>
-    <el-container style="height: calc(100vh - 55px);">
+    <el-container style="height: calc(100vh - 50px);">
         <el-header>
           <h3>调研助手</h3>
         </el-header>
@@ -84,7 +84,7 @@ export default {
   },
   methods: {
     createDialogStudy () {
-      this.paperIds = this.paperIds.slice(0, 1)
+      this.paperIds = this.paperIds.slice(0, 5)
       for (const message of this.aiReply) {
         this.chatMessages.push(message)
       }
@@ -127,7 +127,7 @@ export default {
         while (cur < answer.length) {
           loadingMessage.text += answer.charAt(cur)
           cur++
-          await this.delay(100)
+          await this.delay(50)
         }
         this.answerFinished = true
       }
