@@ -40,7 +40,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .paper-card {
   background-color: white;
   border-radius: 6px;

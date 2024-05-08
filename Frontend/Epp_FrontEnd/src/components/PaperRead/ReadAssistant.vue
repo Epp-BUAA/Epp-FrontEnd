@@ -245,7 +245,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .my-header {
   display: flex;
   justify-content: space-between;

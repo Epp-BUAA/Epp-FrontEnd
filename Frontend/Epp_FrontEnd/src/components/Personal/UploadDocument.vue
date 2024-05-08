@@ -48,7 +48,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .documentMan{
   margin-top:5rem;
 }

@@ -236,7 +236,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .checkbox {
   margin-left: 20px;
   display: flex;

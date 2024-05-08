@@ -171,7 +171,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .el-header {
   text-align: center;
   padding: 20px;
