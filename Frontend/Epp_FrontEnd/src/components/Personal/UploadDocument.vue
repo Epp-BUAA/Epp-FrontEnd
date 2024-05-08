@@ -1,7 +1,7 @@
 <template>
 <div>
   <div>
-    <h1>上传文献</h1>
+    <h1 style="margin-top: 60px;">上传文献</h1>
     <input type="file" @change="handleFileUpload" accept=".pdf,.doc,.docx">
     <button @click="uploadDocument">上传</button>
   </div>

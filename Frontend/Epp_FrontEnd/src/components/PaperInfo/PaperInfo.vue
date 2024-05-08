@@ -102,8 +102,8 @@
                                                         @click="toggleReplyInput(comment.comment_id)">回复</el-button>
                                                     <el-button type="text" icon="el-icon-warning-outline"
                                                         @click="reportComment(comment.comment_id, 1)">举报</el-button>
-                                                    <el-button type="text" icon="el-icon-arrow-down"
-                                                        @click="fetchComments2(comment.comment_id)">展开</el-button>
+                                                    <el-button type="text" icon="el-icon-arrow-down" v-show="comment.second_len > 0"
+                                                        @click="fetchComments2(comment.comment_id)">共 {{ comment.second_len }} 条回复</el-button>
                                                 </span>
                                             </div>
                                         </div>

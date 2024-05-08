@@ -2,7 +2,7 @@
     <el-dialog title="请输入举报理由" :visible.sync="showReportModal" width="50%" @close="closeReportModal">
         <el-form>
             <el-form-item>
-                <el-input type="textarea" placeholder="添加评论..." v-model="reportMessage" autosize>
+                <el-input type="textarea" placeholder="输入举报理由..." v-model="reportMessage" autosize>
                 </el-input>
             </el-form-item>
         </el-form>
