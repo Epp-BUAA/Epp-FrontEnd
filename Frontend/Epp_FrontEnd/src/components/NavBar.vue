@@ -1,5 +1,5 @@
 <template>
-  <el-menu class="navbar has-shadow" role="navigation" aria-label="" style="position: fixed; width: 100%;">
+  <el-menu class="navbar has-shadow" role="navigation" aria-label="" style="position: fixed; width: 100%; top: 0;">
     <div class="container">
       <div class="navbar-brand">
         <a href="" class="navbar-item">

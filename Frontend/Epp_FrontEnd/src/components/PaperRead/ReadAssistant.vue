@@ -1,5 +1,5 @@
 <template>
-    <el-container style="height: calc(100vh - 55px);">
+    <el-container style="height: calc(100vh - 70px);">
         <el-header class="my-header">
           <h3>调研助手</h3>
           <el-button type="success" plain size="small" @click="renderMarkdown()">一键总结</el-button>
@@ -19,6 +19,10 @@
                         <el-button type="text" @click="regenerateAnswer" v-show="index == chatMessages.length - 1 && answerFinished">
                             <i class="fas fa-refresh"></i>
                             重新生成
+                        </el-button>
+                        <el-button type="text" @click="findReplySource" v-show="index == chatMessages.length - 1 && answerFinished">
+                            <i class="fas fa-quote-right"></i>
+                            查询出处
                         </el-button>
                     </div>
                 </div>
@@ -51,7 +55,7 @@ export default {
     },
     fileReadingID: {
       type: Number,
-      defaults: ''
+      defaults: 0
     }
   },
   data () {
@@ -76,13 +80,14 @@ export default {
       const existingPaperId = localStorage.getItem('paperID')
       if (existingPaperId === this.paperID) {
         this.fileReadingID = localStorage.getItem('fileReadingID')
-        this.restorePaperStudy(existingPaperId)
+        console.log('existing file reading id is...', localStorage.getItem('fileReadingID'))
+        console.log('my file reading id is...', this.fileReadingID)
+        this.restorePaperStudy()
       } else {
         this.createPaperStudy()
       }
     },
     createPaperStudy () {
-      console.log('paper-id ', this.paperID)
       axios.post(this.$BASE_API_URL + '/study/createPaperStudy', {'paper_id': this.paperID, 'file_type': 2})
         .then((response) => {
           if (response.status === 200) {
@@ -98,14 +103,13 @@ export default {
         })
     },
     restorePaperStudy () {
-      console.log('研读对话的id, ', this.fileReadingID)
+      console.log('恢复研读对话的id, ', this.fileReadingID)
       axios.post(this.$BASE_API_URL + '/study/restorePaperStudy', {'file_reading_id': this.fileReadingID})
         .then((response) => {
           const history = response.data.conversation_history.conversation
           for (const message of history) {
             const sender = message.role === 'user' ? 'user' : 'ai'
             this.chatMessages.push({sender: sender, text: message.content, loading: false})
-            localStorage.setItem('fileReadingID', this.fileReadingID)
           }
         })
         .catch((error) => {
@@ -129,10 +133,12 @@ export default {
       this.chatMessages.push(loadingMessage)
       let answer = ''
       //   Add user message to chat
+      console.log('file reading id is...', this.fileReadingID)
       try {
         await this.$axios.post(this.$BASE_API_URL + '/study/doPaperStudy', { 'query': chatMessage, 'file_reading_id': this.fileReadingID })
           .then(response => {
             answer = response.data.ai_reply
+            this.docs = response.data.docs
             this.probQuestions = response.data.prob_question
             loadingMessage.loading = false
             loadingMessage.text = ''
@@ -183,6 +189,28 @@ export default {
         cur++
         await this.delay(50)
       }
+      this.answerFinished = true
+    },
+    async findReplySource () {
+      if (this.docs.length === 0) {
+        return
+      }
+      console.log('finding source...')
+      this.answerFinished = false
+      const sources = this.docs
+      console.log('answer\'s source is...', this.docs)
+      const lastMessage = this.chatMessages[this.chatMessages.length - 1]
+      lastMessage.text += '\n来源: \n'
+      let cnt = 1
+      for (const source of sources) {
+        const index1 = source.indexOf(']')
+        const index2 = source.indexOf(']', index1 + 1)
+        lastMessage.text += '[' + cnt + ']'
+        lastMessage.text += source.substring(index2 + 1)
+        lastMessage.text += '\n'
+        cnt++
+      }
+      this.docs = []
       this.answerFinished = true
     },
     sendProbQuestion (question) {
