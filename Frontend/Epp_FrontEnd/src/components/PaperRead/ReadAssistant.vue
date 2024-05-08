@@ -1,7 +1,11 @@
 <template>
     <el-container style="height: calc(100vh - 55px);">
-        <el-header>
+        <el-header class="my-header">
           <h3>调研助手</h3>
+          <el-button type="success" plain size="small" @click="renderMarkdown()">一键总结</el-button>
+          <el-dialog :visible.sync="showSummaryModal" width="70%">
+              <div v-html="markdownFile" style=""></div>
+          </el-dialog>
         </el-header>
 
         <el-main class="chat-content">
@@ -38,10 +42,10 @@
 
 <script>
 import axios from 'axios'
-
+import markdownIt from 'markdown-it'
 export default {
   props: {
-    paper_id: {
+    paperID: {
       type: String,
       default: ''
     },
@@ -55,7 +59,9 @@ export default {
       chatInput: '',
       chatMessages: [],
       answerFinished: false,
-      probQuestions: []
+      probQuestions: [],
+      showSummaryModal: false,
+      markdownFile: ''
     }
   },
   created () {
@@ -69,21 +75,21 @@ export default {
     initialize () {
       const existingPaperId = localStorage.getItem('paperID')
       if (existingPaperId === this.paperID) {
-        this.file_reading_id = localStorage.getItem('fileReadingID')
+        this.fileReadingID = localStorage.getItem('fileReadingID')
         this.restorePaperStudy(existingPaperId)
       } else {
         this.createPaperStudy()
       }
     },
     createPaperStudy () {
-      console.log('paper-id ', this.paper_id)
-      axios.post(this.$BASE_API_URL + '/study/createPaperStudy', {'paper_id': this.paper_id, 'file_type': 2})
+      console.log('paper-id ', this.paperID)
+      axios.post(this.$BASE_API_URL + '/study/createPaperStudy', {'paper_id': this.paperID, 'file_type': 2})
         .then((response) => {
           if (response.status === 200) {
             console.log('论文研读创建成功！')
             this.fileReadingID = response.data.file_reading_id
             localStorage.setItem('fileReadingID', this.fileReadingID)
-            localStorage.setItem('paperID', this.paper_id)
+            localStorage.setItem('paperID', this.paperID)
             console.log('研读对话的id, ', response.data.file_reading_id)
           }
         })
@@ -157,8 +163,8 @@ export default {
       lastMessage.loading = true
       this.answerFinished = false
       let answer = ''
-      console.log('file_reading_id', this.file_reading_id)
-      await axios.post(this.$BASE_API_URL + '/study/reDoPaperStudy', {'file_reading_id': this.file_reading_id})
+      console.log('file_reading_id', this.fileReadingID)
+      await axios.post(this.$BASE_API_URL + '/study/reDoPaperStudy', {'file_reading_id': this.fileReadingID})
         .then((response) => {
           answer = response.data.ai_reply
           this.probQuestions = response.data.prob_question
@@ -181,6 +187,30 @@ export default {
     },
     sendProbQuestion (question) {
       this.chatInput = question
+    },
+    renderMarkdown () {
+      const md = markdownIt()
+      const loadingInstance = this.$loading({
+        lock: true,
+        text: '正在帮您总结论文...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
+      axios.post(this.$BASE_API_URL + '/study/generateAbstractReport', {document_id: '', paper_id: this.paperID})
+        .then((response) => {
+          const summary = response.data.summary
+          this.markdownFile = md.render(summary)
+          loadingInstance.close()
+          this.showSummaryModal = true
+        })
+        .catch((error) => {
+          console.error('摘要生成失败', error)
+          this.$message({
+            message: '摘要生成失败',
+            type: 'error'
+          })
+          loadingInstance.close()
+        })
     }
   }
 
@@ -188,9 +218,11 @@ export default {
 </script>
 
 <style>
-.el-header {
-  text-align: center;
-  padding: 20px;
+.my-header {
+  display: flex;
+  justify-content: space-between;
+  /* padding: 20px; */
+  align-items: center;
 }
 
 .chat-content {
