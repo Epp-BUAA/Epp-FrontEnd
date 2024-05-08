@@ -220,7 +220,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .el-header {
   text-align: center;
   padding: 20px;

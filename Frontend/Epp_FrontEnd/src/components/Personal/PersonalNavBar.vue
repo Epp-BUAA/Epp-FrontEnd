@@ -22,7 +22,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .sidebar {
   width: 150px;
   height:100%;

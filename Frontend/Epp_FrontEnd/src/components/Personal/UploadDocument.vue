@@ -1,7 +1,7 @@
 <template>
-<div>
-  <div>
-    <h1 style="margin-top: 60px;">上传文献</h1>
+<div class="documentMan">
+  <div class="uploadDo">
+    <!-- <h1 class="uploadTitle">上传文献</h1> -->
     <input type="file" @change="handleFileUpload" accept=".pdf,.doc,.docx">
     <button @click="uploadDocument">上传</button>
   </div>
@@ -47,3 +47,37 @@ export default {
   }
 }
 </script>
+
+<style>
+.documentMan{
+  margin-top:5rem;
+}
+/* .uploadTitle {
+  text-align: center;
+  /* margin-top: 2rem;
+  margin-bottom: 2rem;
+} */
+
+.uploadDo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* margin-bottom: 2rem; */
+}
+
+.uploadDo input[type="file"] {
+  margin-right: 1rem;
+}
+
+.uploadDo button {
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.uploadDo button:hover {
+  background-color: #0056b3;
+}
+</style>

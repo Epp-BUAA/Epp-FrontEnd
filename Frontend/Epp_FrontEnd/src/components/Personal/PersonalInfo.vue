@@ -47,7 +47,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .user-info {
   margin-left: 10px;
   height: 400px;

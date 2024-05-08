@@ -107,7 +107,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .history .el-tag {
   display: flex;
   /* 启用flex布局 */

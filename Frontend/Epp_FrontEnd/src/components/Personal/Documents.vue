@@ -89,14 +89,15 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 /* 可以添加样式来美化表格 */
 
-.h1{
-  font-size: 2px;
+h1 {
+  font-size: 24px;
+  color: #333;
   font-weight: bold;
-  margin-bottom: 20px;
-  color:aquamarine;
+  /* margin-top: 5rem; */
+  /* margin-bottom: 20px; */
 }
 table {
   width: 100%;

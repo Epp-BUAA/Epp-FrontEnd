@@ -48,7 +48,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 #personal-main {
   display: flex;
 }

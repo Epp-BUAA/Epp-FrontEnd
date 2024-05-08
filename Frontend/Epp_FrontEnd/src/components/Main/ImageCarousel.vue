@@ -12,7 +12,7 @@
   </el-carousel>
 </template>
 
-<style scoped>
+<style>
 .custom-carousel {
   width: 100%;
   border-radius: 10px;

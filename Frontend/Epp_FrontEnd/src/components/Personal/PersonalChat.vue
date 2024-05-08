@@ -82,7 +82,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 /* 可以添加样式来美化表格 */
 
 .h1{
