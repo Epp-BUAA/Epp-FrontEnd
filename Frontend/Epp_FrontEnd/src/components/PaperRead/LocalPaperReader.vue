@@ -1,11 +1,11 @@
 <template>
-    <el-row :gutter="20">
+    <el-row :gutter="20" style="margin-top: 60px;">
       <el-col :span="16">
         <iframe :src="pdfUrl" style="width: 100%; height: 755px;" frameborder="0">
         </iframe>
       </el-col>
       <el-col :span="8">
-        <read-assistant :paper_id="paper_id" />
+        <read-assistant :paperID="paper_id" :fileReadingId="fileReadingID" />
       </el-col>
     </el-row>
 </template>
