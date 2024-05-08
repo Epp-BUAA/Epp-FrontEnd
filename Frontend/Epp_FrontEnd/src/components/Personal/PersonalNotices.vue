@@ -1,6 +1,6 @@
 <template>
   <div class="collections">
-    <h1>通知消息</h1>
+    <h1 class="noticesTitle">通知消息</h1>
     <div  class="unread">未读消息总数：{{ unreadSum }}</div>
     <table>
       <thead>
@@ -117,11 +117,11 @@ export default {
 <style scoped>
 /* 可以添加样式来美化表格 */
 
-.h1{
-  font-size: 2px;
+.noticesTitle{
+   font-size: 30px;
   font-weight: bold;
   margin-bottom: 20px;
-  color:aquamarine;
+  color:rgb(18, 19, 18);
 }
 table {
   width: 100%;

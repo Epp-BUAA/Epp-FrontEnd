@@ -1,6 +1,5 @@
 <template>
   <div class="collections">
-    <h1>文件列表</h1>
     <table>
       <thead>
         <tr>
@@ -105,11 +104,12 @@ table {
 }
 
 th{
-  border: 1px solid rgb(15, 224, 190);
+  color: white;
+  border: 1px solid #007bff;
   padding: 8px;
   text-align: left;
   font-size:18px;
-  background: rgb(15, 224, 190);
+  background: #007bff;
 }
 
 /* 鼠标悬停时的样式 */

@@ -1,6 +1,6 @@
 <template>
   <div class="collections">
-    <h1>AI对话</h1>
+    <h1 class="chatTitle">AI对话</h1>
     <table>
       <thead>
         <tr>
@@ -85,11 +85,11 @@ export default {
 <style scoped>
 /* 可以添加样式来美化表格 */
 
-.h1{
-  font-size: 2px;
+.chatTitle{
+   font-size: 30px;
   font-weight: bold;
   margin-bottom: 20px;
-  color:rgb(36, 120, 231);
+  color:rgb(18, 19, 18);
 }
 table {
   width: 100%;

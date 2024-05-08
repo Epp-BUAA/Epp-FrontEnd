@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>搜索记录</h1>
+    <h1 class='searchTitle'>搜索记录</h1>
     <table>
       <thead>
         <tr>
@@ -83,11 +83,11 @@ export default {
 
 <style scoped>
 /* 可以添加样式来美化表格 */
-h1{
-  font-size: 2px;
+.searchTitle{
+  font-size: 30px;
   font-weight: bold;
   margin-bottom: 20px;
-  color:aquamarine;
+  color:rgb(18, 19, 18);
 }
 table {
   width: 100%;

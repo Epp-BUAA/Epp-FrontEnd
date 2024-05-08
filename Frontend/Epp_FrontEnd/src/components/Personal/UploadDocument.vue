@@ -1,11 +1,18 @@
 <template>
 <div class="documentMan">
+   <h1 class="documentManTitle">论文上传</h1>
   <div class="uploadDo">
     <!-- <h1 class="uploadTitle">上传文献</h1> -->
-    <input type="file" @change="handleFileUpload" accept=".pdf,.doc,.docx">
-    <button @click="uploadDocument">上传</button>
+    <!-- <input type="file" @change="handleFileUpload" accept=".pdf,.doc,.docx" lang="zh-CN" title="选择文件"> -->
+    <!-- <label for="file-upload" class="file-upload-label">选择文件</label> -->
+   <a for="file-upload" class="file-upload-label" style="text-decoration: underline; color: #007bff; cursor: pointer;" @click="$refs.fileInput.click()">选择文件</a>
+  <input id="file-upload" type="file" @change="handleFileUpload" accept=".pdf,.doc,.docx" style="display: none;" ref="fileInput">
+  <span class='filename'>{{ fileName }}</span>
+  <el-button type="primary" @click="uploadDocument">Upload<i class="el-icon-upload el-icon-right"></i></el-button>
   </div>
+  <div class="documentsTable">
   <Documents/>
+  </div>
  </div>
 </template>
 
@@ -24,12 +31,18 @@ export default {
       currentPage: 1,
       totalPages: 1,
       itemsPerPage: 10,
-      report_id: ''
+      report_id: '',
+      fileName: '未选择文件'
     }
   },
   methods: {
     handleFileUpload (event) {
       this.file = event.target.files[0]
+      if (this.file) {
+        this.fileName = this.file.name
+      } else {
+        this.fileName = '未选择文件'
+      }
     },
     async uploadDocument () {
       try {
@@ -52,17 +65,34 @@ export default {
 .documentMan{
   margin-top:5rem;
 }
+.documentManTitle{
+  font-size:1.5rem;
+}
 /* .uploadTitle {
   text-align: center;
   /* margin-top: 2rem;
   margin-bottom: 2rem;
 } */
+/* .file-upload-label {
+  margin-right: 1rem; /* 调整<label>元素右侧的间距
+}
 
+#file-upload {
+  margin-right: 1rem; /* 调整<input>元素右侧的间距
+} */
+
+.filename {
+  margin-left: 1rem;
+  margin-right: 1rem;/* 调整<span>元素左侧的间距 */
+}
 .uploadDo {
-  display: flex;
+  display: inline-flex;
   justify-content: center;
   align-items: center;
-  /* margin-bottom: 2rem; */
+  margin-bottom: 0rem;
+  border: 8px solid #007bff;
+  border-radius: 10px 10px 0 0;
+  padding: 0.5rem;
 }
 
 .uploadDo input[type="file"] {
@@ -79,5 +109,10 @@ export default {
 
 .uploadDo button:hover {
   background-color: #0056b3;
+}
+
+.documentsTable {
+  margin-left: 3rem;
+  margin-right: 3rem;
 }
 </style>
