@@ -1,15 +1,17 @@
 <template>
   <div class="my-container">
-    <div class="top">
-      <div class="image">
+    <!-- 背景图片 -->
+    <div class="background"></div>
+     <!-- 大标题 -->
+     <div class="title">Easy Paper Plus</div>
+    <!-- 图片框和登录注册组件 -->
+    <div class="content">
+      <div class="left">
         <ImageCarousel />
       </div>
-      <div class="login">
+      <div class="right">
         <LoginRegister />
       </div>
-    </div>
-    <div class="buttons">
-      <NavigationButtons />
     </div>
   </div>
 </template>
@@ -17,42 +19,67 @@
 <script>
 import ImageCarousel from './ImageCarousel.vue'
 import LoginRegister from './Login.vue'
-import NavigationButtons from './Buttons.vue'
 
 export default {
   name: 'Dashboard',
   components: {
     ImageCarousel,
-    LoginRegister,
-    NavigationButtons
+    LoginRegister
   }
 }
 </script>
 
 <style>
 .my-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  height: 100vh;
 }
 
-.top {
+.title {
+  font-size: 2rem; /* 标题字体大小 */
+  font-weight: bold; /* 标题粗体 */
+  color: rgb(250, 250, 250); /* 标题颜色 */
+  text-align: center; /* 文本居中 */
+  padding: 5rem 0 1.5rem; /* 上下留出一些空白
+ /* background-color: #f8f8f8; /* 背景色 */
+  /*border-bottom: 1px solid #ccc; 底部边框线 */
+  z-index: 1; /* 在背景图片之上 */
+}
+
+.background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('../../assets/library.jpg');
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.content {
   flex: 1;
   display: flex;
+  z-index: 1;
 }
 
-.image {
-  flex: 1;
-}
-
-.login {
-  flex: 1;
-}
-
-.buttons {
+.left, .right {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.left {
+  margin-left: 5rem;
+  order: 1; /* 控制左右顺序 */
+}
+
+.right {
+  order: 2; /* 控制左右顺序 */
 }
 </style>
