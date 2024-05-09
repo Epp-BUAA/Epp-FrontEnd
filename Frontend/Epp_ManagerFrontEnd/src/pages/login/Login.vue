@@ -49,6 +49,7 @@ export default {
           var res = await login(params)
           console.log(res.message)
           this.message = res.data.message
+          this.$router.push('/dashboard')
         } else {
           params = {
             'username': this.username,
