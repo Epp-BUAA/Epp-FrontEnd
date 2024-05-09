@@ -1,4 +1,4 @@
-# epp_frontend
+#  易加加论文助手
 
 > A Vue.js project
 

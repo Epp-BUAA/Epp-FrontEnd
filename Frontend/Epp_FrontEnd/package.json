@@ -1,9 +1,10 @@
 {
-  "name": "Epp",
+  "name": "易加加论文助手",
   "version": "1.0.0",
-  "description": "A Vue.js project",
+  "description": "AI加持的全能论文助手",
   "author": "李雨萌“\ngit config --global user.email 21373005@buaa.edu.cn\ngit config --global user.name 李雨萌” <21xxxxxx@buaa.edu.cn>",
   "private": true,
+  "icon": "src/assets/favicon.png",
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
