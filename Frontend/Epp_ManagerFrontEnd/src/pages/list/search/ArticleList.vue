@@ -1,37 +1,3 @@
-<!--<template>
-  <div>
-    <search-form />
-    <a-card :bordered="false">
-      <a-list itemLayout="vertical">
-        <a-list-item :key="n" v-for="n in 10">
-          <a-list-item-meta title="Alipay">
-            <div slot="description">
-              <a-tag >Ant Design</a-tag>
-              <a-tag >设计语言</a-tag>
-              <a-tag >蚂蚁金服</a-tag>
-            </div>
-          </a-list-item-meta>
-          <div class="content">
-            <div class="detail">
-              段落示意：蚂蚁金服设计平台 ant.design，用最小的工作量，无缝接入蚂蚁金服生态，提供跨越设计与开发的体验解决方案。蚂蚁金服设计平台
-              ant.design，用最小的工作量，无缝接入蚂蚁金服生态，提供跨越设计与开发的体验解决方案。
-            </div>
-            <div class="author">
-              <a-avatar size="small" src="https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png" />
-              <a>ICZER</a>发布在
-              <a href="https://github.com/iczer">https://github.com/iczer</a>
-              <em>2018-08-05 22:23</em>
-            </div>
-          </div>
-          <span slot="actions"><a-icon style="margin-right: 8px" type="star-o" />156</span>
-          <span slot="actions"><a-icon style="margin-right: 8px" type="like-o" />1435</span>
-          <span slot="actions"><a-icon style="margin-right: 8px" type="message" />4</span>
-        </a-list-item>
-      </a-list>
-    </a-card>
-  </div>
-</template>
--->
 <template>
   <div>
     <!--<search-form />-->
@@ -115,7 +81,7 @@
 // import SearchForm from "./SearchForm";
 import editor from "@/pages/components/editor/editor.vue";
 import PaperCard from "./paperCard";
-import { getPaperAll, InterpretationIdReq } from "@/services/paper";
+import { getReports, InterpretationIdReq } from "@/services/paper";
 
 const listData = [];
 
@@ -261,58 +227,25 @@ export default {
     },
     loadPost: function() {
       this.loading = true;
-
-      if (this.postSelectType === "论文解读") {
-        getPaperAll()
-          .then((res) => {
-            console.log(res);
-            let s = "";
-            listData.length = 0;
-            for (let i = 0; i < res.data.length; i++) {
-              s = res.data[i].content
-                .replace(/<(style|script|iframe)[^>]*?>[\s\S]+?<\/\1\s*>/gi, "")
-                .replace(/<[^>]+?>/g, "")
-                .replace(/\s+/g, " ")
-                .replace(/ /g, " ")
-                .replace(/>/g, " ");
-              if (s.length >= 200) {
-                s = s.substring(0, 200) + "...";
-              }
-              this.actions = [
-                { type: "star-o", text: res.data[i].favor_num },
-                { type: "like-o", text: res.data[i].like_num },
-                { type: "message", text: res.data[i].commentNum },
-              ];
-
-              listData.push({
+      var params = {mode :1}
+      getReports({params})
+      listData.push({
                 href: "javascript:0",
-                title: res.data[i].title,
+                title: 'jjjj',
                 avatar:
                 //  " http://122.9.14.73:8000/api/" + res.data[i].userpic,
                   // " http://127.0.0.1:8000/api/" + res.data[i].userpic,
-                  " http://116.63.14.146:8000/api/" + res.data[i].userpic,
+                  " http://116.63.14.146:8000/api/",
 
                 description:
-                  res.data[i].created_by.username +
-                  "  |  " +
-                  res.data[i].created_at,
-                content: s,
-                startext: res.data[i].favor_num,
-                liketext: res.data[i].like_num,
-                messagetext: res.data[i].commentNum,
-                id: res.data[i].id,
+                 'bbbb',
+                content: 'cccc',
+                startext: 'a',
+                liketext: 'e',
+                messagetext: 'dd',
+                id: 'dd',
                 type: 1,
               });
-            }
-            this.totalCnt = res.data.total_count;
-            this.loading = false;
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      } else {
-        this.loadProjects();
-      }
     },
     handleDelete: function(id, type) {
       InterpretationIdReq(id, type, "delete")

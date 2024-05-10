@@ -4,48 +4,37 @@
       <template slot="operation" slot-scope="text, record">
         <div>
           <span>
-            <a @click="checkFeedback(record)" v-if="record.flag==0">回复</a>
-            <a  v-else>已成功回复</a>
-            <a-modal v-model="showDetail" title="回复反馈" @ok="handleOk()" width="750px" :mask-closable="false"
+            <!-- <a @click="checkFeedback(record)" v-if="record.flag==0">回复</a>
+            <a  v-else>已成功回复</a> -->
+            <a-modal v-model="showDetail" title="举报审核" @ok="handleOk()" width="750px" :mask-closable="false"
             :mask="true" :maskStyle="{'opacity':'0.08','background':'#000000','animation':'none'}">
               <a-card :bordered="false" dis-hover>
-                <a-row>姓名：{{selectData.name}}</a-row>
+                <a-row>内容：{{selectData.content}}</a-row>
                 <br/>
-                <a-row>性别：{{selectData.sex}}</a-row>
+                <a-row>举报人：{{selectData.user}}</a-row>
                 <br/>
-                <a-row>邮箱：{{selectData.email}}</a-row>
+                <a-row>日期：{{selectData.date}}</a-row>
                 <br/>
-                <a-row>问题类型：{{selectData.qtype}}</a-row>
-                <br/>
-                <a-row>发布时间：{{selectData.datatime}}</a-row>
-                <br/>
-                <a-row>问题：{{selectData.description}}</a-row>
-                <br/>
-                <a-row>回答：</a-row>
-                <br/>
-                <a-textarea v-model="reply"></a-textarea>
+                <!-- <a-textarea v-model="reply"></a-textarea> -->
               </a-card>
             </a-modal>
           </span>
         </div>
       </template>
-      <template #expandedRowRender="record,index" class="ant-table-thead">
+      <template #expandedRowRender="record" class="ant-table-thead">
         <p style="margin: 0">
-          {{ record.description }}
+          举报内容：{{ record.content }}
         </p>
         <br/>
-        <div  v-if="record.flag">
+        <div class="detail">
           <p style="margin: 0">
-            回复：
+            评论人：{{record.comment.user.user_name}}
           </p>
-          <br/>
           <p style="margin: 0">
-            {{ record.message }}
+            评论文章：{{record.comment.paper.title}}
           </p>
-        </div>
-        <div v-else>
           <p style="margin: 0">
-            暂未回复
+             评论内容：{{record.comment.content}}
           </p>
         </div>
       </template>
@@ -54,53 +43,53 @@
 </template>
 
 <script>
-import {getFeedbackAll, replyFeedback} from "../../services/feedback";
+import {getReport,getFeedbackAll, replyFeedback} from "../../services/feedback";
 
 const columns = [
   {
-    title: "姓名",
-    dataIndex: "name",
-    scopedSlots: { customRender: "name" },
+    title: "内容",
+    dataIndex: "content",
+    scopedSlots: { customRender: "content" },
     width: 100,
 
   },
   {
-    title: "性别",
-    dataIndex: "sex",
-    scopedSlots: { customRender: "sex" },
+    title: "举报人",
+    dataIndex: "user",
+    scopedSlots: { customRender: "user" },
     width: 100
   },
   {
-    title: "邮箱",
-    dataIndex: "email",
-    scopedSlots: { customRender: "email" },
-    width: 150
+    title: "日期",
+    dataIndex: "date",
+    scopedSlots: { customRender: "date" },
+    width: 100
   },
-  {
-    title: "问题类型",
-    dataIndex: "qtype",
-    scopedSlots: { customRender: "qtype" },
-    width: 150
-  },
-  {
-    title: "发布时间",
-    dataIndex: "datatime",
-    scopedSlots: { customRender: "datatime" },
-    width: 150
-  },
-  {
-    title: "回复状态",
-    dataIndex: "state",
-    scopedSlots: { customRender: "state" },
-    width: 150
-  },
-  {
-    title: "操作",
-    dataIndex: "operation",
-    scopedSlots: { customRender: "operation" },
-    width: 150,
-    render: () => <a>反馈</a>,
-  }
+  // {
+  //   title: "问题类型",
+  //   dataIndex: "qtype",
+  //   scopedSlots: { customRender: "qtype" },
+  //   width: 150
+  // },
+  // {
+  //   title: "发布时间",
+  //   dataIndex: "datatime",
+  //   scopedSlots: { customRender: "datatime" },
+  //   width: 150
+  // },
+  // {
+  //   title: "回复状态",
+  //   dataIndex: "state",
+  //   scopedSlots: { customRender: "state" },
+  //   width: 150
+  // },
+  // {
+  //   title: "操作",
+  //   dataIndex: "operation",
+  //   scopedSlots: { customRender: "operation" },
+  //   width: 150,
+  //   render: () => <a>反馈</a>,
+  // }
 ];
 const data = [];
 
@@ -127,43 +116,24 @@ export default {
     },
     loadNeed: function () {
       data.length = 0;
-      getFeedbackAll().then((res)=>{
+      getReport({mode:1}).then((res)=>{
         console.log(res);
-        let d = res.data.data;
+        let d = res.data.reports;
         console.log(d);
         for (let i = 0; i < d.length; i++) {
-          if(d[i].qtype) {
-            console.log(d[i].name + " OK!")
-            console.log(typeof (d[i].qtype))
-          } else {
-            console.log(d[i].name + " ERROR!")
-          }
-          let str = d[i].qtype[0];
-          for (let j = 1; j < d[i].qtype.length; j++) {
-            str = str + ', ' + d[i].qtype[j];
-          }
-          let s = '';
-          if (d[i].flag == 1) {
-            s = '已回复'
-          } else {
-            s = '未回复'
-          }
-          // console.log(d[i].name)
-          // console.log(str)
-          // console.log(d[i].qtype)
-          // console.log(typeof(d[i].qtype))
           data.push({
-            feedback_id: d[i].feedback_id,
-            user_id: d[i].user_id,
-            name: d[i].name,
-            email: d[i].email,
-            sex: d[i].sex,
-            qtype: str,
-            description: d[i].description,
-            datatime: d[i].datatime,
-            flag: d[i].flag,
-            message: d[i].message,
-            state: s
+            content: d[i].content,
+            user: d[i].user.user_name,
+            date: d[i].date,
+            comment:d[i].comment
+            // email: d[i].email,
+            // sex: d[i].sex,
+            // qtype: str,
+            // description: d[i].description,
+            // datatime: d[i].datatime,
+            // flag: d[i].flag,
+            // message: d[i].message,
+            // state: s
           })
         }
       }).catch((error) => {

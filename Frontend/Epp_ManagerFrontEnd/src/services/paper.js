@@ -1,6 +1,10 @@
 import { request, METHOD } from "@/utils/request";
 import {PaperAll, BASE_URL_IP} from './api'
 
+export const getReports = (params) => {
+  const url = BASE_URL_IP + `/api/manage/commentReport`
+  return request(url,"get",params)
+}
 export async function api_get_test(url) {
   return request(url, METHOD.GET);
 }

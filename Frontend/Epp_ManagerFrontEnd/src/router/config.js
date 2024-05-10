@@ -32,10 +32,7 @@ const options = {
                     meta: {
                         icon: 'dashboard,',
                     },
-                    component: () => import('@/pages/dashboard/analysis'),BlankView,
-
-
-                    
+                    component: () => import('@/pages/dashboard/analysis'),BlankView,    
                 },
 				
                 {
@@ -67,10 +64,31 @@ const options = {
                         // },
                     ]
                 }, 
-                
+
+                // {
+                //     path: 'reports',
+                //     name: '举报审核',
+                //     meta: {
+                //         icon: 'profile'
+                //     },
+                //     component: PageView,
+                //     children: [
+                //         {
+                //             path: 'resultList',
+                //             name: '举报列表',
+                //             component: () => import('@/pages/form/advance/ResultForm'),
+                //         },
+                //         // {
+                //         //     path: 'chengguoCertificate',
+                //         //     name: '成果审核',
+                //         //     component: () => import('@/pages/chengguo-certificate/ChengguoList'),
+                //         // }
+
+                //     ]
+                // },
                 {
                     path: 'result',
-                    name: '成果管理',
+                    name: '文献管理',
                     meta: {
                         icon: 'profile'
                     },
@@ -78,8 +96,8 @@ const options = {
                     children: [
                         {
                             path: 'resultList',
-                            name: '成果列表',
-                            component: () => import('@/pages/form/advance/ResultForm'),
+                            name: '文献列表',
+                            component: () => import('@/pages/form/advance/reportsForm'),
                         },
                         // {
                         //     path: 'chengguoCertificate',
@@ -91,8 +109,8 @@ const options = {
                 },
                 
                 // {
-                //     path: 'interpretation',
-                //     name: '解读管理',
+                //     path: 'commentReport',
+                //     name: '举报审核',
                 //     meta: {
                 //         icon: 'profile'
                 //     },
@@ -100,10 +118,9 @@ const options = {
                 //     children: [
                 //         {
                 //             path: 'list',
-                //             name: '解读列表',
+                //             name: '举报列表',
                 //             component: () => import('@/pages/list/search/ArticleList'),
-                //         },
-
+                //         },           
                 //     ]
                 // },
                 // {
@@ -121,21 +138,21 @@ const options = {
                 //         }
                 //     ]
                 // },
-                // {
-                //     path: 'feedback',
-                //     name: '用户反馈',
-                //     meta: {
-                //         icon: 'table',
-                //     },
-                //     component: PageView,
-                //     children: [
-                //         {
-                //             path: 'FeedbackList',
-                //             name: '用户反馈列表',
-                //             component: () => import('../pages/feedback/feedbackList')
-                //         }
-                //     ]
-                // },
+                {
+                    path: 'reports',
+                    name: '举报审核',
+                    meta: {
+                        icon: 'table',
+                    },
+                    component: PageView,
+                    children: [
+                        {
+                            path: 'reportsList',
+                            name: '举报列表',
+                            component: () => import('../pages/feedback/feedbackList')
+                        }
+                    ]
+                },
                 // {
                 //     path: 'system-chat',
                 //     name: 'AI/人工客服回复',
