@@ -1,146 +1,77 @@
 <template>
-  <div class="login-register">
-    <!-- <h2 v-if="isLogin">登录</h2>
-    <h2 v-else>注册</h2> -->
-      <div class="input-group">
-      <label>
-        用户名:
-        <input type="text" v-model="username" required>
-      </label>
+  <div class="my-container">
+    <!-- 背景图片 -->
+    <div class="background"></div>
+     <!-- 大标题 -->
+     <div class="title">Easy Paper Plus Manager</div>
+    <!-- 图片框和登录注册组件 -->
+    <div class="content">
+      <!-- <div class="left">
+        <ImageCarousel />
+      </div> -->
+      <div class="right">
+        <LoginRegister />
       </div>
-      <div class="input-group">
-      <label>
-        密码:
-        <input type="password" v-model="password" required>
-      </label>
-      </div>
-    <!-- </form> -->
-    <form @submit.prevent="handleSubmit"  class="form">
-    <div class="button-group">
-    <button type="submit">{{ isLogin ? '登录' : '注册' }}</button>
-    <button @click="toggleMode">{{ isLogin ? '注册新账号' : '使用已有账号登录' }}</button>
     </div>
-    </form>
-     <p :class="{ 'login-message': message }">{{ message }}</p>
   </div>
 </template>
 
 <script>
-
-import { login } from '@/services/user.js'
+// import ImageCarousel from './ImageCarousel.vue'
+import LoginRegister from './loginInput.vue'
 
 export default {
-  data () {
-    return {
-      isLogin: true,
-      username: '',
-      password: '',
-      message: ''
-    }
-  },
-  methods: {
-    async handleSubmit () {
-      try {
-        if (this.isLogin) {
-          var params = {
-            'managerName': this.username,
-            'manpassowrd': this.password
-          }
-          var res = await login(params)
-          console.log(res.message)
-          this.message = res.data.message
-          this.$router.push('/dashboard')
-        } else {
-          params = {
-            'username': this.username,
-            'password': this.password
-          }
-          res = await register(params)
-          console.log(res)
-          this.message = res.data.message
-        }
-      } catch (error) {
-        console.log('error')
-        if (this.isLogin) {
-          this.message = '登录失败'
-        } else {
-          this.message = '注册失败'
-        }
-      }
-    },
-    toggleMode () {
-      this.isLogin = !this.isLogin
-      this.username = ''
-      this.password = ''
-      this.message = ''
-    }
+  name: 'dashboard',
+  components: {
+    // ImageCarousel,
+    LoginRegister
   }
 }
 </script>
 
 <style scoped>
-.login-register {
-  height: 400px;
-  width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  /* border: 1px solid #ccc; */
-  /* border-radius: 5px; */
-  /* background-image: url('../../assets/loginBoard.png'); */
+.my-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 2rem; /* 标题字体大小 */
+  font-weight: bold; /* 标题粗体 */
+  color: rgb(250, 250, 250); /* 标题颜色 */
+  text-align: center; /* 文本居中 */
+  padding: 5rem 0 1.5rem; /* 上下留出一些空白
+ /* background-color: #f8f8f8; /* 背景色 */
+  /*border-bottom: 1px solid #ccc; 底部边框线 */
+  z-index: 1; /* 在背景图片之上 */
+}
+
+.background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('../../assets/img/library.jpg');
   background-size: cover;
   background-position: center;
+  z-index: 0;
 }
 
-.form {
-  margin-top: 40px;
-  display: flex;
-  flex-direction: column;
-}
-
-.input-group {
-  margin-top: 40px;
-  display: flex;
-  align-items: center;
-  margin-bottom: 30px;
-}
-
-.input-group label {
+.content {
   flex: 1;
-}
-
-.input-group input {
-  flex: 3;
-  padding: 5px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-}
-.button-group {
   display: flex;
-  flex-direction: column;
+  z-index: 1;
+}
+
+.right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: space-between;
 }
 
-.button-group button {
-  margin-bottom: 20px;
-  padding: 8px 12px;
-  font-size: 16px;
-  background-color: #0cc0df;
-  color: white;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  width: 48%; /* 让两个按钮平分宽度 */
-}
-
-.button-group button:hover {
-  background-color: #0056b3;
-}
-
-.login-message {
-  margin-top: 10px;
-  font-size: 24px;
-  color: red;
-}
 </style>
