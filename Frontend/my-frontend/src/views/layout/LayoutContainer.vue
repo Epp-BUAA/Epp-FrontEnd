@@ -11,7 +11,7 @@
             >
                 <el-menu-item index="/home">
                     <el-icon>
-                        <el-icon><i-ep-histogram /></el-icon>
+                        <el-icon><i-ep-HomeFilled /></el-icon>
                     </el-icon>
                     <span>首页</span>
                 </el-menu-item>

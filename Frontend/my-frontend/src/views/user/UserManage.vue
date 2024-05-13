@@ -1,0 +1,168 @@
+<template>
+    <div style="width: 100%; height: 100%">
+        <!-- 统计数据 -->
+        <el-collapse v-model="isClsActive">
+            <el-collapse-item name="1">
+                <template #title>
+                    <div class="collapse-title">
+                        <el-icon><i-ep-Histogram /></el-icon>
+                        <span class="collapse-title-text">用户统计数据</span>
+                    </div>
+                </template>
+                <div style="width: 100%; overflow: hidden">
+                    <div class="number-box">
+                        <!-- 用户个数 -->
+                        <svg
+                            t="1715522008378"
+                            class="number-box-icon"
+                            viewBox="0 0 1024 1024"
+                            version="1.1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            p-id="1642"
+                            width="200"
+                            height="200"
+                        >
+                            <path d="M502.9 501.67z" p-id="1643" fill="#1296db"></path>
+                            <path
+                                d="M240.14 316.3a164.63 178.53 0 1 0 329.26 0 164.63 178.53 0 1 0-329.26 0Z"
+                                p-id="1644"
+                                fill="#1296db"
+                            ></path>
+                            <path
+                                d="M502.9 501.67c-28.32 21.94-62 34.65-98.13 34.65S335 523.6 306.65 501.67C183.37 551.28 94.49 691.77 94.49 857.36q0 14.57 0.9 28.87h618.77q0.9-14.42 0.9-28.87c0-165.59-88.88-306.09-212.16-355.69zM591.64 346.58a160.39 160.39 0 0 1-5.64 43.19 157.47 157.47 0 0 1-47 75.36c22.38 49.4 70.66 83.62 126.64 83.62 77.31 0 140-65.17 140-145.56S743 257.62 665.69 257.62a135.79 135.79 0 0 0-83.08 28.44 78.94 78.94 0 0 1 9.06 26.81c1.7 11.21 2.19 22.94-0.03 33.71z"
+                                p-id="1645"
+                                fill="#1296db"
+                            ></path>
+                            <path
+                                d="M749.12 559.11c-24.07 18.65-52.71 29.46-83.43 29.46a128.93 128.93 0 0 1-23.39-2.17c28.18 23.15 46.62 63.51 60.44 100.54 7.06 17.47 13.13 35.56 18.75 53.36 12.75 40.41 21.3 85.47 16.61 128.45 0.45 5.77 0.75 11.55 0.86 17.32h189.79q0.77-12.15 0.77-24.54c-0.01-140.78-75.58-260.25-180.4-302.42z"
+                                p-id="1646"
+                                fill="#1296db"
+                            ></path>
+                        </svg>
+                        <div class="number-box-content">
+                            <span class="number-box-title">用户总数</span>
+                            <span class="number-box-digit"
+                                ><AnimatedNumber
+                                    :from="0"
+                                    :to="1000"
+                                    fromColor="#44cc00"
+                                    toColor="#232323"
+                                    easing="easeOutQuad"
+                                ></AnimatedNumber
+                            ></span>
+                        </div>
+                    </div>
+                    <div class="number-box">
+                        <!-- 用户文件个数 -->
+                        <svg
+                            t="1715522664977"
+                            class="number-box-icon"
+                            viewBox="0 0 1024 1024"
+                            version="1.1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            p-id="8262"
+                            width="200"
+                            height="200"
+                        >
+                            <path
+                                d="M815.104 69.632q27.648 25.6 44.032 42.496t25.088 28.672 10.752 19.968 2.048 14.336l0 16.384-151.552 0q-10.24 0-17.92-7.68t-12.8-17.92-7.68-20.992-2.56-16.896l0-126.976 3.072 0q8.192 0 16.896 2.56t19.968 9.728 28.16 20.48 42.496 35.84zM640 129.024q0 20.48 6.144 42.496t19.456 40.96 33.792 31.232 48.128 12.288l149.504 0 0 577.536q0 29.696-11.776 53.248t-31.232 39.936-43.008 25.6-46.08 9.216l-503.808 0q-19.456 0-42.496-11.264t-43.008-29.696-33.28-41.984-13.312-49.152l0-696.32q0-21.504 9.728-44.544t26.624-42.496 38.4-32.256 45.056-12.8l391.168 0 0 128zM704.512 768q26.624 0 45.056-18.944t18.432-45.568-18.432-45.056-45.056-18.432l-384 0q-26.624 0-45.056 18.432t-18.432 45.056 18.432 45.568 45.056 18.944l384 0zM768 448.512q0-26.624-18.432-45.568t-45.056-18.944l-384 0q-26.624 0-45.056 18.944t-18.432 45.568 18.432 45.056 45.056 18.432l384 0q26.624 0 45.056-18.432t18.432-45.056z"
+                                p-id="8263"
+                                fill="#d81e06"
+                            ></path>
+                        </svg>
+                        <div class="number-box-content">
+                            <span class="number-box-title">用户文件总数</span>
+                            <span class="number-box-digit"
+                                ><AnimatedNumber
+                                    :from="0"
+                                    :to="1000"
+                                    fromColor="#44cc00"
+                                    toColor="#232323"
+                                    easing="easeOutQuad"
+                                ></AnimatedNumber
+                            ></span>
+                        </div>
+                    </div>
+                </div>
+            </el-collapse-item>
+        </el-collapse>
+
+        <!-- 用户管理 -->
+        <div class="user-manage-container">111</div>
+    </div>
+</template>
+
+<script>
+export default {
+    components: {},
+    props: {},
+    data() {
+        return {
+            isClsActive: '1'
+        }
+    },
+    watch: {},
+    computed: {},
+    methods: {},
+    created() {},
+    mounted() {}
+}
+</script>
+<style lang="scss" scoped>
+.collapse-title {
+    display: flex;
+    align-items: center;
+    color: rgb(0, 0, 0, 0.6);
+    font-size: 16px;
+    padding: 10px;
+    .collapse-title-text {
+        margin-left: 10px;
+        vertical-align: middle;
+    }
+}
+.number-box {
+    float: left;
+    width: 22%;
+    height: 18vh;
+    margin-left: 1%;
+    margin-right: 2%;
+    margin-bottom: 2%;
+    margin-top: 1%;
+    background-color: white;
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.2);
+    .number-box-icon {
+        float: left;
+        width: 40%;
+        height: 100%;
+    }
+
+    .number-box-content {
+        float: right;
+        width: 60%;
+        height: 100%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .number-box-title {
+            font-size: 21px;
+            font-weight: bold;
+            padding: 10%;
+            border-bottom: 1px solid black;
+        }
+        .number-box-digit {
+            height: 55%;
+            margin-top: 10%;
+            font-weight: 500;
+            font-size: 19px;
+        }
+    }
+}
+.user-manage-container {
+    margin-top: 2vh;
+    height: 100%;
+    background-color: white;
+}
+</style>

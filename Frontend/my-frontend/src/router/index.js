@@ -6,12 +6,18 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            redirect: '/home'
-        },
-        {
-            path: '/home',
-            name: 'home',
-            component: () => import(`@/views/layout/LayoutContainer.vue`)
+            redirect: '/home',
+            component: () => import(`@/views/layout/LayoutContainer.vue`),
+            children: [
+                {
+                    path: '/home',
+                    component: () => import(`@/views/main/HomePage.vue`)
+                },
+                {
+                    path: '/user',
+                    component: () => import(`@/views/user/UserManage.vue`)
+                }
+            ]
         },
         {
             path: '/login',
