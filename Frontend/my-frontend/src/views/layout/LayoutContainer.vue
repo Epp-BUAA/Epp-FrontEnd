@@ -99,7 +99,7 @@ export default {
     .el-header {
         height: 8vh;
         width: 100%;
-        color: rgb(6, 116, 234);
+        color: #0674ea;
         background-color: white;
         font-weight: bold;
         font-size: 25px;

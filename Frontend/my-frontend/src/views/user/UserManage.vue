@@ -9,6 +9,7 @@
                         <span class="collapse-title-text">用户统计数据</span>
                     </div>
                 </template>
+                <!-- 统计数字框 -->
                 <div style="width: 100%; overflow: hidden">
                     <div class="number-box">
                         <!-- 用户个数 -->
@@ -84,28 +85,179 @@
                         </div>
                     </div>
                 </div>
+                <!-- 统计图表 -->
+                <div class="chart-box">
+                    <div class="chart-box-title"><span>新增用户数量统计</span></div>
+                    <div id="newUsersChart" class="chart-box-content"></div>
+                </div>
             </el-collapse-item>
         </el-collapse>
 
         <!-- 用户管理 -->
-        <div class="user-manage-container">111</div>
+        <div class="user-manage-container">
+            <!-- 标题 -->
+            <div class="collapse-title">
+                <el-icon><i-ep-management /></el-icon>
+                <span class="collapse-title-text">用户管理</span>
+            </div>
+            <!-- 搜索框 -->
+            <div class="user-manage-search">
+                <el-input v-model="input" style="width: 20vw" placeholder="输入用户名" clearable />这是搜索框
+            </div>
+            <!-- 表格内容 -->
+            <div class="user-manage-table">
+                <el-table
+                    :data="userList"
+                    stripe
+                    style="width: 94%; border-top: 1px solid #edebeb"
+                    v-loading="isLoading"
+                >
+                    <el-table-column label="序号" width="300" type="index"> </el-table-column>
+                    <el-table-column label="用户名" prop="username"></el-table-column>
+                    <el-table-column label="注册时间" prop="register_time"></el-table-column>
+                    <el-table-column label="操作" width="200">
+                        <template #default="{ row }">
+                            <el-button circle plain type="primary" @click="onEditChannel(row)">
+                                <el-icon><i-ep-Edit></i-ep-Edit></el-icon>
+                            </el-button>
+                            <el-button circle plain type="danger" @click="onDelChannel(row)">
+                                <el-icon><i-ep-delete></i-ep-delete></el-icon
+                            ></el-button>
+                        </template>
+                    </el-table-column>
+                    <template #empty>
+                        <el-empty description="没有数据" />
+                    </template>
+                </el-table>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
+import { getCurrentInstance, onMounted, ref } from 'vue'
+
 export default {
     components: {},
     props: {},
     data() {
         return {
-            isClsActive: '1'
+            isClsActive: '1',
+            userList: [
+                {
+                    username: 'lalala',
+                    register_time: '2024-4-15'
+                },
+                {
+                    username: 'sanyue',
+                    register_time: '2024-4-17'
+                },
+                {
+                    username: 'test',
+                    register_time: '2024-5-15'
+                }
+            ],
+            input: ref('')
         }
     },
     watch: {},
     computed: {},
     methods: {},
-    created() {},
-    mounted() {}
+    setup() {
+        let internalInstance = getCurrentInstance()
+        let echarts = internalInstance.appContext.config.globalProperties.$echarts
+
+        onMounted(() => {
+            const newUsersChart = echarts.init(document.getElementById('newUsersChart'))
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross',
+                        crossStyle: {
+                            color: '#888'
+                        }
+                    }
+                },
+                toolbox: {
+                    feature: {
+                        dataView: { show: true, readOnly: false },
+                        magicType: { show: true, type: ['line', 'bar'] },
+                        restore: { show: true },
+                        saveAsImage: { show: true }
+                    }
+                },
+                legend: {
+                    data: ['用户月增量', '平台用户总数']
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: ['2023-12', '2024-1', '2024-2', '2024-3', '2024-4', '2024-5', '2024-6'],
+                        axisPointer: {
+                            type: 'shadow'
+                        }
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '用户月增',
+                        min: 0,
+                        max: 100,
+                        interval: 20,
+                        axisLabel: {
+                            formatter: '{value} 人'
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: '用户总数',
+                        min: 0,
+                        max: 25,
+                        interval: 5,
+                        axisLabel: {
+                            formatter: '{value} 人'
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: '用户月增量',
+                        type: 'bar',
+                        tooltip: {
+                            valueFormatter: function (value) {
+                                return value + ' 人'
+                            }
+                        },
+                        itemStyle: {
+                            color: '#077aea'
+                        },
+                        data: [2, 4, 7, 23, 25, 76, 13, 16, 3, 2, 6, 3]
+                    },
+                    {
+                        name: '平台用户总数',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        tooltip: {
+                            valueFormatter: function (value) {
+                                return value + ' 人'
+                            }
+                        },
+                        itemStyle: {
+                            color: '#e87d04'
+                        },
+                        data: [2, 2, 3, 5, 6, 10, 20, 23, 25, 40, 50, 61]
+                    }
+                ]
+            }
+            // 设置实例参数
+            newUsersChart.setOption(option)
+            window.addEventListener('resize', function () {
+                newUsersChart.resize()
+            })
+        })
+    }
 }
 </script>
 <style lang="scss" scoped>
@@ -117,18 +269,16 @@ export default {
     padding: 10px;
     .collapse-title-text {
         margin-left: 10px;
-        vertical-align: middle;
     }
 }
 .number-box {
     float: left;
     width: 22%;
-    height: 18vh;
+    height: 15vh;
     margin-left: 1%;
     margin-right: 2%;
     margin-bottom: 2%;
     margin-top: 1%;
-    background-color: white;
     box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.2);
     .number-box-icon {
         float: left;
@@ -149,20 +299,55 @@ export default {
         .number-box-title {
             font-size: 21px;
             font-weight: bold;
-            padding: 10%;
+            padding: 5%;
             border-bottom: 1px solid black;
         }
         .number-box-digit {
             height: 55%;
             margin-top: 10%;
             font-weight: 500;
-            font-size: 19px;
+            font-size: 21px;
         }
+    }
+}
+.chart-box {
+    width: 100%;
+    height: 45vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .chart-box-title {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 2;
+        width: 90%;
+        border-top: 1px solid rgb(0, 0, 0, 0.2);
+        span {
+            font-size: 20px;
+            font-weight: bold;
+        }
+    }
+    .chart-box-content {
+        flex: 8;
+        width: 90%;
     }
 }
 .user-manage-container {
     margin-top: 2vh;
     height: 100%;
     background-color: white;
+    .user-manage-search {
+        float: right;
+        height: 8vh;
+        line-height: 8vh;
+        padding: 0 3%;
+    }
+    .user-manage-table {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
 }
 </style>
