@@ -11,6 +11,6 @@ export const getFeedbackAll = () => {
 }
 
 export const replyFeedback = (params, method) => {
-    const url = `${BASE_URL_IP}/api/feedback/reply`;
-    return request(url, method, params);
+    const url = `${BASE_URL_IP}/api/manage/judgeCmtRpt`;
+    return request(url, METHOD.POST, params);
 }

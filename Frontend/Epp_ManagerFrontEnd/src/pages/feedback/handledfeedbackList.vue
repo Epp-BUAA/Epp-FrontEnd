@@ -4,6 +4,8 @@
       <template slot="operation" slot-scope="text, record">
         <div>
           <span>
+            <!-- <a @click="checkFeedback(record)" v-if="record.flag==0">回复</a>
+            <a  v-else>已成功回复</a> -->
             <a-modal v-model="showDetail" title="举报审核" @ok="handleOk()" width="750px" :mask-closable="false"
             :mask="true" :maskStyle="{'opacity':'0.08','background':'#000000','animation':'none'}">
               <a-card :bordered="false" dis-hover>
@@ -18,9 +20,6 @@
             </a-modal>
           </span>
         </div>
-      </template>
-      <template slot="action" slot-scope="text, record">
-        <a-button type="primary" @click="handleProcess(record.id)">回复</a-button>
       </template>
       <template #expandedRowRender="record" class="ant-table-thead">
         <p style="margin: 0">
@@ -37,27 +36,14 @@
           <p style="margin: 0">
              评论内容：{{record.comment.content}}
           </p>
-           <a-button type="danger" @click="deleteComment(record.comment.comment_id)">删除评论</a-button>
         </div>
       </template>
     </a-table>
-    <a-modal
-  v-model="showReplyModalVisible"
-  title="举报信息回复"
-  @ok="handleReplyOk"
-  @cancel="handleReplyCancel"
->
-  <a-textarea
-    v-model="replyContent"
-    placeholder="请输入回复内容"
-    rows="4"
-  />
-</a-modal>
   </a-card>
 </template>
 
 <script>
-import {getReport, replyFeedback} from "../../services/feedback";
+import {getReport,getFeedbackAll, replyFeedback} from "../../services/feedback";
 
 const columns = [
   {
@@ -79,12 +65,6 @@ const columns = [
     scopedSlots: { customRender: "date" },
     width: 100
   },
-  {
-    title: "操作",
-    dataIndex: "action",
-    scopedSlots: { customRender: "action" },
-    width: 150,
-  }
   // {
   //   title: "问题类型",
   //   dataIndex: "qtype",
@@ -114,7 +94,7 @@ const columns = [
 const data = [];
 
 export default {
-  name: "handledFeedbbackList",
+  name: "feedbackList",
   inject: ['reload'],
   components: {},
   data() {
@@ -124,9 +104,6 @@ export default {
       showDetail: false,
       reply: '',
       selectData: {},
-      showReplyModalVisible: false,
-      replyContent: "",
-      selectedRecord: null,
     }
   },
   mounted() {
@@ -139,13 +116,12 @@ export default {
     },
     loadNeed: function () {
       data.length = 0;
-      getReport({mode:1}).then((res)=>{
+      getReport({mode:2}).then((res)=>{
         console.log(res);
         let d = res.data.reports;
         console.log(d);
         for (let i = 0; i < d.length; i++) {
           data.push({
-            id: d[i].id,
             content: d[i].content,
             user: d[i].user.user_name,
             date: d[i].date,
@@ -179,43 +155,11 @@ export default {
       })
       this.reload();
     },
-    handleProcess(id) {
-       this.selectedRecord = id;
-      this.replyContent = "";
-      this.showReplyModalVisible = true;
-      console.log("处理举报信息:", record);
-    },
-    handleReplyOk() {
-      if (!this.replyContent) {
-        // 可以添加提示信息
-        console.log("请输入回复内容");
-        return;
-      }
-      replyFeedback({
-        id: this.selectedRecord,
-        judgment: this.replyContent,
-      })
-        .then(() => {
-          console.log("回复成功");
-          this.showReplyModalVisible = false;
-          this.loadNeed();
-        })
-        .catch((error) => {
-          console.error("回复失败", error);
-        });
-    },
-    handleReplyCancel() {
-      this.showReplyModalVisible = false;
-    },
-    deleteComment(commentId) {
-      deleteCommentApi(commentId)
-        .then(() => {
-          console.log("评论删除成功");
-          this.loadNeed();
-        })
-        .catch((error) => {
-          console.error("删除评论失败", error);
-        });
+    checkFeedback(record) {
+      console.log(record)
+      console.log(record.name)
+      this.showDetail = true;
+      this.selectData = record;
     },
   }
 }

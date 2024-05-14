@@ -51,17 +51,6 @@ const options = {
                             name: '用户列表',
                             component: () => import('@/pages/form/advance/UserForm'),
                         },
-                        // {
-                        //     path: 'ExpertCertificate',
-                        //     name: '专家认证审核',
-                        //     component: () => import('../pages/expert-certificate/ExpertList')
-                        // },
-
-                        // {
-                        //     path: 'EnterpriseCertificate',
-                        //     name: '企业认证审核',
-                        //     component: () => import('../pages/enterprise-certificate/EnterpriseList')
-                        // },
                     ]
                 }, 
 
@@ -86,8 +75,30 @@ const options = {
 
                 //     ]
                 // },
+                // {
+                //     path: 'result',
+                //     name: '文献管理',
+                //     meta: {
+                //         icon: 'profile'
+                //     },
+                //     component: PageView,
+                //     children: [
+                //         {
+                //             path: 'resultList',
+                //             name: '文献列表',
+                //             component: () => import('@/pages/form/advance/reportsForm'),
+                //         },
+                //         // {
+                //         //     path: 'chengguoCertificate',
+                //         //     name: '成果审核',
+                //         //     component: () => import('@/pages/chengguo-certificate/ChengguoList'),
+                //         // }
+
+                //     ]
+                // },
+                
                 {
-                    path: 'result',
+                    path: 'commentReport',
                     name: '文献管理',
                     meta: {
                         icon: 'profile'
@@ -95,34 +106,12 @@ const options = {
                     component: PageView,
                     children: [
                         {
-                            path: 'resultList',
+                            path: 'list',
                             name: '文献列表',
-                            component: () => import('@/pages/form/advance/reportsForm'),
-                        },
-                        // {
-                        //     path: 'chengguoCertificate',
-                        //     name: '成果审核',
-                        //     component: () => import('@/pages/chengguo-certificate/ChengguoList'),
-                        // }
-
+                            component: () => import('@/pages/list/search/ArticleList'),
+                        },           
                     ]
                 },
-                
-                // {
-                //     path: 'commentReport',
-                //     name: '举报审核',
-                //     meta: {
-                //         icon: 'profile'
-                //     },
-                //     component: PageView,
-                //     children: [
-                //         {
-                //             path: 'list',
-                //             name: '举报列表',
-                //             component: () => import('@/pages/list/search/ArticleList'),
-                //         },           
-                //     ]
-                // },
                 // {
                 //     path: 'NeedOrder',
                 //     name: "需求订单管理",
@@ -148,8 +137,13 @@ const options = {
                     children: [
                         {
                             path: 'reportsList',
-                            name: '举报列表',
+                            name: '未处理',
                             component: () => import('../pages/feedback/feedbackList')
+                        },
+                        {
+                            path: 'handledReportsList',
+                            name: '已处理',
+                            component: () => import('../pages/feedback/handledfeedbackList')
                         }
                     ]
                 },
