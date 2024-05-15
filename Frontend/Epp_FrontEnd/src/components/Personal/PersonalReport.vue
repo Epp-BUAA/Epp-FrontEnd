@@ -1,28 +1,39 @@
 <template>
   <div>
-    <h1 class='reportTitle'>综述报告</h1>
-    <table>
-      <thead>
-        <tr>
-          <th>标题</th>
-          <!-- <th>摘要</th> -->
-          <th>日期</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="document in documents" :key="document.report_id">
-          <td><a href="#" @click="viewReport(document.report_id)">{{ document.title }}</a></td>
-          <!-- <td>{{ document.title }}</td> -->
-          <!-- <td>{{ truncateAbstract(document.abstract, 100) }}</td> -->
-          <td>{{ document.date }}</td>
-          <td><a href="#" @click="deleteReport(document.report_id)">删除</a></td> <!-- 删除链接 -->
-        </tr>
-      </tbody>
-    </table>
-    <div v-if="totalPages > 1" class="pagination">
-      <button v-for="page in totalPages" :key="page" @click="changePage(page)" :class="{ active: currentPage === page }">{{ page }}</button>
-    </div>
+    <el-row>
+      <el-col :span="24">
+        <h1 class='reportTitle'>综述报告</h1>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="24">
+        <el-card class="table-card">
+          <el-table :data="displayedDocuments" style="width: 100%" :default-sort = "{prop: 'date', order: 'descending'}">
+            <el-table-column prop="title" label="报告标题" align="center">
+              <template slot-scope="scope">
+                <el-link class="report-link" :underline="false" @click="viewReport(scope.row.report_id)" type="primary">{{ scope.row.title }}</el-link>
+              </template>
+            </el-table-column>
+            <el-table-column prop="date" label="生成时间" align="center" sortable></el-table-column>
+            <el-table-column label="操作" align="center">
+              <template slot-scope="scope">
+                <el-button type="primary" size="small" icon="el-icon-delete" @click="deleteReport(scope.row.report_id)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-pagination
+      v-if="totalPages > 1"
+      background
+      style="margin-top: 10px;"
+      @current-change="changePage"
+      :current-page="currentPage"
+      :page-size="itemsPerPage"
+      layout="prev, pager, next"
+      :total="totalRecords">
+    </el-pagination>
   </div>
 </template>
 
@@ -40,12 +51,17 @@ export default {
     return {
       documents: [],
       currentPage: 1,
-      totalPages: 1,
-      itemsPerPage: 10,
+      itemsPerPage: 6,
       report_id: ''
     }
   },
   computed: {
+    totalPages () {
+      return Math.ceil(this.documents.length / this.itemsPerPage)
+    },
+    totalRecords () {
+      return this.documents.length
+    },
     displayedDocuments () {
       const start = (this.currentPage - 1) * this.itemsPerPage
       const end = start + this.itemsPerPage
@@ -58,6 +74,9 @@ export default {
         this.documents = []
         var res = (await fetchReports()).data
         console.log(res)
+        res.reports.sort((a, b) => {
+          return new Date(b.data) - new Date(a.date)
+        })
         this.documents = res.reports
       } catch (error) {
         console.log('error')
@@ -122,38 +141,17 @@ export default {
   margin-bottom: 20px;
   color:rgb(18, 19, 18);
 }
-table {
-  width: 100%;
-  border-collapse: collapse;
+.table-card {
+  border-radius: 12px;
 }
 
-th{
-  border: 1px solid rgb(75, 168, 245);
-  padding: 8px;
-  text-align: left;
-  font-size:18px;
-  background: rgb(75, 168, 245);
+/*链接样式*/
+.report-link {
+  color: #409EFE;
+  text-decoration: none;
 }
-
-/* 鼠标悬停时的样式 */
-tr:hover {
-  background-color: #f5f5f5;
-}
-
-/* 分页样式 */
-.pagination {
-  margin-top: 20px;
-}
-
-.pagination button {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  padding: 5px 10px;
-  margin-right: 5px;
-  cursor: pointer;
-}
-
-.pagination button:hover {
-  background-color: #f5f5f5;
+.report-link:hover {
+  opacity: 0.8;
+  text-decoration: none;
 }
 </style>

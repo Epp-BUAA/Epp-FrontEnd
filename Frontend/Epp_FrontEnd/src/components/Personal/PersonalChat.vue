@@ -1,30 +1,57 @@
 <template>
-  <div class="collections">
-    <h1 class="chatTitle">AI对话</h1>
-    <table>
-      <thead>
-        <tr>
-          <th>标题</th>
-          <th>得分</th>
-          <th>日期</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="document in documents" :key="document.file_reading_id">
-          <td><router-link :to="{name: 'paper-reader', params: {paper_id: document.paper_id}, query: {fileReadingID: document.file_reading_id}}">{{ document.paper_title }}</router-link></td>
-          <td>{{ document.paper_score }}</td>
-          <!-- <td>{{ truncateAbstract(document.abstract, 100) }}</td> -->
-          <td>{{ document.date }}</td>
-           <td><a href="#" @click="deleteDocument(document.paper_id)">删除</a></td> <!-- 删除链接 -->
-        </tr>
-      </tbody>
-    </table>
-    <div v-if="totalPages > 1" class="pagination">
-      <button v-for="page in totalPages" :key="page" @click="changePage(page)" :class="{ active: currentPage === page }">{{ page }}</button>
+    <div class="collections">
+      <el-row>
+        <el-col :span="24">
+          <h1 class="chatTitle">AI对话</h1>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <el-card class="table-card">
+          <el-table :data="displayedDocuments" style="width: 100%" :default-sort = "{prop: 'date', order: 'descending'}">
+            <el-table-column prop="paper_title" label="论文标题" width="400">
+              <template slot-scope="scope">
+                <router-link class="paper-link" :to="{ name: 'paper-reader', params: { paper_id: scope.row.paper_id }, query: { fileReadingID: scope.row.file_reading_id }}">
+                  {{ scope.row.paper_title }}
+                </router-link>
+              </template>
+            </el-table-column>
+            <el-table-column prop="paper_score" label="论文评分" align="center" sortable>
+              <template slot-scope="scope">
+                <el-rate
+                v-model="scope.row.paper_score"
+                disabled
+                text-color="#409EFE"
+                score-template="{value}">
+                </el-rate>
+              </template>
+            </el-table-column>
+            <el-table-column prop="date" label="研读时间" align="center" sortable></el-table-column>
+            <el-table-column label="操作" align="center">
+              <template slot-scope="scope">
+                <el-button type="primary" icon="el-icon-delete" size="small" @click="deleteDocument(scope.row.paper_id)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <el-pagination
+            v-if="totalPages > 1"
+            background
+            style="margin-top: 10px;"
+            @current-change="changePage"
+            :current-page="currentPage"
+            :page-size="itemsPerPage"
+            layout="prev, pager, next"
+            :total="totalDocuments">
+          </el-pagination>
+        </el-col>
+      </el-row>
     </div>
-  </div>
-</template>
+  </template>
 
 <script>
 import { fetchChat, deleteChat } from '@/request/userRequest.js'
@@ -33,11 +60,16 @@ export default {
     return {
       documents: [],
       currentPage: 1,
-      totalPages: 1,
       itemsPerPage: 10
     }
   },
   computed: {
+    totalDocuments () {
+      return this.documents.length
+    },
+    totalPages () {
+      return Math.ceil(this.totalDocuments / this.itemsPerPage)
+    },
     displayedDocuments () {
       const start = (this.currentPage - 1) * this.itemsPerPage
       const end = start + this.itemsPerPage
@@ -48,7 +80,11 @@ export default {
     async fetchDocuments () {
       try {
         var res = (await fetchChat()).data
+        res.paper_reading_list.sort((a, b) => {
+          return new Date(b.date) - new Date(a.date)
+        })
         this.documents = res.paper_reading_list
+        this.totalDocuments = res.total
       } catch (error) {
         console.log('error')
       }
@@ -91,38 +127,18 @@ export default {
   margin-bottom: 20px;
   color:rgb(18, 19, 18);
 }
-table {
-  width: 100%;
-  border-collapse: collapse;
+
+.table-card {
+  border-radius: 12px;
+}
+/*链接样式*/
+.paper-link {
+  color: #409EFE;
+  text-decoration: none;
+}
+.paper-link:hover {
+  opacity: 0.8;
+  text-decoration: none;
 }
 
-th{
-  border: 1px solid rgb(75, 168, 245);
-  padding: 8px;
-  text-align: left;
-  font-size:18px;
-  background: rgb(75, 168, 245);
-}
-
-/* 鼠标悬停时的样式 */
-tr:hover {
-  background-color: #f5f5f5;
-}
-
-/* 分页样式 */
-.pagination {
-  margin-top: 20px;
-}
-
-.pagination button {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  padding: 5px 10px;
-  margin-right: 5px;
-  cursor: pointer;
-}
-
-.pagination button:hover {
-  background-color: #f5f5f5;
-}
 </style>

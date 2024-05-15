@@ -65,4 +65,17 @@ export default {
   padding: 20px;
   overflow: auto; /* 如果内容过多，添加滚动条 */
 }
+.personal::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%; /* 占据底部1/3高度 */
+  background-image: url('../../assets/personal-back.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  z-index: -1; /* 确保背景图片在内容后面 */
+}
 </style>

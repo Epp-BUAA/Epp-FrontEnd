@@ -1,27 +1,39 @@
 <template>
   <div>
-    <h1 class='searchTitle'>搜索记录</h1>
-    <table>
-      <thead>
-        <tr>
-          <th>关键词</th>
-          <th>日期</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="document in documents" :key="document.search_record_id
-">
-          <td><router-link :to="{name: 'search-results', query: {searchRecordID: document.search_record_id}}">{{ document.keyword }}</router-link></td>
-          <!-- <td>{{ document.title }}</td> -->
-          <td>{{ document.date }}</td>
-          <td><a href="#" @click="deleteReport(document.search_record_id)">删除</a></td> <!-- 删除链接 -->
-        </tr>
-      </tbody>
-    </table>
-    <div v-if="totalPages > 1" class="pagination">
-      <button v-for="page in totalPages" :key="page" @click="changePage(page)" :class="{ active: currentPage === page }">{{ page }}</button>
-    </div>
+    <el-row>
+      <el-col :span="24">
+        <h1 class='searchTitle'>搜索记录</h1>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="24">
+        <el-card class="table-card">
+          <el-table :data="displayedDocuments" style="width: 100%" :default-sort = "{prop: 'date', order: 'descending'}">
+            <el-table-column prop="keyword" label="关键词" align="center">
+              <template slot-scope="scope">
+                <router-link class="search-link" :to="{ name: 'search-results', query: { searchRecordID: scope.row.search_record_id }}">{{ scope.row.keyword }}</router-link>
+              </template>
+            </el-table-column>
+            <el-table-column prop="date" label="搜索时间" align="center" sortable></el-table-column>
+            <el-table-column label="操作" align="center">
+              <template slot-scope="scope">
+                <el-button type="primary" icon="el-icon-delete" size="small" @click="deleteReport(scope.row.search_record_id)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-pagination
+      v-if="totalPages > 1"
+      background
+      style="margin-top: 10px;"
+      @current-change="changePage"
+      :current-page="currentPage"
+      :page-size="itemsPerPage"
+      layout="prev, pager, next"
+      :total="totalRecords">
+    </el-pagination>
   </div>
 </template>
 
@@ -32,12 +44,17 @@ export default {
     return {
       documents: [],
       currentPage: 1,
-      totalPages: 1,
-      itemsPerPage: 10,
+      itemsPerPage: 6,
       report_id: ''
     }
   },
   computed: {
+    totalPages () {
+      return Math.ceil(this.documents.length / this.itemsPerPage)
+    },
+    totalRecords () {
+      return this.documents.length
+    },
     displayedDocuments () {
       const start = (this.currentPage - 1) * this.itemsPerPage
       const end = start + this.itemsPerPage
@@ -49,6 +66,9 @@ export default {
       try {
         this.documents = []
         var res = (await fetchSearchHistory()).data
+        res.keywords.sort((a, b) => {
+          return new Date(b.date) - new Date(a.date)
+        })
         this.documents = res.keywords
       } catch (error) {
         console.log(error)
@@ -89,38 +109,17 @@ export default {
   margin-bottom: 20px;
   color:rgb(18, 19, 18);
 }
-table {
-  width: 100%;
-  border-collapse: collapse;
+.table-card {
+  border-radius: 12px;
 }
 
-th{
-  border: 1px solid rgb(75, 168, 245);
-  padding: 8px;
-  text-align: left;
-  font-size:18px;
-  background: rgb(75, 168, 245);
+/*链接样式*/
+.search-link {
+  color: #409EFE;
+  text-decoration: none;
 }
-
-/* 鼠标悬停时的样式 */
-tr:hover {
-  background-color: #f5f5f5;
-}
-
-/* 分页样式 */
-.pagination {
-  margin-top: 20px;
-}
-
-.pagination button {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  padding: 5px 10px;
-  margin-right: 5px;
-  cursor: pointer;
-}
-
-.pagination button:hover {
-  background-color: #f5f5f5;
+.search-link:hover {
+  opacity: 0.8;
+  text-decoration: none;
 }
 </style>

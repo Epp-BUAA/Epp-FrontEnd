@@ -1,34 +1,60 @@
 <template>
   <div class="collections">
-    <h1 class="noticesTitle">通知消息</h1>
-    <div  class="unread">未读消息总数：{{ unreadSum }}</div>
-    <table>
-      <thead>
-        <tr>
-          <th>标题</th>
-          <th>日期</th>
-          <th>状态</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="notification in notifications" :key="notification.notification_id">
-          <td><a href="#" @click="showModal(notification)">{{ notification.title }}</a></td>
-          <!-- <td>{{ document.title }}</td> -->
-          <td>{{ notification.date }}</td>
-          <td>
-            <b-form-checkbox v-model="notification.is_read" switch @change="toggleRead(notification)"></b-form-checkbox>
-          </td>
-           <td><a href="#" @click="deleteDocument(notification.notification_id)">删除</a></td> <!-- 删除链接 -->
-        </tr>
-      </tbody>
-    </table>
-    <div v-if="totalPages > 1" class="pagination">
-      <button v-for="page in totalPages" :key="page" @click="changePage(page)" :class="{ active: currentPage === page }">{{ page }}</button>
-    </div>
-     <b-modal v-model="modalShow" title="消息内容">
-      <p>{{ selectedNotification.content }}</p>
-    </b-modal>
+    <el-row>
+      <el-col :span="24">
+        <h1 class="noticesTitle">通知消息</h1>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="24">
+        <el-card class="table-card">
+          <div class="table-header">
+            <div v-if="unreadSum > 0" class="unread">你还有{{ unreadSum }}条未读消息！</div>
+            <div v-else class="unread">暂时没有未读消息啦~</div>
+            <!-- 选择全部或者未读/已读 -->
+            <el-radio-group v-model="showMode" @change="changeTable" class="radio-group">
+              <el-radio-button label="1">全部</el-radio-button>
+              <el-radio-button label="2">未读</el-radio-button>
+            </el-radio-group>
+          </div>
+          <el-table :data="displayedNotifications" style="width: 100%" :default-sort = "{prop: 'date', order: 'descending'}">
+            <el-table-column prop="title" label="通知标题">
+              <template slot-scope="scope">
+                <el-link class="notice-link" :underline="false" type="primary" @click="showModal(scope.row)">{{ scope.row.title }}</el-link>
+              </template>
+            </el-table-column>
+            <el-table-column prop="date" label="日期" align="center" sortable></el-table-column>
+            <el-table-column label="状态" align="center">
+              <template slot-scope="scope">
+                <el-tag v-if="scope.row.is_read" type="success">已读</el-tag>
+                <el-tag v-else type="danger">未读</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" align="center">
+              <template slot-scope="scope">
+                <el-button-group>
+                  <el-button type="primary" size="small" icon="el-icon-check" @click="toggleRead(scope.row)"></el-button>
+                  <el-button type="primary" size="small" icon="el-icon-delete" @click="deleteNotification(scope.row.notification_id)"></el-button>
+                </el-button-group>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-pagination
+      v-if="totalPages > 1"
+      background
+      style="margin-top: 10px;"
+      @current-change="changePage"
+      :current-page="currentPage"
+      :page-size="itemsPerPage"
+      layout="prev, pager, next"
+      :total="totalRecords">
+    </el-pagination>
+    <el-dialog :visible.sync="modalShow" title="消息内容">
+      <p class="notice-content">{{ selectedNotification.content }}</p>
+    </el-dialog>
   </div>
 </template>
 
@@ -38,19 +64,26 @@ export default {
   data () {
     return {
       notifications: [],
+      allNotifications: [],
       currentPage: 1,
-      totalPages: 1,
-      itemsPerPage: 10,
+      itemsPerPage: 6,
       unreadSum: 0,
       modalShow: false,
-      selectedNotification: {}
+      selectedNotification: {},
+      showMode: '1'
     }
   },
   computed: {
-    displayedDocuments () {
+    totalRecords () {
+      return this.notifications.length
+    },
+    totalPages () {
+      return Math.ceil(this.totalRecords / this.itemsPerPage)
+    },
+    displayedNotifications () {
       const start = (this.currentPage - 1) * this.itemsPerPage
       const end = start + this.itemsPerPage
-      return this.documents.slice(start, end)
+      return this.notifications.slice(start, end)
     }
   },
   methods: {
@@ -60,7 +93,12 @@ export default {
         if (id === 2) {
           console.log(2)
           var res = (await fetchNotification({params})).data
+          // 按照date排序
+          res.notifications.sort((a, b) => {
+            return new Date(b.date) - new Date(a.date)
+          })
           this.notifications = res.notifications
+          this.allNotifications = res.notifications
         } else {
           console.log(id)
           res = (await fetchNotification({params})).data
@@ -105,6 +143,18 @@ export default {
     toggleRead (notification) {
       notification.is_read = true
       this.read(notification.notification_id)
+      this.$notify({
+        title: '成功',
+        message: '消息标记为已读！',
+        type: 'success'
+      })
+    },
+    changeTable () {
+      if (this.showMode === '1') {
+        this.notifications = this.allNotifications
+      } else {
+        this.notifications = this.allNotifications.filter(item => !item.is_read)
+      }
     }
   },
   mounted () {
@@ -123,38 +173,38 @@ export default {
   margin-bottom: 20px;
   color:rgb(18, 19, 18);
 }
-table {
-  width: 100%;
-  border-collapse: collapse;
+.table-card {
+  border-radius: 12px;
 }
 
-th{
-  border: 1px solid rgb(75, 168, 245);
-  padding: 8px;
-  text-align: left;
-  font-size:18px;
-  background: rgb(75, 168, 245);
+/*链接样式*/
+.notice-link {
+  color: #409EFE;
+  text-decoration: none;
 }
-
-/* 鼠标悬停时的样式 */
-tr:hover {
-  background-color: #f5f5f5;
+.notice-link:hover {
+  opacity: 0.8;
+  text-decoration: none;
 }
-
-/* 分页样式 */
-.pagination {
-  margin-top: 20px;
+/*消息弹窗*/
+/deep/ .el-dialog{
+  border-radius: 12px;
 }
-
-.pagination button {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  padding: 5px 10px;
-  margin-right: 5px;
-  cursor: pointer;
+.notice-content{
+  font-size: 16px;
+  font-weight: bold;
 }
-
-.pagination button:hover {
-  background-color: #f5f5f5;
+/*未读消息*/
+.unread{
+  font-size: 18px;
+  font-weight: bold;
+  color:rgb(18, 19, 18);
+}
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 10px;
+  padding-right: 50px;
 }
 </style>

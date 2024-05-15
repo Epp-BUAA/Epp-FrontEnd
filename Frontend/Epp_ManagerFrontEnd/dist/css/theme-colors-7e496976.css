@@ -1135,6 +1135,8 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper,li.an
 #nprogress .bar[data-v-04b61512]{background:#13c2c2}
 #nprogress .peg[data-v-04b61512]{-webkit-box-shadow:0 0 10px #13c2c2,0 0 5px #13c2c2;box-shadow:0 0 10px #13c2c2,0 0 5px #13c2c2}
 #nprogress .spinner-icon[data-v-04b61512]{border-top-color:#13c2c2;border-left-color:#13c2c2}
+.bottom-section[data-v-29abb781],.top-section[data-v-29abb781]{-webkit-box-shadow:0 2px 4px rgba(0,0,0,.1);box-shadow:0 2px 4px rgba(0,0,0,.1)}
+.bottom-section[data-v-29abb781]{background-color:#fff}
 .beauty-scroll[data-v-206e07da]{scrollbar-color:#13c2c2 #b5f5ec}
 .beauty-scroll[data-v-206e07da]::-webkit-scrollbar-thumb{background:#13c2c2}
 .beauty-scroll[data-v-206e07da]::-webkit-scrollbar-track{-webkit-box-shadow:inset 0 0 1px rgba(0,0,0,0);background:#87e8de}

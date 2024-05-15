@@ -2,21 +2,41 @@
   <div class="sidebar">
     <h1>个人中心</h1>
     <ul>
-      <li @click="selectTab('personal')">我的信息</li>
-      <li @click="selectTab('ai')">AI对话</li>
-      <li @click="selectTab('search')">搜索记录</li>
-      <li @click="selectTab('reports')">我的报告</li>
-      <li @click="selectTab('collections')">收藏夹</li>
-      <li @click="selectTab('notices')">消息通知</li>
+      <li
+        v-for="tab in tabs"
+        :key="tab.name"
+        @click="selectTab(tab.name)"
+        :class="{ active: selectedTab === tab.name }"
+        >
+        <span class="icon" v-if="tab.icon_off">
+          <img v-if="selectedTab === tab.name" :src="tab.icon_on" alt="icon" width="20" height="20" />
+          <img v-else :src="tab.icon_off" alt="icon" width="20" height="20" />
+        </span>
+        <span class="label">{{ tab.label }}</span>
+      </li>
     </ul>
   </div>
 </template>
 
 <script>
 export default {
+  data () {
+    return {
+      selectedTab: 'personal',
+      tabs: [
+        { name: 'personal', label: '我的信息', icon_off: require('@/assets/icon/personal-off.svg'), icon_on: require('@/assets/icon/personal-on.svg') },
+        { name: 'ai', label: 'AI对话', icon_off: require('@/assets/icon/ai-off.svg'), icon_on: require('@/assets/icon/ai-on.svg') },
+        { name: 'search', label: '搜索记录', icon_off: require('@/assets/icon/search-off.svg'), icon_on: require('@/assets/icon/search-on.svg') },
+        { name: 'reports', label: '综述报告', icon_off: require('@/assets/icon/reports-off.svg'), icon_on: require('@/assets/icon/reports-on.svg') },
+        { name: 'collections', label: '收藏夹', icon_off: require('@/assets/icon/collections-off.svg'), icon_on: require('@/assets/icon/collections-on.svg') },
+        { name: 'notices', label: '消息通知', icon_off: require('@/assets/icon/notices-off.svg'), icon_on: require('@/assets/icon/notices-on.svg') }
+      ]
+    }
+  },
   methods: {
     selectTab (tabName) {
       this.$emit('tabSelected', tabName) // 发送事件通知父组件选中了哪个选项
+      this.selectedTab = tabName // 更新当前选中的选项
     }
   }
 }
@@ -26,7 +46,6 @@ export default {
 .sidebar {
   width: 150px;
   height:100%;
-  background-color: white;
   border-radius: 15px;
 }
 
@@ -36,7 +55,7 @@ export default {
   margin-bottom: 20px; /* 与导航栏之间的间距 */
   border-bottom: 1px solid #ccc; /* 添加底部边框 */
   font-size: 30px;
-  color:#206af3;
+  color:#409EFF;
 }
 
 .sidebar ul {
@@ -46,27 +65,41 @@ export default {
 }
 
 .sidebar li {
-  color: aliceblue;
+  display: flex;
+  align-items: center;
   padding: 10px;
   cursor: pointer;
-  background: #2a98f1;
-  transition: background-color 0.3s, border-color 0.3s; /* 添加border-color的过渡效果 */
-  border: 1px solid #156dd1; /* 初始状态下边框透明 */
-  border-radius: 15px;
+  transition: box-shadow 0.3s, transform 0.3s; /* 添加border-color的过渡效果 */
+  border-radius: 12px;
 }
 
 .sidebar li:hover {
-  background-color: #2427ec; /* 鼠标悬停时的背景色 */
-  border-color: #0400ff; /* 鼠标悬停时的边框颜色 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  position: relative;
+  z-index: 1;
 }
 
-.sidebar li:active {
-  background-color: #007bff; /* 当前选项的背景色 */
-  color: black; /* 当前选项的文字颜色 */
-  border-color: #007bff; /* 当前选项的边框颜色 */
+.sidebar li.active {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  position: relative;
+  z-index: 1;
 }
 
 .sidebar li:not(:last-child) {
   margin-bottom: 18px; /* 选项之间的间距 */
+}
+
+.label {
+  transition: font-size 0.3s;
+}
+
+.sidebar li.active .label{
+  font-size: 20px; /* 选中时的字体大小 */
+}
+
+.icon {
+  margin-right: 3px;
 }
 </style>
