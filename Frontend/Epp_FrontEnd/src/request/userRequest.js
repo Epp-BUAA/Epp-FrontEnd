@@ -23,6 +23,16 @@ export const login = async (params) => {
   }
 }
 
+export const logout = async () => {
+  try {
+    const response = api.get('logout')
+    console.log(response)
+    return response
+  } catch (error) {
+    throw new Error(error.response.data.message)
+  }
+}
+
 export const register = async (params) => {
   try {
     console.log(params)

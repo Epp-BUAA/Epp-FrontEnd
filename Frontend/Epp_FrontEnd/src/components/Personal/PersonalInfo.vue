@@ -2,7 +2,9 @@
   <div class="profile">
     <el-card class="user-info">
       <el-card class="inside-card">
-        <img class="avatar" :src="path" alt="User Avatar">
+        <button class="avatar-button" @click="showAvatarUpload">
+          <img class="avatar" :src="path" alt="User Avatar">
+        </button>
         <div class="text-container">
           <p>{{ greeting }} ，{{ username }}！</p>
         </div>
@@ -10,7 +12,7 @@
     </el-card>
     <el-card class="other-info">
       <div class="other-text">
-        <el-statistic title="登录时间">
+        <el-statistic title="注册时间">
           <template slot="formatter">
             <i
               class="el-icon-stopwatch"
@@ -36,6 +38,21 @@
         </el-statistic>
       </div>
     </el-card>
+    <el-dialog
+      title="上传头像"
+      :visible.sync="avatarUploadVisible"
+      width="20%">
+      <el-upload
+        class="avatar-uploader"
+        action="https://epp.buaase.cn/api/userInfo/avatar"
+        name="avatar"
+        with-credentials="true"
+        :show-file-list="false"
+        :on-success="handleAvatarSuccess"
+        :before-upload="beforeAvatarUpload">
+        <i v-if="!imgUrl" class="el-icon-plus avatar-uploader-icon"></i>
+      </el-upload>
+    </el-dialog>
   </div>
 </template>
 
@@ -49,7 +66,9 @@ export default {
       loginTime: '2024-04-24 10:00:00',
       favorites: 10,
       likes: 20,
-      greeting: '你好'
+      greeting: '你好',
+      avatarUploadVisible: false,
+      imageUrl: ''
     }
   },
   methods: {
@@ -80,6 +99,30 @@ export default {
         console.log(error)
         console.log('getUserInfoError')
       }
+    },
+    showAvatarUpload () {
+      this.avatarUploadVisible = true
+    },
+    handleAvatarSuccess (res, file) {
+      this.path = 'https://epp.buaase.cn' + res.avatar
+      this.imageUrl = this.path
+      this.$message({
+        message: '头像上传成功！',
+        type: 'success'
+      })
+      this.avatarUploadVisible = false
+    },
+    beforeAvatarUpload (file) {
+      const isPhoto = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isPhoto) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!')
+      }
+      return isPhoto && isLt2M
     }
   },
   mounted () {
@@ -110,6 +153,11 @@ export default {
   background-position: center;
 }
 
+.avatar-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
 .avatar {
   width: 100px; /* 设置头像的宽度 */
   height: 100px; /* 设置头像的高度 */
@@ -165,5 +213,27 @@ export default {
   display: flex;
   justify-content: space-around;
   width: 800px;
+}
+.avatar-uploader {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader:hover {
+    border-color: #409EFF;
+}
+.avatar-uploader-icon {
+  font-size: 40px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+/deep/ .el-dialog {
+  border-radius: 12px;
+  opacity: 0.9;
 }
 </style>

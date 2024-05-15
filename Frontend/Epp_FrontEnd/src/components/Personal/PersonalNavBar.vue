@@ -14,11 +14,15 @@
         </span>
         <span class="label">{{ tab.label }}</span>
       </li>
+      <li class="logout" @click="logout">
+        <span class="label">退出登录</span>
+      </li>
     </ul>
   </div>
 </template>
 
 <script>
+import { logout } from '@/request/userRequest.js';
 export default {
   data () {
     return {
@@ -37,6 +41,15 @@ export default {
     selectTab (tabName) {
       this.$emit('tabSelected', tabName) // 发送事件通知父组件选中了哪个选项
       this.selectedTab = tabName // 更新当前选中的选项
+    },
+    logout () {
+      logout().then(() => {
+        this.$router.push('/dashboard')
+        this.$message({
+          message: '成功登出！',
+          type: 'success'
+        })
+      })
     }
   }
 }
@@ -101,5 +114,11 @@ export default {
 
 .icon {
   margin-right: 3px;
+}
+.logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 </style>
