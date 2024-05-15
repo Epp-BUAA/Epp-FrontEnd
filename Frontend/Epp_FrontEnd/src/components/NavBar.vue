@@ -26,7 +26,22 @@ export default {
   data () {
     return {
       isTop: true,
-      selectedTab: 'search'
+      selectedTab: ''
+    }
+  },
+  watch: {
+    $route (to, from) {
+      if (to.path.includes('/search')) {
+        this.selectedTab = 'search'
+      } else if (to.path.includes('/upload')) {
+        this.selectedTab = 'upload'
+      } else if (to.path.includes('/personal')) {
+        this.selectedTab = 'personal'
+      } else if (to.path.includes('/aboutus')) {
+        this.selectedTab = 'aboutus'
+      } else {
+        this.selectedTab = ''
+      }
     }
   },
   mounted () {
