@@ -97,6 +97,11 @@ export default {
         var data = {paper_ids}
         var res = (await deleteChat({data}))
         console.log(res)
+        this.$notify({
+          title: '成功',
+          message: '删除对话历史成功！',
+          type: 'success'
+        })
       } catch (error) {
         console.log('error')
       }

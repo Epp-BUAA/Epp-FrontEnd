@@ -90,6 +90,11 @@ export default {
       try {
         var res = (await deleteReport({data}))
         console.log(res)
+        this.$notify({
+          title: '成功',
+          message: '删除综述报告成功！',
+          type: 'success'
+        })
       } catch (error) {
         console.log('error')
       }
@@ -110,7 +115,11 @@ export default {
         .replace(/<h2>/g, '<h3>').replace(/<\/h2>/g, '</h3>')
         .replace(/<h1>/g, '<h2>').replace(/<\/h1>/g, '</h2>')
       try {
-        html2pdf().from(replacedHtmlContent).set({ margin: [15, 20, 20, 20] }).toPdf().save('report.pdf')
+        const pdf = html2pdf().from(replacedHtmlContent).set({ margin: [15, 20, 20, 20] })
+        pdf.toPdf().get('pdf').then(function (pdfDocument) {
+          const blob = pdfDocument.output('bloburl')
+          window.open(blob, '_blank')
+        })
       } catch (error) {
         console.log('markdown2pdf error')
         console.log(error)

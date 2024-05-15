@@ -107,6 +107,11 @@ export default {
         var res = await deleteCollectedPapers({data})
         console.log(res)
         this.paper_ids = []
+        this.$notify({
+          title: '成功',
+          message: '删除收藏记录成功！',
+          type: 'success'
+        })
       } catch (error) {
         console.log('error')
       }

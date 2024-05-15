@@ -80,6 +80,11 @@ export default {
       try {
         var res = (await deleteSearchHistory({data}))
         console.log(res)
+        this.$notify({
+          title: '成功',
+          message: '删除搜索记录成功！',
+          type: 'success'
+        })
       } catch (error) {
         console.log('error')
       }

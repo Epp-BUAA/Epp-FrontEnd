@@ -34,7 +34,7 @@
               <template slot-scope="scope">
                 <el-button-group>
                   <el-button type="primary" size="small" icon="el-icon-check" @click="toggleRead(scope.row)"></el-button>
-                  <el-button type="primary" size="small" icon="el-icon-delete" @click="deleteNotification(scope.row.notification_id)"></el-button>
+                  <el-button type="primary" size="small" icon="el-icon-delete" @click="deleteDocument(scope.row.notification_id)"></el-button>
                 </el-button-group>
               </template>
             </el-table-column>
@@ -116,6 +116,11 @@ export default {
         var data = {notification_ids}
         var res = await deleteNotification({data})
         console.log(res)
+        this.$notify({
+          title: '成功',
+          message: '删除消息成功！',
+          type: 'success'
+        })
       } catch (error) {
         console.log('error:deleteNotification')
       }
