@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { logout } from '@/request/userRequest.js';
+import { logout } from '@/request/userRequest.js'
 export default {
   data () {
     return {
