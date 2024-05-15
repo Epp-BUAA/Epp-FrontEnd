@@ -120,7 +120,7 @@ export default {
             .logo2 {
                 width: 100%;
                 height: 100%;
-                background: url('@/assets/logo.png') no-repeat center/120%;
+                background: url('@/assets/login-logo.png') no-repeat center/120%;
             }
         }
         .login {

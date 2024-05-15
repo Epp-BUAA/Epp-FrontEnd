@@ -10,3 +10,13 @@ export const userLogin = ({ username, password }) => {
         }
     })
 }
+
+export const getUserProfile = (username) => {
+    return request({
+        method: 'get',
+        url: '/api/manage/userProfile',
+        params: {
+            username: username
+        }
+    })
+}

@@ -22,7 +22,7 @@
                     <span>用户管理</span>
                 </el-menu-item>
                 <el-menu-item index="/paper">
-                    <el-icon><i-ep-notebook /></el-icon>
+                    <el-icon><i-ep-document /></el-icon>
                     <span>论文管理</span>
                 </el-menu-item>
                 <el-menu-item index="/report">

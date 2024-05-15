@@ -10,7 +10,7 @@
                     </div>
                 </template>
                 <!-- 统计数字框 -->
-                <div style="width: 100%; overflow: hidden">
+                <div style="width: 100%; overflow: hidden; padding: 0 2%">
                     <div class="number-box">
                         <!-- 用户个数 -->
                         <svg
@@ -102,26 +102,29 @@
             </div>
             <!-- 搜索框 -->
             <div class="user-manage-search">
-                <el-input v-model="input" style="width: 20vw" placeholder="输入用户名" clearable />这是搜索框
+                <el-input v-model="input" style="width: 18vw" placeholder="输入用户名" clearable />
+                <el-button type="primary">搜索</el-button>
             </div>
             <!-- 表格内容 -->
             <div class="user-manage-table">
                 <el-table
                     :data="userList"
                     stripe
+                    :default-sort="{ prop: 'registration_date', order: 'descending' }"
                     style="width: 94%; border-top: 1px solid #edebeb"
+                    size="large"
                     v-loading="isLoading"
                 >
                     <el-table-column label="序号" width="300" type="index"> </el-table-column>
                     <el-table-column label="用户名" prop="username"></el-table-column>
-                    <el-table-column label="注册时间" prop="register_time"></el-table-column>
+                    <el-table-column label="注册时间" prop="registration_date" sortable></el-table-column>
                     <el-table-column label="操作" width="200">
                         <template #default="{ row }">
-                            <el-button circle plain type="primary" @click="onEditChannel(row)">
+                            <el-button circle plain type="danger" @click="handleEdit(row)">
                                 <el-icon><i-ep-Edit></i-ep-Edit></el-icon>
                             </el-button>
-                            <el-button circle plain type="danger" @click="onDelChannel(row)">
-                                <el-icon><i-ep-delete></i-ep-delete></el-icon
+                            <el-button circle plain type="success" @click="handleView(row)">
+                                <el-icon><i-ep-view></i-ep-view></el-icon
                             ></el-button>
                         </template>
                     </el-table-column>
@@ -130,39 +133,69 @@
                     </template>
                 </el-table>
             </div>
+            <!-- 用户资料 -->
+            <el-dialog v-model="userProfile.visible" width="40vw">
+                <UserProfile :username="userProfile.username"></UserProfile>
+            </el-dialog>
+            <!-- 分页组件 -->
+            <el-pagination
+                class="user-manage-pagination"
+                v-model:current-page="currentPage"
+                v-model:page-size="pageSize"
+                :page-sizes="[10, 20, 50, 100]"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="totalItem"
+            />
         </div>
     </div>
 </template>
 
 <script>
 import { getCurrentInstance, onMounted, ref } from 'vue'
+import UserProfile from './UserProfile.vue'
 
 export default {
-    components: {},
+    components: {
+        UserProfile
+    },
     props: {},
     data() {
         return {
-            isClsActive: '1',
-            userList: [
+            isClsActive: ref('1'), //折叠框
+            userProfile: ref({
+                visible: false,
+                username: 'Ank'
+            }),
+            input: ref(''), // 用户搜索框信息
+            isLoading: ref(false),
+            userList: ref([
                 {
                     username: 'lalala',
-                    register_time: '2024-4-15'
+                    registration_date: '2024-6-15 12:01:69'
                 },
                 {
                     username: 'sanyue',
-                    register_time: '2024-4-17'
+                    registration_date: '2024-4-17 08:02:44'
                 },
                 {
-                    username: 'test',
-                    register_time: '2024-5-15'
+                    username: '11test',
+                    registration_date: '2024-4-15 20:17:06'
                 }
-            ],
-            input: ref('')
+            ]),
+            username: ref(''),
+            // 分页
+            totalItem: ref(1000), // 数据总数
+            currentPage: ref(1), // 分页当前页
+            pageSize: ref(10) // 分页大小
         }
     },
     watch: {},
     computed: {},
-    methods: {},
+    methods: {
+        handleView() {
+            this.userProfile.visible = true
+        }
+    },
     setup() {
         let internalInstance = getCurrentInstance()
         let echarts = internalInstance.appContext.config.globalProperties.$echarts
@@ -193,7 +226,7 @@ export default {
                 xAxis: [
                     {
                         type: 'category',
-                        data: ['2023-12', '2024-1', '2024-2', '2024-3', '2024-4', '2024-5', '2024-6'],
+                        data: ['2023-11', '2023-12', '2024-1', '2024-2', '2024-3', '2024-4', '2024-5', '2024-6'],
                         axisPointer: {
                             type: 'shadow'
                         }
@@ -233,7 +266,7 @@ export default {
                         itemStyle: {
                             color: '#077aea'
                         },
-                        data: [2, 4, 7, 23, 25, 76, 13, 16, 3, 2, 6, 3]
+                        data: [1, 2, 4, 7, 23, 25, 76, 13, 16, 3, 2, 6, 3]
                     },
                     {
                         name: '平台用户总数',
@@ -247,7 +280,7 @@ export default {
                         itemStyle: {
                             color: '#e87d04'
                         },
-                        data: [2, 2, 3, 5, 6, 10, 20, 23, 25, 40, 50, 61]
+                        data: [1, 2, 2, 3, 5, 6, 10, 20, 23, 25, 40, 50, 61]
                     }
                 ]
             }
@@ -274,9 +307,9 @@ export default {
 .number-box {
     float: left;
     width: 22%;
-    height: 15vh;
+    height: 14vh;
     margin-left: 1%;
-    margin-right: 2%;
+    margin-right: 1%;
     margin-bottom: 2%;
     margin-top: 1%;
     box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.2);
@@ -290,21 +323,21 @@ export default {
         float: right;
         width: 60%;
         height: 100%;
-        margin: 0 auto;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
 
         .number-box-title {
+            flex: 2;
             font-size: 21px;
             font-weight: bold;
             padding: 5%;
             border-bottom: 1px solid black;
         }
         .number-box-digit {
-            height: 55%;
-            margin-top: 10%;
+            flex: 3;
+            margin-top: 5%;
             font-weight: 500;
             font-size: 21px;
         }
@@ -336,8 +369,8 @@ export default {
 }
 .user-manage-container {
     margin-top: 2vh;
-    height: 100%;
     background-color: white;
+    overflow: hidden;
     .user-manage-search {
         float: right;
         height: 8vh;
@@ -348,6 +381,11 @@ export default {
         display: flex;
         justify-content: center;
         width: 100%;
+    }
+    .user-manage-pagination {
+        height: 10vh;
+        margin-right: 3%;
+        float: right;
     }
 }
 </style>
