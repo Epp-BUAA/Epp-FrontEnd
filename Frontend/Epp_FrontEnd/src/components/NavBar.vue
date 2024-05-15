@@ -1,14 +1,10 @@
 <template>
-  <el-menu class="navbar has-shadow" role="navigation" aria-label="" style="position: fixed; width: 100%; top: 0;">
+  <el-menu class="navbar has-shadow" :class="{ 'trans-menu': isTop }" role="navigation" aria-label="" style="position: fixed; width: 100%; top: 0;">
     <div class="container">
       <div class="navbar-brand">
         <a href="" class="navbar-item">
-          <span style="margin-left: 10px">Epp</span>
-        </a>
-        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false">
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
+          <img src="../../static/favicon.png" alt="Epp" width="30" height="30">
+          <span style="margin-left: 10px">EPP</span>
         </a>
       </div>
 
@@ -26,10 +22,35 @@
 
 <script>
 export default {
-  name: 'NavBar'
+  name: 'NavBar',
+  data () {
+    return {
+      isTop: true
+    }
+  },
+  mounted () {
+    window.addEventListener('scroll', this.handleScroll)
+  },
+  destroyed () {
+    window.removeEventListener('scroll', this.handleScroll)
+  },
+  methods: {
+    handleScroll () {
+      this.isTop = window.scrollY === 0
+    }
+  }
 }
 </script>
 
 <style scoped>
 @import "../../static/css/bulma.css";
+.trans-menu {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+.navbar-item {
+  /* 正常状态下的样式 */
+  background-color: transparent; /* 设置背景颜色 */
+  transition: background-color 0.3s; /* 添加过渡效果 */
+}
 </style>
