@@ -1,6 +1,6 @@
 <template>
 <div class="documentMan">
-   <h1 class="documentManTitle">论文上传</h1>
+   <h1 class="documentManTitle">全文解读</h1>
   <div class="uploadDo">
     <!-- <h1 class="uploadTitle">上传文献</h1> -->
     <!-- <input type="file" @change="handleFileUpload" accept=".pdf,.doc,.docx" lang="zh-CN" title="选择文件"> -->

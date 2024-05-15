@@ -2,7 +2,7 @@
     <div class="collections">
       <el-row>
         <el-col :span="24">
-          <h1 class="chatTitle">AI对话</h1>
+          <h1 class="chatTitle">研读历史</h1>
         </el-col>
       </el-row>
       <el-row>
@@ -11,25 +11,24 @@
           <el-table :data="displayedDocuments" v-loading="loading" style="width: 100%" :default-sort = "{prop: 'date', order: 'descending'}">
             <el-table-column prop="paper_title" label="论文标题" width="400">
               <template slot-scope="scope">
-                <router-link class="paper-link" :to="{ name: 'paper-reader', params: { paper_id: scope.row.paper_id }, query: { fileReadingID: scope.row.file_reading_id }}">
+                <router-link v-if="scope.row.mode === 1" class="paper-link" :to="{ name: 'paper-reader', params: { paper_id: scope.row.paper_id }, query: { fileReadingID: scope.row.file_reading_id }}">
+                  {{ scope.row.paper_title }}
+                </router-link>
+                <router-link v-else class="paper-link" :to="{ name: 'localPaper-reader', params: { paper_id: scope.row.paper_id }, query: { fileReadingID: scope.row.file_reading_id }}">
                   {{ scope.row.paper_title }}
                 </router-link>
               </template>
             </el-table-column>
-            <el-table-column prop="paper_score" label="论文评分" align="center" sortable>
+            <el-table-column prop="mode" label="类型" align="center" width="100">
               <template slot-scope="scope">
-                <el-rate
-                v-model="scope.row.paper_score"
-                disabled
-                text-color="#409EFE"
-                score-template="{value}">
-                </el-rate>
+                <el-tag v-if="scope.row.mode === 1" type="success">在线</el-tag>
+                <el-tag v-else type="warning">上传</el-tag>
               </template>
             </el-table-column>
             <el-table-column prop="date" label="研读时间" align="center" sortable></el-table-column>
             <el-table-column label="操作" align="center">
               <template slot-scope="scope">
-                <el-button type="primary" icon="el-icon-delete" size="small" @click="deleteDocument(scope.row.paper_id)">删除</el-button>
+                <el-button type="primary" icon="el-icon-delete" size="small" @click="deleteDocument(scope.row.mode, scope.row.paper_id)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -60,7 +59,7 @@ export default {
     return {
       documents: [],
       currentPage: 1,
-      itemsPerPage: 10,
+      itemsPerPage: 6,
       loading: true
     }
   },
@@ -91,12 +90,12 @@ export default {
         console.log('error')
       }
     },
-    async deleteDocument (id) {
+    async deleteDocument (mode, id) {
       try {
         // eslint-disable-next-line camelcase
         var paper_ids = []
         paper_ids.push(id)
-        var data = {paper_ids}
+        var data = {mode, paper_ids}
         var res = (await deleteChat({data}))
         console.log(res)
         this.$notify({
