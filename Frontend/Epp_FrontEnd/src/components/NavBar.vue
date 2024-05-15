@@ -10,10 +10,10 @@
 
       <div class="navbar-menu">
         <div class="navbar-start">
-          <router-link to="/search" class="navbar-item">文献调研</router-link>
-          <router-link to="/upload" class="navbar-item">论文上传</router-link>
-          <router-link to="/aboutus" class="navbar-item">关于我们</router-link>
-          <router-link to="/personal" class="navbar-item">个人中心</router-link>
+          <router-link to="/search" class="navbar-item" :class="{ 'selected-tab': selectedTab === 'search'}" @click.native="selectTab('search', $event)">文献调研</router-link>
+          <router-link to="/upload" class="navbar-item" :class="{ 'selected-tab': selectedTab === 'upload'}" @click.native="selectTab('upload', $event)">论文上传</router-link>
+          <router-link to="/aboutus" class="navbar-item" :class="{ 'selected-tab': selectedTab === 'aboutus'}" @click.native="selectTab('aboutus', $event)">关于我们</router-link>
+          <router-link to="/personal" class="navbar-item" :class="{ 'selected-tab': selectedTab === 'personal'}" @click.native="selectTab('personal', $event)">个人中心</router-link>
         </div>
       </div>
     </div>
@@ -25,7 +25,8 @@ export default {
   name: 'NavBar',
   data () {
     return {
-      isTop: true
+      isTop: true,
+      selectedTab: 'search'
     }
   },
   mounted () {
@@ -37,6 +38,10 @@ export default {
   methods: {
     handleScroll () {
       this.isTop = window.scrollY === 0
+    },
+    selectTab (tabName, event) {
+      this.selectedTab = tabName
+      event.target.blur()
     }
   }
 }
@@ -49,8 +54,21 @@ export default {
   box-shadow: none !important;
 }
 .navbar-item {
-  /* 正常状态下的样式 */
+  margin-top: 2px;
   background-color: transparent; /* 设置背景颜色 */
-  transition: background-color 0.3s; /* 添加过渡效果 */
+  transition: box-shadow 0.3s, transform 0.3s, color 0.3s, font-size 0.3s; /* 添加过渡效果 */
+  border-radius: 12px;
+  text-decoration: none;
+}
+.navbar-item:hover {
+  text-decoration: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  position: relative;
+  z-index: 1;
+}
+.selected-tab {
+  color: #485fc7;
+  font-size: 20px;
 }
 </style>
