@@ -2,6 +2,7 @@
   <div>
     <!--<search-form />-->
     <a-card :bordered="false">
+      <a-spin :spinning="loading">
       <a-list
         item-layout="vertical"
         size="large"
@@ -10,16 +11,28 @@
       >
         <a-list-item slot="renderItem" key="item.title" slot-scope="item">
           <template slot="actions">
-            <span @click="handleShow(item.id, item.type)">
+            <span>
               <a-icon type="star-o" style="margin-right: 8px" />
               {{ item.startext }}
             </span>
-            <span @click="handleShow(item.id, item.type)">
+            <span>
+              <a-icon type="eye" style="margin-right: 8px" />
+              {{ item.read }}
+            </span>
+            <span>
               <a-icon type="like-o" style="margin-right: 8px" />
               {{ item.liketext }}
             </span>
-            <span @click="handleShow(item.id, item.type)">
-              <a-icon type="message" style="margin-right: 8px" />
+            <span>
+              <a-icon type="download" style="margin-right: 8px" />
+              {{ item.download }}
+            </span>
+            <span>
+              <a-icon type="fire" style="margin-right: 8px" />
+              {{ item.score }}
+            </span>
+            <span >
+              <a-icon type="clock-circle" style="margin-right: 8px" />
               {{ item.messagetext }}
             </span>
           </template>
@@ -31,48 +44,25 @@
             align="end"
             style="margin-right:20px;"
           >
-            <a-row>
-              <a-col :span="24">
-                <a-button
-                  type="primary"
-                  style="width: 80px"
-                  @click="handleShow(item.id, item.type)"
-                >
-                  查看
-                </a-button>
-              </a-col>
-            </a-row>
-
-            <a-row>
-              <a-col :span="24">
-                <a-popconfirm
-                  title="确定要删除论文解读吗？"
-                  ok-text="确定"
-                  cancel-text="取消"
-                  @confirm="handleDelete(item.id, item.type)"
-                >
-                  <a-button type="danger" style="width: 80px"> 删除</a-button>
-                </a-popconfirm>
-              </a-col>
-            </a-row>
           </a-space>
-          <a-Modal v-model="showDetail" title="" @ok="handleOk" width="750px">
-            <PaperCard v-if="showDetail" v-bind="post" />
-          </a-Modal>
 
-          <a-list-item-meta :description="item.description">
-            <a slot="title" :href="item.href">{{ item.title }}</a>
-            <a-avatar slot="avatar" :src="item.avatar" />
-          </a-list-item-meta>
-
+          <a-list-item-meta >
+            <a slot="title" :href="item.href">
+    <a-icon type="book" style="margin-right: 8px;" /> <!-- 使用 margin-right 添加图标和标题之间的间距 -->
+    {{ item.title }}
+  </a>
+          </a-list-item-meta> 
           <a
-            style="display:block"
-            class="textbreak"
-            href="javascript:void(0)"
-            @click="handleShow(item.id, item.type)"
-            >{{item.content|ellipsis}}           </a>
+  style="display: block"
+  class="textbreak"
+  href="javascript:void(0)"
+>
+  <a-icon type="user" style="margin-right: 8px;" /> <!-- 使用 margin-right 添加图标和文本之间的间距 -->
+  {{ item.content | ellipsis }}
+</a>
         </a-list-item>
       </a-list>
+      </a-spin>
     </a-card>
   </div>
 </template>
@@ -81,8 +71,7 @@
 // import SearchForm from "./SearchForm";
 import editor from "@/pages/components/editor/editor.vue";
 import PaperCard from "./paperCard";
-import { getReports, InterpretationIdReq } from "@/services/paper";
-
+import { getWorkAll} from '../../../services/work';
 const listData = [];
 
 export default {
@@ -99,7 +88,7 @@ export default {
   components: { PaperCard, editor},
   data() {
     return {
-      loading: true,
+       loading: false, 
       pageIndex: 1,
       data: [],
       totalCnt: 1,
@@ -117,57 +106,17 @@ export default {
       pagination: {
         onChange: (page) => {
           console.log(page);
+          this.handlePageChange(page)
         },
-        pageSize: 10,
+        current: 1, // 设置当前页
+        total: 0,   // 总条目数
+        pageSize: 5,
       },
-      // actions: [
-      //   { type: "star-o", text: "" },
-      //   { type: "like-o", text: "" },
-      //   { type: "message", text: "" },
-      // ],
       actions: [
         { type: "star-o", text: "" },
         { type: "like-o", text: "" },
         { type: "message", text: "" },
       ],
-      conjectureRule: {
-        content: [{ required: true, message: "请填写内容", trigger: "blur" }],
-      },
-      evidenceRule: {
-        content: [{ required: true, message: "请填写内容", trigger: "blur" }],
-        citation: [
-          { required: true, message: "请填写参考文献", trigger: "blur" },
-        ],
-        published_year: [
-          {
-            validator: (rule, value, callback) => {
-              if (!value) {
-                callback(new Error("请输入文献年份"));
-              } else {
-                callback();
-              }
-            },
-          },
-        ],
-      },
-      interpretationRule: {
-        content: [{ required: true, message: "请填写内容", trigger: "blur" }],
-        title: [{ required: true, message: "请填写标题", trigger: "blur" }],
-        citation: [
-          { required: true, message: "请填写参考文献", trigger: "blur" },
-        ],
-        published_year: [
-          {
-            validator: (rule, value, callback) => {
-              if (!value) {
-                callback(new Error("请输入文献年份"));
-              } else {
-                callback();
-              }
-            },
-          },
-        ],
-      },
     };
   },
 
@@ -176,121 +125,58 @@ export default {
   },
 
   methods: {
-    ToText(HTML) {
-      var input = HTML;
-      return input
-        .replace(/<(style|script|iframe)[^>]*?>[\s\S]+?<\/\1\s*>/gi, "")
-        .replace(/<[^>]+?>/g, "")
-        .replace(/\s+/g, " ")
-        .replace(/ /g, " ")
-        .replace(/>/g, " ");
-    },
     init: async function() {
       this.loadPost();
     },
-    handleShow: function(id, type) {
-      InterpretationIdReq(id, type, "get")
-        .then((res) => {
-          // console.log(res)
-          this.post = {
-            id: res.data.id,
-            creator: res.data.created_by,
-            kind: type,
-            source: res.data.source,
-            citation: res.data.citation,
-            title: res.data.title,
-            createAt: res.data.created_at,
-            content: res.data.content,
-            tags: res.data.tags,
-            isLike: res.data.is_like,
-            isCollect: res.data.is_favor,
-            likeNumber: res.data.like_num,
-            favorNumber: res.data.favor_num,
-            commentNum: res.data.commentNum,
-            publishedYear: res.data.published_year,
-          };
-          this.postType = type;
-          this.showDetail = true;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    handlePageChange(page) {
+      this.pagination.current = page;
+      this.loadPost();
     },
-    handleOk(e) {
-      console.log(e);
-      this.showDetail = false;
-    },
-    getSimpleText: function(html) {
-      var re1 = new RegExp("<.+?>", "g"); //匹配html标签的正则表达式，"g"是搜索匹配多个符合的内容
-      var msg = html.replace(re1, ""); //执行替换成空字符
-      return msg;
-    },
-    loadPost: function() {
+    loadPost: async function() {
       this.loading = true;
-      var params = {mode :1}
-      getReports({params})
-      listData.push({
-                href: "javascript:0",
-                title: 'jjjj',
-                avatar:
-                //  " http://122.9.14.73:8000/api/" + res.data[i].userpic,
-                  // " http://127.0.0.1:8000/api/" + res.data[i].userpic,
-                  " http://116.63.14.146:8000/api/",
-
-                description:
-                 'bbbb',
-                content: 'cccc',
-                startext: 'a',
-                liketext: 'e',
-                messagetext: 'dd',
-                id: 'dd',
-                type: 1,
-              });
-    },
-    handleDelete: function(id, type) {
-      InterpretationIdReq(id, type, "delete")
-        .then((res) => {
-          this.pageIndex = 1;
-          this.loadPost();
-          this.$message.success("成功删除", 3);
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-
-    handleModifyPost: function(id, type) {
-      InterpretationIdReq(id, type, "get")
-        .then((res) => {
-          this.post = res.data;
-          this.postType = type;
-          this.showModify = true;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-
-    handleSubmit: function(name) {
-      if (name == "interpretation") {
-        const params = {
-          title: this.post.title,
-          content: this.post.content,
-          citation: this.post.citation,
-          source: this.post.source,
-          published_year: this.post.published_year,
-        };
-        InterpretationIdReq(this.post.id, this.postType, "put", params)
-          .then((res) => {
-            this.$Message.info("成功修改");
-            this.pageIndex = 1;
-            this.loadPost();
-            console.log(res);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+      var params={
+                  keyword:"",
+                  page_num:this.pagination.current,
+                  page_size:this.pagination.pageSize,
+              }
+        console.log("size")
+        console.log(params)
+        try{
+        await getWorkAll({params}).then((oriRes) => {
+        console.log(oriRes)
+        console.log('response')
+        console.log(oriRes);
+        let res = oriRes.data
+        console.log(res);
+        listData.length=0;
+        this.pagination.total = res.total; 
+        // this.listData = {};
+        console.log('length')
+        console.log(res.papers.length)
+        for (let i = 0; i < res.papers.length; i++) {
+            listData.push({
+                 id:res.papers[i].paper_id,
+                 href: "javascript:0",
+                 title:res.papers[i].title,
+                 content:res.papers[i].authors[1],
+                 messagetext:res.papers[i].publication_date,
+                //  description:res.papers[i].journal,
+                //  citation:res.papers[i].citation_count,
+                 read:res.papers[i].read_count,
+                 liketext:res.papers[i].like_count,
+                 startext:res.papers[i].collect_count,
+                 download:res.papers[i].download_count,
+                 score:res.papers[i].score,
+                });
+        }
+      })} catch (error) {
+        console.error("Failed to load data:", error);
+      } finally {
+        console.log('listData')
+      console.log(listData)
+      console.log('over')
+        console.log('加载完成')
+        this.loading = false;  // 请求完成后设置 loading 状态为 false
       }
     },
   },
