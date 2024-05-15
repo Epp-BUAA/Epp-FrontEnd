@@ -8,7 +8,7 @@
     <el-row>
       <el-col :span="24">
         <el-card class="table-card">
-          <el-table :data="displayedDocuments" style="width: 100%" :default-sort = "{prop: 'date', order: 'descending'}">
+          <el-table :data="displayedDocuments" v-loading="loading" style="width: 100%" :default-sort = "{prop: 'date', order: 'descending'}">
             <el-table-column prop="title" label="报告标题" align="center">
               <template slot-scope="scope">
                 <el-link class="report-link" :underline="false" @click="viewReport(scope.row.report_id)" type="primary">{{ scope.row.title }}</el-link>
@@ -52,7 +52,8 @@ export default {
       documents: [],
       currentPage: 1,
       itemsPerPage: 6,
-      report_id: ''
+      report_id: '',
+      loading: true
     }
   },
   computed: {
@@ -78,6 +79,7 @@ export default {
           return new Date(b.data) - new Date(a.date)
         })
         this.documents = res.reports
+        this.loading = false
       } catch (error) {
         console.log('error')
       }

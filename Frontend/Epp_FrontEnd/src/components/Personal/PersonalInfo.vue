@@ -74,6 +74,12 @@ export default {
   methods: {
     async getUserInfo () {
       try {
+        const loading = this.$loading({
+          lock: true,
+          text: '客官别急，正在加载中...',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0)'
+        })
         console.log('getuserinformation')
         var res = (await fetchUserInfo()).data
         console.log(res)
@@ -95,6 +101,7 @@ export default {
         } else {
           this.greeting = '🌃夜深了'
         }
+        loading.close()
       } catch (error) {
         console.log(error)
         console.log('getUserInfoError')

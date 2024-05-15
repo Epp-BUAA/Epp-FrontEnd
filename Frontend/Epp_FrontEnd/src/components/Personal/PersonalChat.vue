@@ -8,7 +8,7 @@
       <el-row>
         <el-col :span="24">
           <el-card class="table-card">
-          <el-table :data="displayedDocuments" style="width: 100%" :default-sort = "{prop: 'date', order: 'descending'}">
+          <el-table :data="displayedDocuments" v-loading="loading" style="width: 100%" :default-sort = "{prop: 'date', order: 'descending'}">
             <el-table-column prop="paper_title" label="论文标题" width="400">
               <template slot-scope="scope">
                 <router-link class="paper-link" :to="{ name: 'paper-reader', params: { paper_id: scope.row.paper_id }, query: { fileReadingID: scope.row.file_reading_id }}">
@@ -60,7 +60,8 @@ export default {
     return {
       documents: [],
       currentPage: 1,
-      itemsPerPage: 10
+      itemsPerPage: 10,
+      loading: true
     }
   },
   computed: {
@@ -85,6 +86,7 @@ export default {
         })
         this.documents = res.paper_reading_list
         this.totalDocuments = res.total
+        this.loading = false
       } catch (error) {
         console.log('error')
       }

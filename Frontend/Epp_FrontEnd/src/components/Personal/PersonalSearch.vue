@@ -8,7 +8,7 @@
     <el-row>
       <el-col :span="24">
         <el-card class="table-card">
-          <el-table :data="displayedDocuments" style="width: 100%" :default-sort = "{prop: 'date', order: 'descending'}">
+          <el-table :data="displayedDocuments" v-loading="loading" style="width: 100%" :default-sort = "{prop: 'date', order: 'descending'}">
             <el-table-column prop="keyword" label="关键词" align="center">
               <template slot-scope="scope">
                 <router-link class="search-link" :to="{ name: 'search-results', query: { searchRecordID: scope.row.search_record_id }}">{{ scope.row.keyword }}</router-link>
@@ -45,7 +45,8 @@ export default {
       documents: [],
       currentPage: 1,
       itemsPerPage: 6,
-      report_id: ''
+      report_id: '',
+      loading: true
     }
   },
   computed: {
@@ -70,6 +71,7 @@ export default {
           return new Date(b.date) - new Date(a.date)
         })
         this.documents = res.keywords
+        this.loading = false
       } catch (error) {
         console.log(error)
       }

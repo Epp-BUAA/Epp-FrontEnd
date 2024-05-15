@@ -8,7 +8,7 @@
     <el-row>
       <el-col :span="24">
         <el-card class="table-card">
-          <el-table :data="displayedDocuments" style="width: 100%" :default-sort = "{prop: 'publication_date', order: 'descending'}">
+          <el-table :data="displayedDocuments" v-loading="loading" style="width: 100%" :default-sort = "{prop: 'publication_date', order: 'descending'}">
             <el-table-column prop="title" label="论文标题" width="300">
               <template slot-scope="scope">
                 <router-link class="collection-link" :to="{ name: 'paper-info', params: { paper_id: scope.row.paper_id }}">{{ scope.row.title }}</router-link>
@@ -65,7 +65,8 @@ export default {
       documents: [{paper_id: '0000f570-04bc-49fa-b2d4-56447ca1bd9b', title: 'Quantization of Deep Neural Networks for Accurate Edge Computing', score: '9', author: 'Wentao Chen', date: '2021-04-25', abstract: 'Deep neural networks (DNNs) have demonstrated their great potential in recent\nyears, exceeding the per-formance of human experts in a wide range of\napplications. Due to their large sizes, however, compressiontechniques such as\nweight quantization and pruning are usually applied before they can be\naccommodated onthe edge. It is generally believed that quantization leads to\nperformance degradation, and plenty of existingworks have explored quantization\nstrategies aiming at minimum accuracy loss. In this paper, we argue\nthatquantization, which essentially imposes regularization on weight\nrepresentations, can sometimes help toimprove accuracy. We conduct\ncomprehensive experiments on three widely used applications: fully con-nected\nnetwork (FCN) for biomedical image segmentation, convolutional neural network\n(CNN) for imageclassification on ImageNet, and recurrent neural network (RNN)\nfor automatic speech recognition, and experi-mental results show that\nquantization can improve the accuracy by 1%, 1.95%, 4.23% on the three\napplicationsrespectively with 3.5x-6.4x memory reduction.\n'},
         {paper_id: 'f570111-04bc-49fa-b2d4-56447ca1bd9b', title: 'Quantization of Deep Neural Networks for Accurate Edge Computing', score: '9', author: 'Wentao Chen', date: '2021-04-25', abstract: 'Deep neural networks (DNNs) have demonstrated their great potential in recent\nyears, exceeding the per-formance of human experts in a wide range of\napplications. Due to their large sizes, however, compressiontechniques such as\nweight quantization and pruning are usually applied before they can be\naccommodated onthe edge. It is generally believed that quantization leads to\nperformance degradation, and plenty of existingworks have explored quantization\nstrategies aiming at minimum accuracy loss. In this paper, we argue\nthatquantization, which essentially imposes regularization on weight\nrepresentations, can sometimes help toimprove accuracy. We conduct\ncomprehensive experiments on three widely used applications: fully con-nected\nnetwork (FCN) for biomedical image segmentation, convolutional neural network\n(CNN) for imageclassification on ImageNet, and recurrent neural network (RNN)\nfor automatic speech recognition, and experi-mental results show that\nquantization can improve the accuracy by 1%, 1.95%, 4.23% on the three\napplicationsrespectively with 3.5x-6.4x memory reduction.\n'}],
       currentPage: 1,
-      itemsPerPage: 4
+      itemsPerPage: 4,
+      loading: true
     }
   },
   computed: {
@@ -94,6 +95,7 @@ export default {
           return new Date(b.publication_date) - new Date(a.publication_date)
         })
         this.documents = res.papers
+        this.loading = false
       } catch (error) {
         console.log(error.message)
       }
