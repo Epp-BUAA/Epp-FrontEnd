@@ -11,15 +11,29 @@
                 </div>
                 <div class="base-info-userid">
                     <el-icon><i-ep-UserFilled /></el-icon>
-                    <span>{{ userProfile.user_id }}</span>
+                    <span style="margin-left: 2%">{{ userProfile.user_id }}</span>
                 </div>
                 <div class="base-info-date">
                     <el-icon><i-ep-Calendar /></el-icon>
-                    <span>{{ userProfile.registration_date }}</span>
+                    <span style="margin-left: 2%">{{ userProfile.registration_date }}</span>
                 </div>
             </div>
         </div>
-        <div class="lower-box"></div>
+
+        <div class="lower-box">
+            <div class="statistic-card">
+                <div class="statistic-title">收藏文献</div>
+                <div class="statistic-content">{{ userProfile.collected_papers_cnt }}</div>
+            </div>
+            <div class="statistic-card">
+                <div class="statistic-title">点赞文献</div>
+                <div class="statistic-content">{{ userProfile.liked_papers_cnt }}</div>
+            </div>
+            <div class="statistic-card">
+                <div class="statistic-title">上传文件</div>
+                <div class="statistic-content">{{ userProfile.documents_cnt }}</div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -48,12 +62,11 @@ export default {
     watch: {},
     computed: {},
     methods: {},
-    async created() {
+    async updated() {
         await getUserProfile(this.$props.username)
             .then((response) => {
                 this.userProfile = response.data
                 this.userProfile.avatar = serverURL + this.userProfile.avatar
-                console.log(this.userProfile)
             })
             .catch((error) => {
                 ElMessage.error(error.response.data.message)
@@ -74,18 +87,18 @@ export default {
     align-items: center;
     height: 60%;
     .avatar-box {
-        flex: 1;
+        flex: 2;
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100%;
         .avatar {
-            height: 85%;
+            height: 70%;
             width: 80%;
         }
     }
     .base-info {
-        flex: 1;
+        flex: 3;
         height: 100%;
         .base-info-username {
             height: 30%;
@@ -96,19 +109,42 @@ export default {
         }
         .base-info-userid {
             display: flex;
-            flex-direction: row;
             align-items: center;
         }
         .base-info-date {
             display: flex;
-            flex-direction: row;
             align-items: center;
             height: 20%;
         }
     }
 }
 .lower-box {
-    height: 40%;
-    background-color: pink;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 30%;
+    .statistic-card {
+        // flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0 8%;
+        height: 80%;
+        border-right: 1.5px solid rgb(0, 0, 0, 0.2);
+        .statistic-title {
+            flex: 1;
+            font-size: 22px;
+            color: rgb(95, 95, 95);
+        }
+        .statistic-content {
+            flex: 1;
+            font-size: 19px;
+        }
+    }
+    .statistic-card:last-of-type {
+        border-right: none;
+    }
 }
 </style>

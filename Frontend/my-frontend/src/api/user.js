@@ -20,3 +20,15 @@ export const getUserProfile = (username) => {
         }
     })
 }
+
+export const getUserList = ({ keyword, page_num, page_size }) => {
+    return request({
+        method: 'get',
+        url: '/api/manage/users',
+        params: {
+            keyword,
+            page_num,
+            page_size
+        }
+    })
+}

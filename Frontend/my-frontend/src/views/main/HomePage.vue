@@ -1,13 +1,12 @@
 <template>
     <div class="home-page">
-        <div class="test"><DynamicNumber title="帅哥"></DynamicNumber></div>
+        <div class="test"></div>
     </div>
 </template>
 
 <script>
-import DynamicNumber from '@/components/statistic/DynamicNumber.vue'
 export default {
-    components: { DynamicNumber },
+    components: {},
     props: {},
     data() {
         return {}

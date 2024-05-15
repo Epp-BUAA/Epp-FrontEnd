@@ -102,13 +102,13 @@
             </div>
             <!-- 搜索框 -->
             <div class="user-manage-search">
-                <el-input v-model="input" style="width: 18vw" placeholder="输入用户名" clearable />
-                <el-button type="primary">搜索</el-button>
+                <el-input v-model="keyword" style="width: 18vw" placeholder="输入用户名" clearable />
+                <el-button type="primary" @click="handleSearch">搜索</el-button>
             </div>
             <!-- 表格内容 -->
             <div class="user-manage-table">
                 <el-table
-                    :data="userList"
+                    :data="userData.users"
                     stripe
                     :default-sort="{ prop: 'registration_date', order: 'descending' }"
                     style="width: 94%; border-top: 1px solid #edebeb"
@@ -144,7 +144,8 @@
                 v-model:page-size="pageSize"
                 :page-sizes="[10, 20, 50, 100]"
                 layout="total, sizes, prev, pager, next, jumper"
-                :total="totalItem"
+                :total="userData.total"
+                @change="handleSearch"
             />
         </div>
     </div>
@@ -153,6 +154,8 @@
 <script>
 import { getCurrentInstance, onMounted, ref } from 'vue'
 import UserProfile from './UserProfile.vue'
+import { getUserList } from '@/api/user'
+import { ElMessage } from 'element-plus'
 
 export default {
     components: {
@@ -166,34 +169,45 @@ export default {
                 visible: false,
                 username: 'Ank'
             }),
-            input: ref(''), // 用户搜索框信息
+            keyword: ref(''), // 用户搜索框信息
+            keywordBuffer: ref(''),
             isLoading: ref(false),
-            userList: ref([
-                {
-                    username: 'lalala',
-                    registration_date: '2024-6-15 12:01:69'
-                },
-                {
-                    username: 'sanyue',
-                    registration_date: '2024-4-17 08:02:44'
-                },
-                {
-                    username: '11test',
-                    registration_date: '2024-4-15 20:17:06'
-                }
-            ]),
-            username: ref(''),
-            // 分页
-            totalItem: ref(1000), // 数据总数
+            userData: ref({
+                total: 4,
+                users: [],
+                message: '用户列表获取成功'
+            }),
             currentPage: ref(1), // 分页当前页
             pageSize: ref(10) // 分页大小
         }
     },
     watch: {},
     computed: {},
+    mounted() {
+        this.handleSearch()
+    },
     methods: {
-        handleView() {
-            this.userProfile.visible = true
+        handleView(item) {
+            this.userProfile.username = item.username
+            this.$nextTick(() => {
+                this.userProfile.visible = true
+            })
+        },
+        async handleSearch() {
+            this.isLoading = true
+            await getUserList({
+                keyword: this.keyword,
+                page_num: this.currentPage,
+                page_size: this.pageSize
+            })
+                .then((response) => {
+                    this.keywordBuffer = this.keyword
+                    this.userData = response.data
+                })
+                .catch((error) => {
+                    ElMessage.error(error.response.data.message)
+                })
+            this.isLoading = false
         }
     },
     setup() {
