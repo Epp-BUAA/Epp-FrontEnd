@@ -6,9 +6,14 @@
           <img src="../../static/favicon.png" alt="Epp" width="30" height="30">
           <span style="margin-left: 10px">EPP</span>
         </a>
+        <a role="button" class="navbar-burger" :class="{ 'is-active': isMenuActive }" @click="toggleMenu">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
       </div>
 
-      <div class="navbar-menu">
+      <div class="navbar-menu" :class="{ 'is-active': isMenuActive }">
         <div class="navbar-start">
           <router-link to="/search" class="navbar-item" :class="{ 'selected-tab': selectedTab === 'search'}" @click.native="selectTab('search', $event)">文献调研</router-link>
           <router-link to="/upload" class="navbar-item" :class="{ 'selected-tab': selectedTab === 'upload'}" @click.native="selectTab('upload', $event)">全文解读</router-link>
@@ -26,7 +31,8 @@ export default {
   data () {
     return {
       isTop: true,
-      selectedTab: ''
+      selectedTab: '',
+      isMenuActive: false
     }
   },
   watch: {
@@ -57,6 +63,10 @@ export default {
     selectTab (tabName, event) {
       this.selectedTab = tabName
       event.target.blur()
+      this.isMenuActive = false
+    },
+    toggleMenu () {
+      this.isMenuActive = !this.isMenuActive
     }
   }
 }
@@ -86,4 +96,22 @@ export default {
   color: #485fc7;
   font-size: 20px;
 }
+.navbar-burger {
+  display: none;
+}
+
+@media screen and (max-width: 768px) {
+  .navbar-burger {
+    display: block;
+  }
+
+  .navbar-menu {
+    display: none;
+  }
+
+  .navbar-menu.is-active {
+    display: block;
+  }
+}
+
 </style>
