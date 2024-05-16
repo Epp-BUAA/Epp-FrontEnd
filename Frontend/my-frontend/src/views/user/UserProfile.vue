@@ -61,18 +61,25 @@ export default {
     },
     watch: {},
     computed: {},
-    methods: {},
-    async updated() {
-        await getUserProfile(this.$props.username)
-            .then((response) => {
-                this.userProfile = response.data
-                this.userProfile.avatar = serverURL + this.userProfile.avatar
-            })
-            .catch((error) => {
-                ElMessage.error(error.response.data.message)
-            })
+    methods: {
+        async draw() {
+            await getUserProfile(this.$props.username)
+                .then((response) => {
+                    this.userProfile = response.data
+                    this.userProfile.avatar = serverURL + this.userProfile.avatar
+                })
+                .catch((error) => {
+                    ElMessage.error(error.response.data.message)
+                })
+        }
     },
-    mounted() {}
+    created() {},
+    updated() {
+        this.draw()
+    },
+    mounted() {
+        this.draw()
+    }
 }
 </script>
 <style lang="scss" scoped>

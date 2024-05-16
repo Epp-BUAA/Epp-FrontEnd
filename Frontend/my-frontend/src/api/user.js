@@ -32,3 +32,23 @@ export const getUserList = ({ keyword, page_num, page_size }) => {
         }
     })
 }
+
+export const getUserOverviewStatistic = () => {
+    return request({
+        method: 'get',
+        url: '/api/manage/userStatistic',
+        params: {
+            mode: 1
+        }
+    })
+}
+
+export const getUserMonthlyStatistic = () => {
+    return request({
+        method: 'get',
+        url: '/api/manage/userStatistic',
+        params: {
+            mode: 2
+        }
+    })
+}

@@ -45,7 +45,8 @@
                             <span class="number-box-digit"
                                 ><AnimatedNumber
                                     :from="0"
-                                    :to="1000"
+                                    :to="userStatistic.userCnt"
+                                    :key="userStatistic.userCnt"
                                     fromColor="#44cc00"
                                     toColor="#232323"
                                     easing="easeOutQuad"
@@ -76,7 +77,8 @@
                             <span class="number-box-digit"
                                 ><AnimatedNumber
                                     :from="0"
-                                    :to="1000"
+                                    :to="userStatistic.documentCnt"
+                                    :key="userStatistic.documentCnt"
                                     fromColor="#44cc00"
                                     toColor="#232323"
                                     easing="easeOutQuad"
@@ -111,14 +113,16 @@
                     :data="userData.users"
                     stripe
                     :default-sort="{ prop: 'registration_date', order: 'descending' }"
-                    style="width: 94%; border-top: 1px solid #edebeb"
+                    style="width: 94%; border-top: 1px solid #edebeb; font-size: 15px"
                     size="large"
                     v-loading="isLoading"
+                    :header-cell-style="{ 'text-align': 'center' }"
+                    :cell-style="{ 'text-align': 'center' }"
                 >
-                    <el-table-column label="序号" width="300" type="index"> </el-table-column>
+                    <el-table-column label="序号" width="100" type="index"> </el-table-column>
                     <el-table-column label="用户名" prop="username"></el-table-column>
                     <el-table-column label="注册时间" prop="registration_date" sortable></el-table-column>
-                    <el-table-column label="操作" width="200">
+                    <el-table-column label="操作" width="250">
                         <template #default="{ row }">
                             <el-button circle plain type="danger" @click="handleEdit(row)">
                                 <el-icon><i-ep-Edit></i-ep-Edit></el-icon>
@@ -152,9 +156,9 @@
 </template>
 
 <script>
-import { getCurrentInstance, onMounted, ref } from 'vue'
+import { getCurrentInstance, ref } from 'vue'
 import UserProfile from './UserProfile.vue'
-import { getUserList } from '@/api/user'
+import { getUserList, getUserOverviewStatistic, getUserMonthlyStatistic } from '@/api/user'
 import { ElMessage } from 'element-plus'
 
 export default {
@@ -164,27 +168,143 @@ export default {
     props: {},
     data() {
         return {
-            isClsActive: ref('1'), //折叠框
-            userProfile: ref({
+            isClsActive: '1', //折叠框
+            userStatistic: ref({
+                // 统计数字板
+                userCnt: 0,
+                documentCnt: 0
+            }),
+            userProfile: {
+                // 用户详情弹窗
                 visible: false,
                 username: 'Ank'
-            }),
-            keyword: ref(''), // 用户搜索框信息
-            keywordBuffer: ref(''),
-            isLoading: ref(false),
-            userData: ref({
+            },
+            keyword: '', // 用户搜索框信息
+            keywordBuffer: '',
+            isLoading: false,
+            userData: {
                 total: 4,
                 users: [],
                 message: '用户列表获取成功'
-            }),
-            currentPage: ref(1), // 分页当前页
-            pageSize: ref(10) // 分页大小
+            },
+            currentPage: 1, // 分页当前页
+            pageSize: 10 // 分页大小
         }
     },
     watch: {},
     computed: {},
-    mounted() {
-        this.handleSearch()
+    created() {
+        this.handleSearch() // 初始化用户搜索列表
+        getUserOverviewStatistic().then((response) => {
+            this.userStatistic.documentCnt = response.data.document_cnt
+            this.userStatistic.userCnt = response.data.user_cnt
+        })
+    },
+    async mounted() {
+        // 渲染图表
+        let internalInstance = getCurrentInstance()
+        let echarts = internalInstance.appContext.config.globalProperties.$echarts
+        const newUsersChart = echarts.init(document.getElementById('newUsersChart'))
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                        color: '#888'
+                    }
+                }
+            },
+            toolbox: {
+                feature: {
+                    dataView: { show: true, readOnly: false },
+                    magicType: { show: true, type: ['line', 'bar'] },
+                    restore: { show: true },
+                    saveAsImage: { show: true }
+                }
+            },
+            legend: {
+                data: ['用户月增量', '平台用户总数']
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: ['2023-11', '2023-12', '2024-1', '2024-2', '2024-3', '2024-4', '2024-5', '2024-6'],
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    name: '用户月增',
+                    min: 0,
+                    max: 100,
+                    interval: 20,
+                    axisLabel: {
+                        formatter: '{value} 人'
+                    }
+                },
+                {
+                    type: 'value',
+                    name: '用户总数',
+                    min: 0,
+                    max: 25,
+                    interval: 5,
+                    axisLabel: {
+                        formatter: '{value} 人'
+                    }
+                }
+            ],
+            series: [
+                {
+                    name: '用户月增量',
+                    type: 'bar',
+                    tooltip: {
+                        valueFormatter: function (value) {
+                            return value + ' 人'
+                        }
+                    },
+                    itemStyle: {
+                        color: '#077aea'
+                    },
+                    data: [1, 2, 4, 7, 23, 25, 76, 13, 16, 3, 2, 6, 3]
+                },
+                {
+                    name: '平台用户总数',
+                    type: 'line',
+                    yAxisIndex: 1,
+                    tooltip: {
+                        valueFormatter: function (value) {
+                            return value + ' 人'
+                        }
+                    },
+                    itemStyle: {
+                        color: '#e87d04'
+                    },
+                    data: [1, 2, 2, 3, 5, 6, 10, 20, 23, 25, 40, 50, 61]
+                }
+            ]
+        }
+        // 获取实时数据
+        await getUserMonthlyStatistic().then((response) => {
+            console.log(response.data)
+            // 坐标轴设置
+            option.xAxis[0].data = response.data.months
+            option.yAxis[0].max = response.data.user_addition.max
+            option.yAxis[0].interval = option.yAxis[0].max / 5
+            option.yAxis[1].max = response.data.user_total.max
+            option.yAxis[1].interval = option.yAxis[1].max / 5
+            // 数据
+            option.series[0].data = response.data.user_addition.data
+            option.series[1].data = response.data.user_total.data
+        })
+        // 设置实例参数
+        newUsersChart.setOption(option)
+        window.addEventListener('resize', function () {
+            newUsersChart.resize()
+        })
     },
     methods: {
         handleView(item) {
@@ -209,101 +329,6 @@ export default {
                 })
             this.isLoading = false
         }
-    },
-    setup() {
-        let internalInstance = getCurrentInstance()
-        let echarts = internalInstance.appContext.config.globalProperties.$echarts
-
-        onMounted(() => {
-            const newUsersChart = echarts.init(document.getElementById('newUsersChart'))
-            const option = {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: {
-                        type: 'cross',
-                        crossStyle: {
-                            color: '#888'
-                        }
-                    }
-                },
-                toolbox: {
-                    feature: {
-                        dataView: { show: true, readOnly: false },
-                        magicType: { show: true, type: ['line', 'bar'] },
-                        restore: { show: true },
-                        saveAsImage: { show: true }
-                    }
-                },
-                legend: {
-                    data: ['用户月增量', '平台用户总数']
-                },
-                xAxis: [
-                    {
-                        type: 'category',
-                        data: ['2023-11', '2023-12', '2024-1', '2024-2', '2024-3', '2024-4', '2024-5', '2024-6'],
-                        axisPointer: {
-                            type: 'shadow'
-                        }
-                    }
-                ],
-                yAxis: [
-                    {
-                        type: 'value',
-                        name: '用户月增',
-                        min: 0,
-                        max: 100,
-                        interval: 20,
-                        axisLabel: {
-                            formatter: '{value} 人'
-                        }
-                    },
-                    {
-                        type: 'value',
-                        name: '用户总数',
-                        min: 0,
-                        max: 25,
-                        interval: 5,
-                        axisLabel: {
-                            formatter: '{value} 人'
-                        }
-                    }
-                ],
-                series: [
-                    {
-                        name: '用户月增量',
-                        type: 'bar',
-                        tooltip: {
-                            valueFormatter: function (value) {
-                                return value + ' 人'
-                            }
-                        },
-                        itemStyle: {
-                            color: '#077aea'
-                        },
-                        data: [1, 2, 4, 7, 23, 25, 76, 13, 16, 3, 2, 6, 3]
-                    },
-                    {
-                        name: '平台用户总数',
-                        type: 'line',
-                        yAxisIndex: 1,
-                        tooltip: {
-                            valueFormatter: function (value) {
-                                return value + ' 人'
-                            }
-                        },
-                        itemStyle: {
-                            color: '#e87d04'
-                        },
-                        data: [1, 2, 2, 3, 5, 6, 10, 20, 23, 25, 40, 50, 61]
-                    }
-                ]
-            }
-            // 设置实例参数
-            newUsersChart.setOption(option)
-            window.addEventListener('resize', function () {
-                newUsersChart.resize()
-            })
-        })
     }
 }
 </script>
