@@ -1,7 +1,7 @@
 <template>
   <a-card :bordered="false">
     <a-table :data-source="data" :columns="columns">
-      <template slot="operation" slot-scope="text, record">
+      <template slot="operation">
         <div>
           <span>
             <!-- <a @click="checkFeedback(record)" v-if="record.flag==0">回复</a>
@@ -21,7 +21,7 @@
           </span>
         </div>
       </template>
-      <template #expandedRowRender="record" class="ant-table-thead">
+      <template #expandedRowRender="record">
         <p style="margin: 0">
           举报内容：{{ record.content }}
         </p>
