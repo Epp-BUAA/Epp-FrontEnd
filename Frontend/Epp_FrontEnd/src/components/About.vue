@@ -96,9 +96,9 @@ export default {
 .member-photo {
   flex: 1;
   display: flex;
-  //align-items: center;
-  //justify-content: center;
-  //background-color: #f0f0f0; /* 背景色，用于显示图像未覆盖的区域 */
+  /* align-items: center; */
+  /* justify-content: center; */
+  /* background-color: #f0f0f0; 背景色，用于显示图像未覆盖的区域 */
 }
 
 .member-info {

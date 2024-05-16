@@ -1,69 +1,97 @@
 <template>
-  <el-row style="">
-    <!-- 侧边栏 -->
-    <el-col :span="4" type="flex" style="margin-top: 60px; position: sticky; top: 60px">
-      <el-aside style="">
-        <el-form label-position="top">
-          <el-form-item label="年份过滤">
-            <el-select v-model="filterYear" placeholder="请选择年份" @change="applyFilter">
-              <el-option label="所有年份" value=""></el-option>
-              <el-option label="2024年以来" value="2024"></el-option>
-              <el-option label="2022年以来" value="2022"></el-option>
-              <el-option label="2020年以来" value="2020"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="排序方式">
-            <el-select v-model="sortOrder" placeholder="请选择排序方式" @change="applyFilter">
-              <el-option label="时间升序" value="asc"></el-option>
-              <el-option label="时间降序" value="desc"></el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-      </el-aside>
-    </el-col>
-    <el-col :span="12" style="margin-top: 55px;">
-      <el-main>
-        <div style="display: flex; justify-content: right">
-          <el-button type="success" icon="el-icon-download" @click="downloadPapers" size="small">
-            下载文献
-          </el-button>
-          <el-button type="primary" icon="el-icon-document-copy" @click="generateSummaryReport" size="small">
-            生成综述
-          </el-button>
-        </div>
-        <div v-for="paper in filteredPapers" :key="paper.paper_id" style="margin-top: 30px;">
-            <div class="columns is-mobile">
-              <div class="column is-narrow checkbox">
-                <el-checkbox @change="handleCheckboxChange(paper.paper_id)"></el-checkbox>
+  <el-col style="overflow: hidden; height: 100vh">
+    <el-col :span="16" style="margin-top: 80px;" type="flex">
+      <el-row>
+        <el-col :span="18" :offset="1">
+          <search-input />
+        </el-col>
+      </el-row>
+      <el-row style="">
+        <el-col :span="6">
+          <!-- 侧边栏 -->
+          <el-form label-position="top" style="margin-left: 20px;">
+            <el-form-item label="年份过滤">
+              <el-select v-model="filterYear" placeholder="请选择年份" @change="applyFilter">
+                <el-option label="所有年份" value=""></el-option>
+                <el-option label="2024年以来" value="2024"></el-option>
+                <el-option label="2022年以来" value="2022"></el-option>
+                <el-option label="2020年以来" value="2020"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="排序方式">
+              <el-select v-model="sortOrder" placeholder="请选择排序方式" @change="applyFilter">
+                <el-option label="默认排序" value=""></el-option>
+                <el-option label="时间升序" value="asc"></el-option>
+                <el-option label="时间降序" value="desc"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-form>
+        </el-col>
+        <el-col :span="18">
+          <el-main>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              共检索出 {{ papers.length }} 篇论文
+              <div>
+                <el-button type="success" icon="el-icon-download" @click="downloadPapers" size="small">
+                  下载文献
+                </el-button>
+                <el-button type="primary" icon="el-icon-document-copy" @click="generateSummaryReport" size="small">
+                  生成综述
+                </el-button>
               </div>
-              <paper-card :paper="paper"/>
             </div>
-          </div>
-        <el-backtop :visibility-height="100"></el-backtop>
-      </el-main>
+            <div style="overflow: scroll; height: 100vh">
+              <div v-for="paper in filteredPapers" :key="paper.paper_id" style="margin-top: 30px;">
+                <div class="columns is-mobile">
+                  <div class="column is-narrow checkbox">
+                    <el-checkbox @change="handleCheckboxChange(paper.paper_id)"></el-checkbox>
+                  </div>
+                  <paper-card :paper="paper" />
+                </div>
+              </div>
+            </div>
+            <el-backtop :visibility-height="100"></el-backtop>
+          </el-main>
+        </el-col>
+      </el-row>
     </el-col>
     <el-col :span="8" style="height: 100vh; position: sticky; top: 55px">
-      <ai-assistant v-if="aiReply.length > 0" :aiReply="aiReply" :paperIds="paperIds"
-        :searchRecordID="searchRecordID" :restoreHistory="restoreHistory" @find-paper="searchPaperByAssistant"/>
+      <ai-assistant v-if="aiReply.length > 0" :aiReply="aiReply" :paperIds="paperIds" :searchRecordID="searchRecordID"
+        :restoreHistory="restoreHistory" @find-paper="searchPaperByAssistant" />
     </el-col>
-  </el-row>
+  </el-col>
 </template>
 
 <script>
 import axios from 'axios'
 import SearchAssistant from './SearchAssistant.vue'
 import PaperCard from './PaperCard.vue'
+import SearchInput from './SearchInput.vue'
 export default {
   components: {
     'ai-assistant': SearchAssistant,
-    'paper-card': PaperCard
+    'paper-card': PaperCard,
+    'search-input': SearchInput
   },
   props: ['searchForm'],
+  watch: {
+    '$route' (to, from) {
+      console.log('to query\'s search record id...', to.query.searchRecordID)
+      console.log('to query\'s search content...', to.query.search_content)
+      this.papers = []
+      if (to.query.searchRecordID.length > 0) {
+        this.fetchPapersFromHistory()
+      } else {
+        this.fetchPapers()
+      }
+      window.location.reload()
+    }
+  },
   data () {
     return {
       papers: [],
       filterYear: '',
-      sortOrder: 'asc',
+      sortOrder: '',
       filteredPapers: [],
       aiReply: [],
       paperIds: [],
@@ -88,7 +116,7 @@ export default {
           const dateB = new Date(b.publication_date)
           return dateA - dateB // 升序排序
         })
-      } else {
+      } else if (this.sortOrder === 'desc') {
         results.sort((a, b) => {
           const dateA = new Date(a.publication_date)
           const dateB = new Date(b.publication_date)
@@ -106,12 +134,12 @@ export default {
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       })
-      await axios.post(this.$BASE_API_URL + '/search/vectorQuery', {'search_content': this.$route.query.search_content})
+      await axios.post(this.$BASE_API_URL + '/search/vectorQuery', { 'search_content': this.$route.query.search_content })
         .then((response) => {
           console.log('response is ...')
           this.papers = response.data.paper_infos
           // 添加ai回答的逻辑
-          this.aiReply.push({sender: 'ai', text: response.data.ai_reply, loading: false, type: 'dialog'})
+          this.aiReply.push({ sender: 'ai', text: response.data.ai_reply, loading: false, type: 'dialog' })
           console.log('ai的回复: ', this.aiReply)
           this.paperIds = this.papers.map(paper => paper.paper_id)
           this.searchRecordID = response.data.search_record_id
@@ -120,19 +148,16 @@ export default {
         .catch((error) => {
           console.error('语义检索失败:', error)
         })
-      // 写死数据
-      // this.createFakeData()
-      // loadingInstance.close()
     },
     async fetchPapersFromHistory () {
       console.log('search record ID: ', this.$route.query.searchRecordID)
-      await axios.get(this.$BASE_API_URL + '/search/restoreSearchRecord?search_record_id=' + this.$route.query.searchRecordID, {timeout: 1000 * 60 * 5})
+      await axios.get(this.$BASE_API_URL + '/search/restoreSearchRecord?search_record_id=' + this.$route.query.searchRecordID, { timeout: 1000 * 60 * 5 })
         .then((response) => {
           this.papers = response.data.paper_infos
           console.log('历史记录的论文', this.papers)
           for (const message of response.data.conversation) {
             const sender = message.role === 'user' ? 'user' : 'ai'
-            this.aiReply.push({sender: sender, text: message.content, loading: false, type: 'dialog'})
+            this.aiReply.push({ sender: sender, text: message.content, loading: false, type: 'dialog' })
           }
           console.log('历史记录对话信息 ', this.aiReply)
           this.paperIds = this.papers.map(paper => paper.paper_id)
@@ -160,18 +185,16 @@ export default {
         })
         return
       }
-      this.$message({
-        message: '正在生成综述报告',
-        type: 'success'
-      })
       console.log('选中的论文:', this.selectedPapers)
-      axios.post(this.$BASE_API_URL + '/summary/generateSummaryReport', {'paper_id_list': this.selectedPapers}, {timeout: 300000})
+      axios.post(this.$BASE_API_URL + '/summary/generateSummaryReport', { 'paper_id_list': this.selectedPapers }, { timeout: 300000 })
         .then((response) => {
-          console.log(response.data.message)
-          this.$message({
-            message: '综述报告已生成，请在个人中心查看',
-            type: 'success'
-          })
+          if (response.status === 200) {
+            this.$message({
+              message: '正在生成综述报告',
+              type: 'success'
+            })
+            this.getSummaryReportStatus(response.data.report_id)
+          }
         })
         .catch((error) => {
           console.error('综述报告生成失败:', error)
@@ -182,6 +205,25 @@ export default {
         })
       this.selectedPapers = []
     },
+    getSummaryReportStatus (reportID) {
+      console.log('报告ID是', reportID)
+      let intervalID = setInterval(() => {
+        axios.get(this.$BASE_API_URL + '/summary/getSummaryStatus?report_id=' + reportID)
+          .then(response => {
+            if (response.data.status === '生成成功') {
+              this.$message({
+                message: '综述报告已生成，请在个人中心查看',
+                type: 'success'
+              })
+              clearInterval(intervalID) // 停止轮询
+            }
+          })
+          .catch(error => {
+            console.error('查询状态失败:', error)
+            clearInterval(this.intervalID) // 错误时停止轮询
+          })
+      }, 1000) // 每秒查询一次
+    },
     downloadPapers () {
       if (this.selectedPapers.length === 0) {
         this.$message({
@@ -189,7 +231,7 @@ export default {
           type: 'warning'
         })
       }
-      axios.post(this.$BASE_API_URL + '/batchDownload', {'paper_id_list': this.selectedPapers})
+      axios.post(this.$BASE_API_URL + '/batchDownload', { 'paper_id_list': this.selectedPapers })
         .then((response) => {
           if (response.data.is_success === true) {
             this.$message({
@@ -216,7 +258,7 @@ export default {
       this.papers = papers
       this.applyFilter()
       const paperIDs = papers.map(paper => paper.paper_id)
-      axios.post(this.$BASE_API_URL + '/search/changeRecordPapers', {search_record_id: this.searchRecordID, paper_id_list: paperIDs})
+      axios.post(this.$BASE_API_URL + '/search/changeRecordPapers', { search_record_id: this.searchRecordID, paper_id_list: paperIDs })
         .then((response) => {
           console.log(response.status)
           if (response.status === 200) {

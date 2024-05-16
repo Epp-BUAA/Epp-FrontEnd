@@ -1,46 +1,54 @@
 <template>
-    <el-container style="height: calc(100vh - 55px);">
+    <el-container style="height: calc(100vh - 60px); overflow: hidden;">
       <el-header class="my-header">
           <h3>调研助手</h3>
-          <el-button type="success" plain size="small" @click="renderMarkdown()">一键总结</el-button>
-          <el-dialog :visible.sync="showSummaryModal" width="70%">
-              <div v-html="markdownFile" style=""></div>
-          </el-dialog>
+          <div>
+            <el-tooltip class="item" effect="dark" content="一键总结" placement="top">
+              <el-button type="success" plain size="small" @click="renderMarkdown()" icon="fas fa-file-text"></el-button>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="清除历史对话" placement="top">
+              <el-button type="primary" plain size="small" @click="clearHistory()" icon="fas fa-eraser"
+                style="margin-right: 10px;"></el-button>
+            </el-tooltip>
+            <el-dialog :visible.sync="showSummaryModal" width="70%">
+                <div v-html="markdownFile" style=""></div>
+            </el-dialog>
+          </div>
       </el-header>
 
-        <el-main class="chat-content">
-            <div v-for="(message, index) in chatMessages" :key="index">
-                <div v-if="message.sender === 'ai'" class="message-bubble left">
-                    <div v-if="message.loading" v-loading="message.loading"
-                        element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" style="width: 100px; height: 40px;">
-                    </div>
-                    <div v-else>
-                        <p style="white-space: pre-wrap;">{{ message.text }}</p>
-                        <el-button type="text" @click="regenerateAnswer" v-show="index == chatMessages.length - 1 && answerFinished">
-                            <i class="fas fa-refresh"></i>
-                            重新生成
-                        </el-button>
-                        <el-button type="text" @click="findReplySource" v-show="index == chatMessages.length - 1 && answerFinished">
-                            <i class="fas fa-quote-right"></i>
-                            查询出处
-                        </el-button>
-                    </div>
-                </div>
-                <div v-else class="message-bubble right">
-                    <p style="white-space: pre-wrap;">{{ message.text }}</p>
-                </div>
-            </div>
-            <div style="margin-top: 10px;">
-              <div v-show="answerFinished" v-for="(question, index) in probQuestions" :key="index" class="prob-question" @click="sendProbQuestion(question)">
-                {{ question }}
+      <el-main class="chat-content">
+          <div v-for="(message, index) in chatMessages" :key="index">
+              <div v-if="message.sender === 'ai'" class="message-bubble left">
+                  <div v-if="message.loading" v-loading="message.loading"
+                      element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" style="width: 100px; height: 40px;">
+                  </div>
+                  <div v-else>
+                      <p style="white-space: pre-wrap;">{{ message.text }}</p>
+                      <el-button type="text" @click="regenerateAnswer" v-show="index == chatMessages.length - 1 && answerFinished">
+                          <i class="fas fa-refresh"></i>
+                          重新生成
+                      </el-button>
+                      <el-button type="text" @click="findReplySource" v-show="index == chatMessages.length - 1 && answerFinished">
+                          <i class="fas fa-quote-right"></i>
+                          查询出处
+                      </el-button>
+                  </div>
               </div>
+              <div v-else class="message-bubble right">
+                  <p style="white-space: pre-wrap;">{{ message.text }}</p>
+              </div>
+          </div>
+          <div style="margin-top: 10px;">
+            <div v-show="answerFinished" v-for="(question, index) in probQuestions" :key="index" class="prob-question" @click="sendProbQuestion(question)">
+              {{ question }}
             </div>
-        </el-main>
+          </div>
+      </el-main>
 
-        <el-footer>
-          <el-input v-model="chatInput" placeholder="输入你的消息..." @keyup.enter="chatToAI"></el-input>
-          <el-button type="primary" @click="chatToAI">发送</el-button>
-        </el-footer>
+      <el-footer>
+        <el-input v-model="chatInput" placeholder="输入你的消息..." @keyup.enter="chatToAI"></el-input>
+        <el-button type="primary" @click="chatToAI">发送</el-button>
+      </el-footer>
     </el-container>
 </template>
 
@@ -93,6 +101,13 @@ export default {
             localStorage.setItem('localFileReadingID', this.fileReadingID)
             localStorage.setItem('documentID', this.paperID)
             console.log('研读对话的id, ', response.data.file_reading_id)
+            if (response.data.conversation_history.conversation.length > 0) {
+              const history = response.data.conversation_history.conversation
+              for (const message of history) {
+                const sender = message.role === 'user' ? 'user' : 'ai'
+                this.chatMessages.push({sender: sender, text: message.content, loading: false})
+              }
+            }
             this.$message({
               message: '论文研读知识库创建成功！',
               type: 'success'
@@ -244,6 +259,23 @@ export default {
           })
           loadingInstance.close()
         })
+    },
+    clearHistory () {
+      axios.post(this.$BASE_API_URL + '/study/clearConversation', {file_reading_id: this.fileReadingID})
+        .then((response) => {
+          if (response.status === 200) {
+            this.$message({
+              message: '清除历史对话成功！',
+              type: 'success'
+            })
+            this.chatMessages = []
+            this.probQuestions = []
+            this.answerFinished = false
+          }
+        })
+        .catch((error) => {
+          console.error('清楚对话失败', error)
+        })
     }
   }
 
@@ -264,6 +296,7 @@ export default {
   align-items: stretch; /* 确保元素可以根据需要对齐到左边或右边 */
   background: rgb(233, 242, 251);
   width: 100%; /* 可以调整宽度以适应不同屏幕大小 */
+  height: 100%;
 }
 
 .el-footer {
