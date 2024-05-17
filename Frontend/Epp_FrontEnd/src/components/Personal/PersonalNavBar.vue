@@ -47,7 +47,7 @@ export default {
       logout().then(() => {
         this.$router.push('/dashboard')
         this.$message({
-          message: '成功登出！',
+          message: '退出登录成功',
           type: 'success'
         })
       })

@@ -20,12 +20,18 @@
           <router-link to="/personal" class="navbar-item" :class="{ 'selected-tab': selectedTab === 'personal'}" @click.native="selectTab('personal', $event)">个人中心</router-link>
           <router-link to="/aboutus" class="navbar-item" :class="{ 'selected-tab': selectedTab === 'aboutus'}" @click.native="selectTab('aboutus', $event)">关于我们</router-link>
         </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <el-button type="text" @click="logout">退出登录</el-button>
+          </div>
+        </div>
       </div>
     </div>
   </el-menu>
 </template>
 
 <script>
+import { logout } from '@/request/userRequest.js'
 export default {
   name: 'NavBar',
   data () {
@@ -67,6 +73,15 @@ export default {
     },
     toggleMenu () {
       this.isMenuActive = !this.isMenuActive
+    },
+    logout () {
+      logout().then(() => {
+        this.$router.push('/dashboard')
+        this.$message({
+          message: '退出登录成功',
+          type: 'success'
+        })
+      })
     }
   }
 }
