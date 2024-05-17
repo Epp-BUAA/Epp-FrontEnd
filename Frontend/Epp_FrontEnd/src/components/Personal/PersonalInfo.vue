@@ -80,16 +80,17 @@ export default {
           spinner: 'el-icon-loading',
           background: 'rgba(0, 0, 0, 0)'
         })
-        console.log('getuserinformation')
         var res = (await fetchUserInfo()).data
-        console.log(res)
         this.path = 'https://epp.buaase.cn' + res.avatar
-        console.log(this.path)
         this.username = res.username
         this.loginTime = res.registration_date
         this.favorites = res.collected_papers_cnt
         this.likes = res.liked_papers_cnt
-        console.log(res)
+        localStorage.setItem('username', this.username)
+        localStorage.setItem('avatar', this.path)
+        localStorage.setItem('loginTime', this.loginTime)
+        localStorage.setItem('favorites', this.favorites)
+        localStorage.setItem('likes', this.likes)
         // 设置问候语
         const hour = new Date().getHours()
         if (hour >= 5 && hour < 12) {
@@ -117,6 +118,7 @@ export default {
         message: '头像上传成功！',
         type: 'success'
       })
+      localStorage.setItem('avatar', this.path)
       this.avatarUploadVisible = false
     },
     beforeAvatarUpload (file) {
@@ -133,7 +135,15 @@ export default {
     }
   },
   mounted () {
-    this.getUserInfo()
+    if (localStorage.getItem('username')) {
+      this.username = localStorage.getItem('username')
+      this.path = localStorage.getItem('avatar')
+      this.loginTime = localStorage.getItem('loginTime')
+      this.favorites = localStorage.getItem('favorites')
+      this.likes = localStorage.getItem('likes')
+    } else {
+      this.getUserInfo()
+    }
   }
 }
 </script>
@@ -215,6 +225,22 @@ export default {
   padding: 20px;
   border-radius: 12px;
   transform: translateY(-50%);
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+@keyframes bounce {
+      0%, 100% {
+        transform: translateY(-50%);
+      }
+      50% {
+        transform: translateY(-60%);
+      }
+    }
+.other-info:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  /* 实现一个回弹效果 */
+  animation: bounce 0.5s ease;
+  position: relative;
+  z-index: 1;
 }
 .other-text {
   display: flex;

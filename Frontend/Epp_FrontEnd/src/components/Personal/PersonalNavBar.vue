@@ -41,6 +41,7 @@ export default {
     selectTab (tabName) {
       this.$emit('tabSelected', tabName) // 发送事件通知父组件选中了哪个选项
       this.selectedTab = tabName // 更新当前选中的选项
+      localStorage.setItem('selectedPersonalTab', tabName) // 保存当前选中的选项
     },
     logout () {
       logout().then(() => {
@@ -50,6 +51,12 @@ export default {
           type: 'success'
         })
       })
+    }
+  },
+  mounted () {
+    const selectedTab = localStorage.getItem('selectedPersonalTab')
+    if (selectedTab) {
+      this.selectedTab = selectedTab
     }
   }
 }

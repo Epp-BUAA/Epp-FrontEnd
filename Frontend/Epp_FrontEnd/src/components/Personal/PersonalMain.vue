@@ -42,8 +42,20 @@ export default {
   methods: {
     selectTab (tabName) {
       this.selectedTab = tabName
-      console.log(this.selectedTab)
     }
+  },
+  mounted () {
+    const selectedTab = localStorage.getItem('selectedPersonalTab')
+    if (selectedTab) {
+      this.selectedTab = selectedTab
+    }
+  },
+  destroyed () {
+    localStorage.removeItem('username')
+    localStorage.removeItem('avatar')
+    localStorage.removeItem('loginTime')
+    localStorage.removeItem('favorites')
+    localStorage.removeItem('likes')
   }
 }
 </script>
