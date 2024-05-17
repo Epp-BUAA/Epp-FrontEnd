@@ -14,7 +14,7 @@ import LocalPaperReader from '@/components/PaperRead/LocalPaperReader'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
@@ -102,10 +102,29 @@ export default new Router({
         hideNavbar: false
       }
     }
-    // {
-    //   path: '/pdf-viewer/:reportId',
-    //   name: 'PdfViewer',
-    //   component: PdfViewer
-    // }
   ]
 })
+
+// 获取 Cookie 的帮助函数
+function getCookie (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+router.beforeEach((to, from, next) => {
+  const sessionID = getCookie('userlogin')
+  if (!sessionID && to.path !== '/' && to.path !== '/dashboard') {
+    next('/dashboard')
+  } else if (to.path === '/' || to.path === '/dashboard') {
+    if (sessionID) {
+      next('/search')
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
+})
+
+export default router

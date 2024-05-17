@@ -14,9 +14,13 @@ const api = axios.create({
 
 export const login = async (params) => {
   try {
-    console.log(params)
-    const response = api.post('login', params)
-    console.log(response)
+    const response = await api.post('login', params)
+    localStorage.clear() // 清除所有缓存
+    var expiredTime = response.data.expired_time
+    if (expiredTime) {
+      expiredTime = 'expires=' + new Date(expiredTime).toUTCString()
+      document.cookie = 'userlogin=' + response.data.username + '; ' + expiredTime
+    }
     return response
   } catch (error) {
     throw new Error(error.response.data.message)
@@ -26,7 +30,7 @@ export const login = async (params) => {
 export const logout = async () => {
   try {
     const response = api.get('logout')
-    console.log(response)
+    document.cookie = 'userlogin=; expires=Thu, 01 Jan 1970 00:00:00 UTC'
     return response
   } catch (error) {
     throw new Error(error.response.data.message)
