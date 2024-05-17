@@ -114,6 +114,7 @@ export default {
           message: '删除收藏记录成功！',
           type: 'success'
         })
+        localStorage.removeItem('username')
       } catch (error) {
         console.log('error')
       }
