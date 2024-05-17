@@ -59,7 +59,15 @@ export default {
             })
         }
     },
-    watch: {},
+    watch: {
+        userProfile: {
+            handler() {
+                this.draw()
+            },
+            immediate: true,
+            deep: true // 可以深度检测到 person 对象的属性值的变化
+        }
+    },
     computed: {},
     methods: {
         async draw() {
@@ -74,12 +82,8 @@ export default {
         }
     },
     created() {},
-    updated() {
-        this.draw()
-    },
-    mounted() {
-        this.draw()
-    }
+    updated() {},
+    mounted() {}
 }
 </script>
 <style lang="scss" scoped>

@@ -16,6 +16,13 @@ const router = createRouter({
                 {
                     path: '/user',
                     component: () => import(`@/views/user/UserManage.vue`)
+                },
+                {
+                    path: '/paper',
+                    component: () => import(`@/views/paper/PaperManage.vue`)
+                },
+                {
+                    path: '/report'
                 }
             ]
         },

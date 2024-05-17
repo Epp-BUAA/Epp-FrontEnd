@@ -120,7 +120,15 @@
                     :cell-style="{ 'text-align': 'center' }"
                 >
                     <el-table-column label="序号" width="100" type="index"> </el-table-column>
-                    <el-table-column label="用户名" prop="username"></el-table-column>
+                    <el-table-column label="用户名">
+                        <template v-slot="scope">
+                            <el-tooltip class="item" effect="light" :content="scope.row.username" placement="bottom">
+                                <div style="color: #409efe; cursor: pointer">
+                                    {{ scope.row.username }}
+                                </div>
+                            </el-tooltip>
+                        </template>
+                    </el-table-column>
                     <el-table-column label="注册时间" prop="registration_date" sortable></el-table-column>
                     <el-table-column label="操作" width="250">
                         <template #default="{ row }">
@@ -146,7 +154,7 @@
                 class="user-manage-pagination"
                 v-model:current-page="currentPage"
                 v-model:page-size="pageSize"
-                :page-sizes="[10, 20, 50, 100]"
+                :page-sizes="[10, 25, 50, 100]"
                 layout="total, sizes, prev, pager, next, jumper"
                 :total="userData.total"
                 @change="handleSearch"
@@ -177,15 +185,14 @@ export default {
             userProfile: {
                 // 用户详情弹窗
                 visible: false,
-                username: 'Ank'
+                username: ''
             },
             keyword: '', // 用户搜索框信息
             keywordBuffer: '',
             isLoading: false,
             userData: {
-                total: 4,
-                users: [],
-                message: '用户列表获取成功'
+                total: 0,
+                users: []
             },
             currentPage: 1, // 分页当前页
             pageSize: 10 // 分页大小
@@ -351,7 +358,7 @@ export default {
     margin-right: 1%;
     margin-bottom: 2%;
     margin-top: 1%;
-    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.2);
     .number-box-icon {
         float: left;
         width: 40%;
@@ -383,19 +390,19 @@ export default {
     }
 }
 .chart-box {
-    width: 100%;
+    width: 94%;
     height: 45vh;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.2);
     .chart-box-title {
         display: flex;
         justify-content: center;
         align-items: center;
         flex: 2;
-        width: 90%;
-        border-top: 1px solid rgb(0, 0, 0, 0.2);
         span {
             font-size: 20px;
             font-weight: bold;
@@ -403,7 +410,7 @@ export default {
     }
     .chart-box-content {
         flex: 8;
-        width: 90%;
+        width: 95%;
     }
 }
 .user-manage-container {
