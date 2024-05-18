@@ -367,8 +367,9 @@ export default {
     box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.2);
     .number-box-icon {
         float: left;
-        width: 40%;
+        width: 35%;
         height: 100%;
+        margin-left: 5%;
     }
 
     .number-box-content {
