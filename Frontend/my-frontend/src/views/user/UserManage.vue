@@ -89,7 +89,7 @@
                 </div>
                 <!-- 统计图表 -->
                 <div class="chart-box">
-                    <div class="chart-box-title"><span>新增用户数量统计</span></div>
+                    <div class="chart-box-title"><span>新增用户数量统计（近十月）</span></div>
                     <div id="newUsersChart" class="chart-box-content"></div>
                 </div>
             </el-collapse-item>
@@ -157,7 +157,6 @@
                 :page-sizes="[10, 25, 50, 100]"
                 layout="total, sizes, prev, pager, next, jumper"
                 :total="userData.total"
-                @change="handleSearch"
             />
         </div>
     </div>
@@ -198,7 +197,14 @@ export default {
             pageSize: 10 // 分页大小
         }
     },
-    watch: {},
+    watch: {
+        currentPage() {
+            this.handleSearch()
+        },
+        pageSize() {
+            this.handleSearch()
+        }
+    },
     computed: {},
     created() {
         this.handleSearch() // 初始化用户搜索列表
@@ -296,7 +302,6 @@ export default {
         }
         // 获取实时数据
         await getUserMonthlyStatistic().then((response) => {
-            console.log(response.data)
             // 坐标轴设置
             option.xAxis[0].data = response.data.months
             option.yAxis[0].max = response.data.user_addition.max
@@ -339,6 +344,7 @@ export default {
     }
 }
 </script>
+
 <style lang="scss" scoped>
 .collapse-title {
     display: flex;

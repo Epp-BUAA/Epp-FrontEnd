@@ -9,9 +9,9 @@
                             <span class="collapse-title-text">论文统计数据</span>
                         </div>
                     </template>
-                    <!-- <div style="width: 100%; overflow: hidden; padding: 0 2%">
+                    <div style="width: 100%; overflow: hidden; padding: 0 2%">
                         <div class="number-box">
-                            论文个数
+                            <!-- 论文个数 -->
                             <svg
                                 t="1715522008378"
                                 class="number-box-icon"
@@ -40,21 +40,73 @@
                                 ></path>
                             </svg>
                             <div class="number-box-content">
-                                <span class="number-box-title">用户总数</span>
-                                <span class="number-box-digit"
-                                    ><AnimatedNumber
+                                <span class="number-box-title">论文总数</span>
+                                <span class="number-box-digit">
+                                    <AnimatedNumber
                                         :from="0"
-                                        :to="userStatistic.userCnt"
-                                        :key="userStatistic.userCnt"
+                                        :to="paperStatistic.paperCnt"
+                                        :key="paperStatistic.paperCnt"
                                         fromColor="#44cc00"
                                         toColor="#232323"
                                         easing="easeOutQuad"
-                                    ></AnimatedNumber
+                                    >
+                                    </AnimatedNumber
+                                ></span>
+                            </div>
+                        </div>
+                        <div class="number-box">
+                            <!-- 论文个数 -->
+                            <svg
+                                t="1715522008378"
+                                class="number-box-icon"
+                                viewBox="0 0 1024 1024"
+                                version="1.1"
+                                xmlns="http://www.w3.org/2000/svg"
+                                p-id="1642"
+                                width="200"
+                                height="200"
+                            >
+                                <path d="M502.9 501.67z" p-id="1643" fill="#1296db"></path>
+                                <path
+                                    d="M240.14 316.3a164.63 178.53 0 1 0 329.26 0 164.63 178.53 0 1 0-329.26 0Z"
+                                    p-id="1644"
+                                    fill="#1296db"
+                                ></path>
+                                <path
+                                    d="M502.9 501.67c-28.32 21.94-62 34.65-98.13 34.65S335 523.6 306.65 501.67C183.37 551.28 94.49 691.77 94.49 857.36q0 14.57 0.9 28.87h618.77q0.9-14.42 0.9-28.87c0-165.59-88.88-306.09-212.16-355.69zM591.64 346.58a160.39 160.39 0 0 1-5.64 43.19 157.47 157.47 0 0 1-47 75.36c22.38 49.4 70.66 83.62 126.64 83.62 77.31 0 140-65.17 140-145.56S743 257.62 665.69 257.62a135.79 135.79 0 0 0-83.08 28.44 78.94 78.94 0 0 1 9.06 26.81c1.7 11.21 2.19 22.94-0.03 33.71z"
+                                    p-id="1645"
+                                    fill="#1296db"
+                                ></path>
+                                <path
+                                    d="M749.12 559.11c-24.07 18.65-52.71 29.46-83.43 29.46a128.93 128.93 0 0 1-23.39-2.17c28.18 23.15 46.62 63.51 60.44 100.54 7.06 17.47 13.13 35.56 18.75 53.36 12.75 40.41 21.3 85.47 16.61 128.45 0.45 5.77 0.75 11.55 0.86 17.32h189.79q0.77-12.15 0.77-24.54c-0.01-140.78-75.58-260.25-180.4-302.42z"
+                                    p-id="1646"
+                                    fill="#1296db"
+                                ></path>
+                            </svg>
+                            <div class="number-box-content">
+                                <span class="number-box-title">论文领域</span>
+                                <span class="number-box-digit">
+                                    <AnimatedNumber
+                                        :from="0"
+                                        :to="paperStatistic.subclassCnt"
+                                        :key="paperStatistic.subclassCnt"
+                                        fromColor="#44cc00"
+                                        toColor="#232323"
+                                        easing="easeOutQuad"
+                                    >
+                                    </AnimatedNumber
                                 ></span>
                             </div>
                         </div>
                     </div>
-                    <div class="chart-box"></div> -->
+                    <div class="chart-box" style="height: 45vh; margin-bottom: 3vh">
+                        <div class="chart-box-title" style="flex: 2"><span>各年份论文统计（近五年）</span></div>
+                        <div id="paperYearlyChart" class="chart-box-content"></div>
+                    </div>
+                    <div class="chart-box" style="height: 80vh">
+                        <div class="chart-box-title" style="flex: 1"><span>各领域论文统计（近五年）</span></div>
+                        <div id="paperClassChart" class="chart-box-content"></div>
+                    </div>
                 </el-collapse-item>
             </el-collapse>
 
@@ -142,7 +194,6 @@
                     :page-sizes="[10, 25, 50, 100]"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="paperData.total"
-                    @change="handleSearch"
                 />
             </div>
         </div>
@@ -150,14 +201,20 @@
 </template>
 
 <script>
+import { getCurrentInstance } from 'vue'
 import PaperOutline from './PaperOutline.vue'
-import { getPaperList } from '@/api/paper'
+import { getPaperList, getPaperOverviewStatistic, getPaperYearlyStatistic, getPaperClassStatistic } from '@/api/paper'
 import { ElMessage } from 'element-plus'
 export default {
     components: { PaperOutline },
     props: {},
     data() {
         return {
+            isClsActive: '1',
+            paperStatistic: {
+                paperCnt: 7000,
+                subclassCnt: 12
+            },
             paperOutline: {
                 visible: false,
                 paperID: ''
@@ -192,7 +249,14 @@ export default {
             pageSize: 10 // 分页大小
         }
     },
-    watch: {},
+    watch: {
+        currentPage() {
+            this.handleSearch()
+        },
+        pageSize() {
+            this.handleSearch()
+        }
+    },
     computed: {},
     methods: {
         handleView() {
@@ -219,8 +283,188 @@ export default {
     },
     created() {
         this.handleSearch() // 初始化论文搜索列表
+        getPaperOverviewStatistic() // 初始化统计数据
+            .then((response) => {
+                console.log(response)
+            })
+            .catch((error) => {
+                ElMessage.error(error.response.data.message)
+            })
     },
-    mounted() {}
+    mounted() {
+        let internalInstance = getCurrentInstance()
+        let echarts = internalInstance.appContext.config.globalProperties.$echarts
+        // 渲染论文领域图表
+        const paperClassChart = echarts.init(document.getElementById('paperClassChart'))
+        setTimeout(function () {
+            const option1 = {
+                legend: {},
+                tooltip: {
+                    trigger: 'axis',
+                    showContent: false
+                },
+                dataset: {
+                    source: [
+                        ['product', '2012', '2013', '2014', '2015', '2016', '2017'],
+                        ['Milk Tea', 56.5, 82.1, 88.7, 70.1, 53.4, 85.1],
+                        ['Matcha Latte', 51.1, 51.4, 55.1, 53.3, 73.8, 68.7],
+                        ['Cheese Cocoa', 40.1, 62.2, 69.5, 36.4, 45.2, 32.5],
+                        ['Walnut Brownie', 25.2, 37.1, 41.2, 18, 33.9, 49.1]
+                    ]
+                },
+                xAxis: { type: 'category' },
+                yAxis: { gridIndex: 0 },
+                grid: { top: '55%' },
+                series: [
+                    {
+                        type: 'line',
+                        smooth: true,
+                        seriesLayoutBy: 'row',
+                        emphasis: { focus: 'series' }
+                    },
+                    {
+                        type: 'line',
+                        smooth: true,
+                        seriesLayoutBy: 'row',
+                        emphasis: { focus: 'series' }
+                    },
+                    {
+                        type: 'line',
+                        smooth: true,
+                        seriesLayoutBy: 'row',
+                        emphasis: { focus: 'series' }
+                    },
+                    {
+                        type: 'line',
+                        smooth: true,
+                        seriesLayoutBy: 'row',
+                        emphasis: { focus: 'series' }
+                    },
+                    {
+                        type: 'pie',
+                        id: 'pie',
+                        radius: '30%',
+                        center: ['50%', '25%'],
+                        emphasis: {
+                            focus: 'self'
+                        },
+                        label: {
+                            formatter: '{b}: {@2012} ({d}%)'
+                        },
+                        encode: {
+                            itemName: 'product',
+                            value: '2012',
+                            tooltip: '2012'
+                        }
+                    }
+                ]
+            }
+            paperClassChart.on('updateAxisPointer', function (event) {
+                const xAxisInfo = event.axesInfo[0]
+                if (xAxisInfo) {
+                    const dimension = xAxisInfo.value + 1
+                    paperClassChart.setOption({
+                        series: {
+                            id: 'pie',
+                            label: {
+                                formatter: '{b}: {@[' + dimension + ']} ({d}%)'
+                            },
+                            encode: {
+                                value: dimension,
+                                tooltip: dimension
+                            }
+                        }
+                    })
+                }
+            })
+            paperClassChart.setOption(option1)
+        })
+        // 渲染各年份论文统计图
+        const paperYearlyChart = echarts.init(document.getElementById('paperYearlyChart'))
+        const option2 = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            toolbox: {
+                feature: {
+                    dataView: { show: true, readOnly: false },
+                    magicType: { show: true, type: ['line', 'bar'] },
+                    restore: { show: true },
+                    saveAsImage: { show: true }
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: ['2019', '2020', '2021', '2022', '2023'],
+                    axisTick: {
+                        alignWithLabel: true
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value'
+                }
+            ],
+            visualMap: {
+                top: 0,
+                left: 'center',
+                orient: 'horizontal',
+                pieces: [
+                    {
+                        gt: 0,
+                        lte: 100,
+                        color: '#93CE07'
+                    },
+                    {
+                        gt: 100,
+                        lte: 300,
+                        color: '#FBDB0F'
+                    },
+                    {
+                        gt: 300,
+                        lte: 500,
+                        color: '#FC7D02'
+                    },
+                    {
+                        gt: 500,
+                        lte: 1000,
+                        color: '#FD0100'
+                    },
+                    {
+                        gt: 1000,
+                        color: '#AA069F'
+                    }
+                ],
+                outOfRange: {
+                    color: '#999'
+                }
+            },
+            series: [
+                {
+                    name: 'Direct',
+                    type: 'bar',
+                    barWidth: '60%',
+                    data: [1001, 52, 200, 334, 390],
+                    label: {
+                        show: true,
+                        position: 'top'
+                    }
+                }
+            ]
+        }
+        paperYearlyChart.setOption(option2)
+    }
 }
 </script>
 <style lang="scss" scoped>
@@ -275,7 +519,6 @@ export default {
 }
 .chart-box {
     width: 94%;
-    height: 45vh;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -286,7 +529,6 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
-        flex: 2;
         span {
             font-size: 20px;
             font-weight: bold;

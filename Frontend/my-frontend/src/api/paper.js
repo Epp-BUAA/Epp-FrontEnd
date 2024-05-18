@@ -21,3 +21,33 @@ export const getPaperList = ({ keyword, page_num, page_size }) => {
         }
     })
 }
+
+export const getPaperOverviewStatistic = () => {
+    return request({
+        method: 'get',
+        url: '/api/manage/paperStatistic',
+        params: {
+            mode: 1
+        }
+    })
+}
+
+export const getPaperYearlyStatistic = () => {
+    return request({
+        method: 'get',
+        url: '/api/manage/paperStatistic',
+        params: {
+            mode: 2
+        }
+    })
+}
+
+export const getPaperClassStatistic = () => {
+    return request({
+        method: 'get',
+        url: '/api/manage/paperStatistic',
+        params: {
+            mode: 3
+        }
+    })
+}
