@@ -212,8 +212,8 @@ export default {
         return {
             isClsActive: '1',
             paperStatistic: {
-                paperCnt: 7000,
-                subclassCnt: 12
+                paperCnt: 0,
+                subclassCnt: 0
             },
             paperOutline: {
                 visible: false,
@@ -286,12 +286,14 @@ export default {
         getPaperOverviewStatistic() // 初始化统计数据
             .then((response) => {
                 console.log(response)
+                this.paperStatistic.paperCnt = response.data.paper_cnt
+                this.paperStatistic.subclassCnt = response.data.subclass_cnt
             })
             .catch((error) => {
                 ElMessage.error(error.response.data.message)
             })
     },
-    mounted() {
+    async mounted() {
         let internalInstance = getCurrentInstance()
         let echarts = internalInstance.appContext.config.globalProperties.$echarts
         // 渲染论文领域图表
@@ -463,6 +465,15 @@ export default {
                 }
             ]
         }
+        await getPaperYearlyStatistic()
+            .then((response) => {
+                console.log(response)
+                option2.xAxis[0].data = response.data.years
+                option2.series[0].data = response.data.data
+            })
+            .catch((error) => {
+                ElMessage.error(error.response.data.message)
+            })
         paperYearlyChart.setOption(option2)
     }
 }
