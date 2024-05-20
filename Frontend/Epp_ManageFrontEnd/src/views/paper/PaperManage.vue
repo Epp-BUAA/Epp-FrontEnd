@@ -137,8 +137,8 @@
                             width="150"
                             sortable
                         ></el-table-column>
-                        <el-table-column label="引用" prop="citation_count" width="100" sortable></el-table-column>
-                        <el-table-column label="评分" width="100" sortable>
+                        <el-table-column label="引用" prop="citation_count" width="120" sortable></el-table-column>
+                        <el-table-column label="评分" width="120" sortable>
                             <template v-slot="scope">
                                 <div style="cursor: pointer; color: rgb(215, 141, 2)">
                                     {{ scope.row.score }}
@@ -147,9 +147,6 @@
                         </el-table-column>
                         <el-table-column label="操作">
                             <template v-slot="scope">
-                                <el-button circle plain type="danger" @click="handleEdit(scope.row)">
-                                    <el-icon><i-ep-Edit></i-ep-Edit></el-icon>
-                                </el-button>
                                 <el-button circle plain type="success" @click="handleView(scope.row)">
                                     <el-icon><i-ep-view></i-ep-view></el-icon>
                                 </el-button>
@@ -237,9 +234,10 @@ export default {
     },
     computed: {},
     methods: {
-        handleView() {
+        handleView(item) {
             this.$nextTick(() => {
                 this.paperOutline.visible = true
+                this.paperOutline.paperID = item.paper_id
             })
         },
         async handleSearch() {
@@ -263,7 +261,6 @@ export default {
         this.handleSearch() // 初始化论文搜索列表
         getPaperOverviewStatistic() // 初始化统计数据
             .then((response) => {
-                console.log(response)
                 this.paperStatistic.paperCnt = response.data.paper_cnt
                 this.paperStatistic.subclassCnt = response.data.subclass_cnt
             })
@@ -445,7 +442,6 @@ export default {
         }
         await getPaperYearlyStatistic()
             .then((response) => {
-                console.log(response)
                 option2.xAxis[0].data = response.data.years
                 option2.series[0].data = response.data.data
             })

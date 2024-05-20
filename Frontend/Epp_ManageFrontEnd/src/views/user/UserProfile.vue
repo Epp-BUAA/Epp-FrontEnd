@@ -60,12 +60,12 @@ export default {
         }
     },
     watch: {
-        userProfile: {
+        username: {
             handler() {
                 this.draw()
             },
             immediate: true,
-            deep: true // 可以深度检测到 person 对象的属性值的变化
+            deep: true
         }
     },
     computed: {},
@@ -80,10 +80,7 @@ export default {
                     ElMessage.error(error.response.data.message)
                 })
         }
-    },
-    created() {},
-    updated() {},
-    mounted() {}
+    }
 }
 </script>
 <style lang="scss" scoped>
