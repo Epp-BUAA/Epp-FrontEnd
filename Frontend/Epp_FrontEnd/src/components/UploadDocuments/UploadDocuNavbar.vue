@@ -14,9 +14,6 @@
         </span>
         <span class="label">{{ tab.label }}</span>
       </li>
-      <li class="logout" @click="logout">
-        <span class="label">退出登录</span>
-      </li>
     </ul>
   </div>
 </template>
@@ -63,6 +60,7 @@ export default {
   width: 150px;
   height:100%;
   border-radius: 15px;
+  position: fixed;
 }
 
 .sidebar h1 {

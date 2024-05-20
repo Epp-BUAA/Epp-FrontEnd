@@ -67,6 +67,7 @@ export default {
   width: 150px;
   height:100%;
   border-radius: 15px;
+  position: fixed;
 }
 
 .sidebar h1 {

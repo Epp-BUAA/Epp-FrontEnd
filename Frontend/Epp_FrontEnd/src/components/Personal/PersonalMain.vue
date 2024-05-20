@@ -67,26 +67,20 @@ export default {
 .content {
   flex: 1;
   padding: 20px;
+  margin-left: 150px; /* 侧边栏宽度 */
 }
 .personal{
-  position: absolute;
-  top: 35px; /* 假设导航栏高度为50px */
+  position: relative;
   left: 0;
   right: 0;
   bottom: 0;
   padding: 20px;
-}
-.personal::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 120%;
+  padding-top: 50px;
+  min-height: 100vh;
   background-image: url('../../assets/personal-back.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center bottom;
-  z-index: -1; /* 确保背景图片在内容后面 */
+  background-attachment: fixed;
 }
 </style>

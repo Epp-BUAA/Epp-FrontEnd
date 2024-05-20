@@ -73,7 +73,8 @@ export default {
       answerFinished: false,
       probQuestions: [],
       showSummaryModal: false,
-      markdownFile: ''
+      markdownFile: '',
+      fileReadingID: ''
     }
   },
   created () {
@@ -82,11 +83,7 @@ export default {
   },
   methods: {
     initialize () {
-      const existingPaperId = localStorage.getItem('documentID')
-      if (existingPaperId === this.paperID) {
-        this.fileReadingID = localStorage.getItem('localFileReadingID')
-        console.log('existing file reading id is...', localStorage.getItem('localFileReadingID'))
-        console.log('my file reading id is...', this.fileReadingID)
+      if (this.fileReadingID) {
         this.restorePaperStudy()
       } else {
         this.createPaperStudy()
@@ -96,22 +93,23 @@ export default {
       axios.post(this.$BASE_API_URL + '/study/createPaperStudy', {'document_id': this.paperID, 'file_type': 1})
         .then((response) => {
           if (response.status === 200) {
-            console.log('论文研读创建成功！')
             this.fileReadingID = response.data.file_reading_id
-            localStorage.setItem('localFileReadingID', this.fileReadingID)
-            localStorage.setItem('documentID', this.paperID)
-            console.log('研读对话的id, ', response.data.file_reading_id)
             if (response.data.conversation_history.conversation.length > 0) {
               const history = response.data.conversation_history.conversation
               for (const message of history) {
                 const sender = message.role === 'user' ? 'user' : 'ai'
                 this.chatMessages.push({sender: sender, text: message.content, loading: false})
               }
+              this.$message({
+                message: '已恢复研读对话',
+                type: 'success'
+              })
+            } else {
+              this.$message({
+                message: '论文研读知识库创建成功！',
+                type: 'success'
+              })
             }
-            this.$message({
-              message: '论文研读知识库创建成功！',
-              type: 'success'
-            })
           }
         })
         .catch((error) => {
@@ -274,7 +272,7 @@ export default {
           }
         })
         .catch((error) => {
-          console.error('清楚对话失败', error)
+          console.error('清除对话失败', error)
         })
     }
   }
