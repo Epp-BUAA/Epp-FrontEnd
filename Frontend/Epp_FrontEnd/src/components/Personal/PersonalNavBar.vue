@@ -53,7 +53,7 @@ export default {
       })
     }
   },
-  mounted () {
+  created () {
     const selectedTab = localStorage.getItem('selectedPersonalTab')
     if (selectedTab) {
       this.selectedTab = selectedTab
