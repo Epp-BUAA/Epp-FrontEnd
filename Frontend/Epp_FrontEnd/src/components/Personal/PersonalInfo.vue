@@ -61,11 +61,11 @@ import { fetchUserInfo } from '@/request/userRequest.js'
 export default {
   data () {
     return {
-      path: '',
-      username: 'John Doe',
-      loginTime: '2024-04-24 10:00:00',
-      favorites: 10,
-      likes: 20,
+      path: '/resource/uploads/users/avatars/20240517092510_23.jpg',
+      username: '',
+      loginTime: '',
+      favorites: 0,
+      likes: 0,
       greeting: '你好',
       avatarUploadVisible: false,
       imageUrl: ''
@@ -91,17 +91,6 @@ export default {
         localStorage.setItem('loginTime', this.loginTime)
         localStorage.setItem('favorites', this.favorites)
         localStorage.setItem('likes', this.likes)
-        // 设置问候语
-        const hour = new Date().getHours()
-        if (hour >= 5 && hour < 12) {
-          this.greeting = '🌞早上好'
-        } else if (hour >= 12 && hour < 18) {
-          this.greeting = '🌻下午好'
-        } else if (hour >= 18 && hour < 24) {
-          this.greeting = '⭐晚上好'
-        } else {
-          this.greeting = '🌃夜深了'
-        }
         loading.close()
       } catch (error) {
         console.log(error)
@@ -134,15 +123,38 @@ export default {
       return isPhoto && isLt2M
     }
   },
-  mounted () {
+  created () {
     if (localStorage.getItem('username')) {
       this.username = localStorage.getItem('username')
       this.path = localStorage.getItem('avatar')
-      this.loginTime = localStorage.getItem('loginTime')
-      this.favorites = localStorage.getItem('favorites')
-      this.likes = localStorage.getItem('likes')
+      if (localStorage.getItem('loginTime')) {
+        this.loginTime = localStorage.getItem('loginTime')
+      } else {
+        this.getUserInfo()
+      }
+      if (localStorage.getItem('favorites')) {
+        this.favorites = localStorage.getItem('favorites')
+      } else {
+        this.getUserInfo()
+      }
+      if (localStorage.getItem('likes')) {
+        this.likes = localStorage.getItem('likes')
+      } else {
+        this.getUserInfo()
+      }
     } else {
       this.getUserInfo()
+    }
+    // 设置问候语
+    const hour = new Date().getHours()
+    if (hour >= 5 && hour < 12) {
+      this.greeting = '🌞早上好'
+    } else if (hour >= 12 && hour < 18) {
+      this.greeting = '🌻下午好'
+    } else if (hour >= 18 && hour < 24) {
+      this.greeting = '⭐晚上好'
+    } else {
+      this.greeting = '🌃夜深了'
     }
   }
 }

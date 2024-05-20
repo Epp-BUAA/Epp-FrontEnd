@@ -1,6 +1,6 @@
 <template>
   <div class="sidebar">
-    <h1>个人中心</h1>
+    <h1>全文解读</h1>
     <ul>
       <li
         v-for="tab in tabs"
@@ -14,9 +14,6 @@
         </span>
         <span class="label">{{ tab.label }}</span>
       </li>
-      <li class="logout" @click="logout">
-        <span class="label">退出登录</span>
-      </li>
     </ul>
   </div>
 </template>
@@ -26,14 +23,10 @@ import { logout } from '@/request/userRequest.js'
 export default {
   data () {
     return {
-      selectedTab: 'personal',
+      selectedTab: 'upload',
       tabs: [
-        { name: 'personal', label: '我的信息', icon_off: require('@/assets/icon/personal-off.svg'), icon_on: require('@/assets/icon/personal-on.svg') },
-        { name: 'ai', label: '研读历史', icon_off: require('@/assets/icon/ai-off.svg'), icon_on: require('@/assets/icon/ai-on.svg') },
-        { name: 'search', label: '搜索记录', icon_off: require('@/assets/icon/search-off.svg'), icon_on: require('@/assets/icon/search-on.svg') },
-        { name: 'reports', label: '综述报告', icon_off: require('@/assets/icon/reports-off.svg'), icon_on: require('@/assets/icon/reports-on.svg') },
-        { name: 'collections', label: '收藏夹', icon_off: require('@/assets/icon/collections-off.svg'), icon_on: require('@/assets/icon/collections-on.svg') },
-        { name: 'notices', label: '消息通知', icon_off: require('@/assets/icon/notices-off.svg'), icon_on: require('@/assets/icon/notices-on.svg') }
+        { name: 'upload', label: '本地上传', icon_off: require('@/assets/icon/upload-off.svg'), icon_on: require('@/assets/icon/upload-on.svg') },
+        { name: 'documents', label: '文件库', icon_off: require('@/assets/icon/documents-off.svg'), icon_on: require('@/assets/icon/documents-on.svg') }
       ]
     }
   },
@@ -41,7 +34,7 @@ export default {
     selectTab (tabName) {
       this.$emit('tabSelected', tabName) // 发送事件通知父组件选中了哪个选项
       this.selectedTab = tabName // 更新当前选中的选项
-      localStorage.setItem('selectedPersonalTab', tabName) // 保存当前选中的选项
+      localStorage.setItem('selectedUploadDocuTab', tabName) // 保存当前选中的选项
     },
     logout () {
       logout().then(() => {
@@ -53,8 +46,8 @@ export default {
       })
     }
   },
-  created () {
-    const selectedTab = localStorage.getItem('selectedPersonalTab')
+  mounted () {
+    const selectedTab = localStorage.getItem('selectedUploadDocuTab')
     if (selectedTab) {
       this.selectedTab = selectedTab
     }

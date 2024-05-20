@@ -25,11 +25,13 @@ export default {
   },
   data () {
     return {
-      pdfUrl: ''
+      pdfUrl: '',
+      fileReadingID: ''
     }
   },
   created () {
     this.fetchPaperPDF()
+    this.fileReadingID = this.$route.query.fileReadingID
   },
   methods: {
     fetchPaperPDF () {

@@ -2,10 +2,7 @@
 <div class="documentMan">
    <h1 class="documentManTitle">全文解读</h1>
   <div class="uploadDo">
-    <!-- <h1 class="uploadTitle">上传文献</h1> -->
-    <!-- <input type="file" @change="handleFileUpload" accept=".pdf,.doc,.docx" lang="zh-CN" title="选择文件"> -->
-    <!-- <label for="file-upload" class="file-upload-label">选择文件</label> -->
-   <a for="file-upload" class="file-upload-label" style="text-decoration: underline; color: #007bff; cursor: pointer;" @click="$refs.fileInput.click()">选择文件</a>
+   <a for="file-upload" class="file-upload-label" style="text-decoration: underline; color: #409EFE; cursor: pointer;" @click="$refs.fileInput.click()">选择文件</a>
   <input id="file-upload" type="file" @change="handleFileUpload" accept=".pdf,.doc,.docx" style="display: none;" ref="fileInput">
   <span class='filename'>{{ fileName }}</span>
   <el-button type="primary" @click="uploadDocument">Upload<i class="el-icon-upload el-icon-right"></i></el-button>
@@ -90,7 +87,7 @@ export default {
   justify-content: center;
   align-items: center;
   margin-bottom: 0rem;
-  border: 8px solid #007bff;
+  border: 8px solid #409EFE;
   border-radius: 10px 10px 0 0;
   padding: 0.5rem;
 }
@@ -101,7 +98,7 @@ export default {
 
 .uploadDo button {
   padding: 0.5rem 1rem;
-  background-color: #007bff;
+  background-color: #409EFE;
   color: white;
   border: none;
   cursor: pointer;
@@ -114,5 +111,19 @@ export default {
 .documentsTable {
   margin-left: 3rem;
   margin-right: 3rem;
+}
+
+.documentMan::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 120%;
+  background-image: url('../../assets/personal-back.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  z-index: -1; /* 确保背景图片在内容后面 */
 }
 </style>
