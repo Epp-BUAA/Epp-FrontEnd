@@ -61,11 +61,11 @@ import { fetchUserInfo } from '@/request/userRequest.js'
 export default {
   data () {
     return {
-      path: '',
-      username: 'John Doe',
-      loginTime: '2024-04-24 10:00:00',
-      favorites: 10,
-      likes: 20,
+      path: '/resource/uploads/users/avatars/20240517092510_23.jpg',
+      username: '',
+      loginTime: '',
+      favorites: 0,
+      likes: 0,
       greeting: '你好',
       avatarUploadVisible: false,
       imageUrl: ''
