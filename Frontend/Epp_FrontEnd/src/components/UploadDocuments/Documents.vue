@@ -18,7 +18,7 @@
           <p><span class="label">格式:</span> {{ document.format }}</p>
         </div>
       </div>
-      <el-button class="deleteButton" type="primary" size="small" icon="el-icon-delete" @click="deleteDocument(scope.row.paper_id)">删除</el-button>
+      <el-button class="deleteButton" type="primary" size="small" icon="el-icon-delete" @click="deleteDocument(document.document_id)">删除</el-button>
     </div>
     <div class="pagination">
       <button @click="prevPage" :disabled="currentPage === 1">
@@ -71,9 +71,19 @@ export default {
       try {
         var params = {'paper_id': id}
         var res = await deleteDocument(params)
+        this.$notify({
+          title: '成功',
+          message: '本地文件删除成功！',
+          type: 'success'
+        })
         console.log(res)
       } catch (error) {
         console.log('error')
+        this.$notify({
+          title: '失败',
+          message: '本地文件删除失败！',
+          type: 'error'
+        })
       }
       this.fetchDocuments()
     },
@@ -178,7 +188,7 @@ export default {
   border: none;
   padding: 0.625rem 1rem;
   cursor: pointer;
-  border-radius: 12px;
+  border-radius: 3px;
   transition: background-color 0.3s;
   width: 50%; /* 调整按钮宽度 */
   align-self: center; /* 水平居中 */
