@@ -78,7 +78,7 @@ export default {
           lock: true,
           text: '客官别急，正在加载中...',
           spinner: 'el-icon-loading',
-          background: 'rgba(255, 255, 255, 1)'
+          background: 'rgba(0, 0, 0, 0)'
         })
         var res = (await fetchUserInfo()).data
         this.path = 'https://epp.buaase.cn' + res.avatar
@@ -91,17 +91,6 @@ export default {
         localStorage.setItem('loginTime', this.loginTime)
         localStorage.setItem('favorites', this.favorites)
         localStorage.setItem('likes', this.likes)
-        // 设置问候语
-        const hour = new Date().getHours()
-        if (hour >= 5 && hour < 12) {
-          this.greeting = '🌞早上好'
-        } else if (hour >= 12 && hour < 18) {
-          this.greeting = '🌻下午好'
-        } else if (hour >= 18 && hour < 24) {
-          this.greeting = '⭐晚上好'
-        } else {
-          this.greeting = '🌃夜深了'
-        }
         loading.close()
       } catch (error) {
         console.log(error)
@@ -138,11 +127,34 @@ export default {
     if (localStorage.getItem('username')) {
       this.username = localStorage.getItem('username')
       this.path = localStorage.getItem('avatar')
-      this.loginTime = localStorage.getItem('loginTime')
-      this.favorites = localStorage.getItem('favorites')
-      this.likes = localStorage.getItem('likes')
+      if (localStorage.getItem('loginTime')) {
+        this.loginTime = localStorage.getItem('loginTime')
+      } else {
+        this.getUserInfo()
+      }
+      if (localStorage.getItem('favorites')) {
+        this.favorites = localStorage.getItem('favorites')
+      } else {
+        this.getUserInfo()
+      }
+      if (localStorage.getItem('likes')) {
+        this.likes = localStorage.getItem('likes')
+      } else {
+        this.getUserInfo()
+      }
     } else {
       this.getUserInfo()
+    }
+    // 设置问候语
+    const hour = new Date().getHours()
+    if (hour >= 5 && hour < 12) {
+      this.greeting = '🌞早上好'
+    } else if (hour >= 12 && hour < 18) {
+      this.greeting = '🌻下午好'
+    } else if (hour >= 18 && hour < 24) {
+      this.greeting = '⭐晚上好'
+    } else {
+      this.greeting = '🌃夜深了'
     }
   }
 }

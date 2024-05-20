@@ -46,6 +46,8 @@ export default {
           console.log(res.message)
           this.message = res.data.message
           this.isLogged = true
+          localStorage.setItem('username', this.username)
+          localStorage.setItem('avatar', 'https://epp.buaase.cn' + res.data.avatar)
         } else {
           params = {
             'username': this.username,
