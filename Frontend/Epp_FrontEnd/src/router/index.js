@@ -8,7 +8,7 @@ import SearchPage from '@/components/Search/SearchPage'
 import SearchResult from '@/components/Search/SearchResult'
 import PaperInfo from '@/components/PaperInfo/PaperInfo'
 import PersonalMain from '@/components/Personal/PersonalMain'
-import UploadDocument from '@/components/Personal/UploadDocument'
+import uploadDocuMain from '@/components/UploadDocuments/UploadDocuMain'
 import PaperReader from '@/components/PaperRead/PaperReader'
 import LocalPaperReader from '@/components/PaperRead/LocalPaperReader'
 
@@ -95,8 +95,8 @@ const router = new Router({
     },
     {
       path: '/upload',
-      name: 'UploadDocument',
-      component: UploadDocument,
+      name: 'uploadDocuMain',
+      component: uploadDocuMain,
       props: true,
       meta: {
         hideNavbar: false
