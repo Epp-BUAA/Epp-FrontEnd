@@ -28,7 +28,7 @@
         </div>
         <div class="author">
             <el-icon><i-ep-Avatar /></el-icon>
-            <span>{{ paperInfo.authors }}</span>
+            <span>{{ paperInfo.authors.join(', ') }}</span>
         </div>
         <div class="subclass">
             <el-tag
@@ -77,25 +77,22 @@ export default {
     data() {
         return {
             paperInfo: {
-                paper_id: '000345d3-ff5f-4140-8f3c-5f5793cc44d6',
-                title: 'Automatic Infectious Disease Classification Analysis with Concept  Discovery',
-                authors:
-                    'Elena Sizikova,Joshua Vendrow,Xu Cao,Rachel Grotheer,Jamie Haddock,Lara Kassab,Alona Kryshchenko,Thomas Merkh,R. W. M. A. Madushani,Kenny Moise,Annie Ulichney,Huy V. Vo,Chuntian Wang,Megan Coffee,Kathryn Leonard,Deanna Needell,',
-                abstract:
-                    '  Automatic infectious disease classification from images can facilitate neededmedical diagnoses. Such an approach can identify diseases, like tuberculosis,which remain under-diagnosed due to resource constraints and also novel andemerging diseases, like monkeypox, which clinicians have little experience oracumen in diagnosing. Avoiding missed or delayed diagnoses would preventfurther transmission and improve clinical outcomes. In order to understand andtrust neural network predictions, analysis of learned representations isnecessary. In this work, we argue that automatic discovery of concepts, i.e.,human interpretable attributes, allows for a deep understanding of learnedinformation in medical image analysis tasks, generalizing beyond the traininglabels or protocols. We provide an overview of existing concept discoveryapproaches in medical image and computer vision communities, and evaluaterepresentative methods on tuberculosis (TB) prediction and monkeypox predictiontasks. Finally, we propose NMFx, a general NMF formulation of interpretabilityby concept discovery that works in a unified way in unsupervised, weaklysupervised, and supervised scenarios.',
-                publication_date: '2022-08-28',
+                paper_id: '',
+                title: '',
+                authors: [],
+                abstract: '',
+                publication_date: '',
                 journal: null,
-                citation_count: 83,
-                read_count: 612,
+                citation_count: 0,
+                read_count: 0,
                 like_count: 0,
                 collect_count: 0,
-                download_count: 162,
+                download_count: 0,
                 comment_count: 0,
-                score: 0,
+                score: 0.0,
                 score_count: 0,
-                original_url: 'http://arxiv.org/abs/2209.02415v2',
-                subclasses: ['图像分类'],
-                message: '论文详情获取成功'
+                original_url: '',
+                subclasses: []
             }
         }
     },
@@ -155,6 +152,9 @@ export default {
     width: 80%;
     margin: 0.5vh auto;
     text-align: center;
+    & > *:not(:last-child) {
+        margin-right: 0.5vw;
+    }
 }
 .date {
     margin-top: 1vh;

@@ -198,22 +198,13 @@ export default {
                 total: 0,
                 papers: [
                     {
-                        paper_id: '003fc09d-ac2f-4756-9395-a5767584ada8',
-                        title: 'Monocular Depth Estimation Using Cues Inspired by Biological Vision\n  Systems',
-                        authors: ['Dylan Auty', 'Krystian Mikolajczyk', ''],
-                        publication_date: '2022-04-21',
+                        paper_id: '',
+                        title: '',
+                        authors: [],
+                        publication_date: '',
                         journal: null,
-                        citation_count: 185,
+                        citation_count: 0,
                         score: 0
-                    },
-                    {
-                        paper_id: '003fc09d-ac2f-4756-9395-a5767584ada8',
-                        title: 'Monocular Depth Estimation Using Cues Inspired by Biological Vision\n  Systems',
-                        authors: ['Dylan Auty', 'Krystian Mikolajczyk', ''],
-                        publication_date: '2022-04-21',
-                        journal: null,
-                        citation_count: 185,
-                        score: 1
                     }
                 ]
             },
@@ -273,89 +264,75 @@ export default {
         let echarts = internalInstance.appContext.config.globalProperties.$echarts
         // 渲染论文领域图表
         const paperClassChart = echarts.init(document.getElementById('paperClassChart'))
-        setTimeout(function () {
-            const option1 = {
-                legend: {},
-                tooltip: {
-                    trigger: 'axis',
-                    showContent: false
-                },
-                dataset: {
-                    source: [
-                        ['product', '2012', '2013', '2014', '2015', '2016', '2017'],
-                        ['Milk Tea', 56.5, 82.1, 88.7, 70.1, 53.4, 85.1],
-                        ['Matcha Latte', 51.1, 51.4, 55.1, 53.3, 73.8, 68.7],
-                        ['Cheese Cocoa', 40.1, 62.2, 69.5, 36.4, 45.2, 32.5],
-                        ['Walnut Brownie', 25.2, 37.1, 41.2, 18, 33.9, 49.1]
-                    ]
-                },
-                xAxis: { type: 'category' },
-                yAxis: { gridIndex: 0 },
-                grid: { top: '55%' },
-                series: [
-                    {
+        const option1 = {
+            legend: {
+                left: 'center' // 图例水平居中
+            },
+            tooltip: {
+                trigger: 'axis',
+                showContent: true
+            },
+            dataset: {
+                source: []
+            },
+            xAxis: { type: 'category' },
+            yAxis: { gridIndex: 0 },
+            grid: { top: '55%' },
+            series: []
+        }
+        await getPaperClassStatistic()
+            .then((response) => {
+                option1.dataset.source = [response.data.years, ...response.data.data]
+                for (let i = 0; i < response.data.data.length; ++i) {
+                    option1.series.push({
                         type: 'line',
                         smooth: true,
                         seriesLayoutBy: 'row',
                         emphasis: { focus: 'series' }
-                    },
-                    {
-                        type: 'line',
-                        smooth: true,
-                        seriesLayoutBy: 'row',
-                        emphasis: { focus: 'series' }
-                    },
-                    {
-                        type: 'line',
-                        smooth: true,
-                        seriesLayoutBy: 'row',
-                        emphasis: { focus: 'series' }
-                    },
-                    {
-                        type: 'line',
-                        smooth: true,
-                        seriesLayoutBy: 'row',
-                        emphasis: { focus: 'series' }
-                    },
-                    {
-                        type: 'pie',
-                        id: 'pie',
-                        radius: '30%',
-                        center: ['50%', '25%'],
-                        emphasis: {
-                            focus: 'self'
-                        },
-                        label: {
-                            formatter: '{b}: {@2012} ({d}%)'
-                        },
-                        encode: {
-                            itemName: 'product',
-                            value: '2012',
-                            tooltip: '2012'
-                        }
-                    }
-                ]
-            }
-            paperClassChart.on('updateAxisPointer', function (event) {
-                const xAxisInfo = event.axesInfo[0]
-                if (xAxisInfo) {
-                    const dimension = xAxisInfo.value + 1
-                    paperClassChart.setOption({
-                        series: {
-                            id: 'pie',
-                            label: {
-                                formatter: '{b}: {@[' + dimension + ']} ({d}%)'
-                            },
-                            encode: {
-                                value: dimension,
-                                tooltip: dimension
-                            }
-                        }
                     })
                 }
+                option1.series.push({
+                    type: 'pie',
+                    id: 'pie',
+                    radius: '35%',
+                    center: ['50%', '30%'],
+                    emphasis: {
+                        focus: 'self'
+                    },
+                    label: {
+                        formatter: '{b}: {@' + response.data.years[1] + '} ({d}%)'
+                    },
+                    encode: {
+                        itemName: 'subclass',
+                        value: response.data.years[1],
+                        tooltip: response.data.years[1]
+                    }
+                })
             })
-            paperClassChart.setOption(option1)
+            .catch((error) => {
+                ElMessage.error(error.response.data.message)
+            })
+
+        paperClassChart.on('updateAxisPointer', function (event) {
+            const xAxisInfo = event.axesInfo[0]
+            if (xAxisInfo) {
+                const dimension = xAxisInfo.value + 1
+                paperClassChart.setOption({
+                    series: {
+                        id: 'pie',
+                        label: {
+                            formatter: '{b}: {@[' + dimension + ']} ({d}%)'
+                        },
+                        encode: {
+                            value: dimension,
+                            tooltip: dimension
+                        }
+                    }
+                })
+            }
         })
+        paperClassChart.setOption(option1)
+
         // 渲染各年份论文统计图
         const paperYearlyChart = echarts.init(document.getElementById('paperYearlyChart'))
         const option2 = {
