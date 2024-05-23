@@ -7,7 +7,7 @@
             </router-link>
         </div>
         <div style="text-align: left;">
-          <el-tag size="mini" v-for="subclass in subclasses" :key="subclass" type="warning" style="margin-right: 5px">
+          <el-tag size="mini" v-for="subclass in paper.sub_classes" :key="subclass" type="warning" style="margin-right: 5px">
             {{ subclass }}
           </el-tag>
         </div>
@@ -35,7 +35,6 @@ export default {
   },
   data () {
     return {
-      subclasses: ['计算机视觉', '深度学习']
     }
   },
   methods: {

@@ -6,31 +6,66 @@
           <search-input />
         </el-col>
       </el-row>
-      <el-row style="">
-        <el-col :span="6">
-          <!-- 侧边栏 -->
-          <el-form label-position="top" style="margin-left: 20px;">
-            <el-form-item label="年份过滤">
-              <el-select v-model="filterYear" placeholder="请选择年份" @change="applyFilter">
-                <el-option label="所有年份" value=""></el-option>
-                <el-option label="2024年以来" value="2024"></el-option>
-                <el-option label="2022年以来" value="2022"></el-option>
-                <el-option label="2020年以来" value="2020"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="排序方式">
-              <el-select v-model="sortOrder" placeholder="请选择排序方式" @change="applyFilter">
-                <el-option label="默认排序" value=""></el-option>
-                <el-option label="时间升序" value="asc"></el-option>
-                <el-option label="时间降序" value="desc"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-form>
+      <el-row>
+        <el-col :span="4" style="margin-top: 15px;">
+          <el-col :span="18" :offset="6">
+            <!-- 侧边栏 -->
+            <div class="filter-cond">
+              <el-button type="text" @click="filterByYear(0)"
+                :class="filterYear === 0 ? 'clicked-button' : 'normal-button'">时间不限</el-button>
+            </div>
+            <div class="filter-cond">
+              <el-button type="text" @click="filterByYear(2024)"
+                :class="filterYear === 2024 ? 'clicked-button' : 'normal-button'">2024年以来</el-button>
+            </div>
+            <div class="filter-cond">
+              <el-button type="text" @click="filterByYear(2022)"
+                :class="filterYear === 2022 ? 'clicked-button' : 'normal-button'">2022年以来</el-button>
+            </div>
+            <div class="filter-cond">
+              <el-button type="text" @click="filterByYear(2020)"
+                :class="filterYear === 2020 ? 'clicked-button' : 'normal-button'">2020年以来</el-button>
+            </div>
+            <el-divider></el-divider>
+            <div class="filter-cond">
+              <el-button type="text" @click="sortPapers('')"
+                :class="sortOrder === '' ? 'clicked-button' : 'normal-button'">默认排序</el-button>
+            </div>
+            <div class="filter-cond">
+              <el-button type="text" @click="sortPapers('asc')"
+                :class="sortOrder === 'asc' ? 'clicked-button' : 'normal-button'">按时间升序</el-button>
+            </div>
+            <div class="filter-cond">
+              <el-button type="text" @click="sortPapers('desc')"
+                :class="sortOrder === 'desc' ? 'clicked-button' : 'normal-button'">按时间降序</el-button>
+            </div>
+            <el-divider></el-divider>
+            <el-form label-position="top">
+              <el-form-item>
+                <el-select v-model="filterSubclass" placeholder="所有类别" @change="applyFilter">
+                  <el-option label="所有类别" value=""></el-option>
+                  <el-option label="边缘检测" value="边缘检测"></el-option>
+                  <el-option label="目标检测" value="目标检测"></el-option>
+                  <el-option label="图像分类" value="图像分类"></el-option>
+                  <el-option label="图像去噪" value="图像去噪"></el-option>
+                  <el-option label="图像分割" value="图像分割"></el-option>
+                  <el-option label="人脸识别" value="人脸识别"></el-option>
+                  <el-option label="姿态估计" value="姿态估计"></el-option>
+                  <el-option label="动作识别" value="动作识别"></el-option>
+                  <el-option label="人群计数" value="人群计数"></el-option>
+                  <el-option label="医学影像" value="医学影像"></el-option>
+                  <el-option label="三维重建" value="三维重建"></el-option>
+                  <el-option label="对抗样本攻击" value="对抗样本攻击"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-form>
+            <el-divider></el-divider>
+          </el-col>
         </el-col>
-        <el-col :span="18">
+        <el-col :span="20">
           <el-main>
             <div style="display: flex; justify-content: space-between; align-items: center;">
-              共检索出 {{ papers.length }} 篇论文
+              共检索出 {{ filteredPapers.length }} 篇论文
               <div>
                 <el-button type="success" icon="el-icon-download" @click="downloadPapers" size="small">
                   下载文献
@@ -90,8 +125,9 @@ export default {
   data () {
     return {
       papers: [],
-      filterYear: '',
+      filterYear: 0,
       sortOrder: '',
+      filterSubclass: '',
       filteredPapers: [],
       aiReply: [],
       paperIds: [],
@@ -101,15 +137,16 @@ export default {
     }
   },
   methods: {
+    filterByYear (year) {
+      this.filterYear = year
+      this.applyFilter()
+    },
+    sortPapers (sortOrder) {
+      this.sortOrder = sortOrder
+      this.applyFilter()
+    },
     applyFilter () {
-      let results = this.papers
-      if (this.filterYear) {
-        results = results.filter(paper => {
-          const year = new Date(paper.publication_date).getFullYear()
-          console.log(year)
-          return year >= this.filterYear
-        })
-      }
+      let results = this.papers.slice()
       if (this.sortOrder === 'asc') {
         results.sort((a, b) => {
           const dateA = new Date(a.publication_date)
@@ -121,6 +158,19 @@ export default {
           const dateA = new Date(a.publication_date)
           const dateB = new Date(b.publication_date)
           return dateB - dateA // 降序排序
+        })
+      } else {
+        console.log('default order:', this.papers)
+        results = this.papers
+      }
+      results = results.filter(paper => {
+        const year = new Date(paper.publication_date).getFullYear()
+        console.log(year)
+        return year >= this.filterYear
+      })
+      if (this.filterSubclass.length > 0) {
+        results = results.filter(paper => {
+          return paper.sub_classes.includes(this.filterSubclass)
         })
       }
       this.filteredPapers = results
@@ -283,6 +333,22 @@ export default {
 </script>
 
 <style scoped>
+.filter-cond {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.normal-button {
+  color: black;
+  font-weight: normal !important;
+}
+
+.clicked-button {
+  color: #409EFE;
+  font-weight: normal !important;
+  font-size: 16px;
+}
+
 .checkbox {
   margin-left: 20px;
   display: flex;
