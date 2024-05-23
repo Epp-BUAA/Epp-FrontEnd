@@ -118,8 +118,13 @@ export const fetchReports = async () => {
 export const fetchUserInfo = async () => {
   try {
     console.log('fetchInfo')
-    const response = api.get('userInfo/userInfo')
+    const response = await api.get('userInfo/userInfo')
     console.log(response)
+    localStorage.setItem('username', response.data.username)
+    localStorage.setItem('avatar', 'https://epp.buaase.cn' + response.data.avatar)
+    localStorage.setItem('loginTime', response.data.registration_date)
+    localStorage.setItem('favorites', response.data.collected_papers_cnt)
+    localStorage.setItem('likes', response.data.liked_papers_cnt)
     return response
   } catch (error) {
     console.log(error)
