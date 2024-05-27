@@ -86,7 +86,7 @@ export default {
 <style lang="scss" scoped>
 .profile {
     width: 100%;
-    height: 50vh;
+    height: 45vh;
 }
 .upper-box {
     display: flex;
@@ -143,7 +143,7 @@ export default {
         border-right: 1.5px solid rgb(0, 0, 0, 0.2);
         .statistic-title {
             flex: 1;
-            font-size: 22px;
+            font-size: 20px;
             color: rgb(95, 95, 95);
         }
         .statistic-content {
