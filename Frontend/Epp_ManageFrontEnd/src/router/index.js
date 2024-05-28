@@ -22,7 +22,19 @@ const router = createRouter({
                     component: () => import(`@/views/paper/PaperManage.vue`)
                 },
                 {
-                    path: '/report'
+                    path: '/report',
+                    redirect: '/report/unhandled',
+                    component: () => import(`@/views/report/ReportManage.vue`),
+                    children: [
+                        {
+                            path: '/report/unhandled',
+                            component: () => import(`@/views/report/UnhandledReport.vue`)
+                        },
+                        {
+                            path: '/report/handled',
+                            component: () => import(`@/views/report/HandledReport.vue`)
+                        }
+                    ]
                 }
             ]
         },

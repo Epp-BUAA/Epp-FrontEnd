@@ -5,7 +5,7 @@
             <el-menu
                 active-text-color="#ffd04b"
                 background-color="#2c2c2c"
-                :default-active="$route.path"
+                :default-active="activeMenu"
                 text-color="#fff"
                 router
             >
@@ -79,6 +79,14 @@ export default {
                 .catch((error) => {
                     ElMessage.error(error.response.data.error)
                 })
+        }
+    },
+    computed: {
+        activeMenu() {
+            if (this.$route.path.startsWith('/report')) {
+                return '/report'
+            }
+            return this.$route.path
         }
     }
 }

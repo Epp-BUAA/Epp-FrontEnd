@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div style="width: 100%; height: 100%">
+        <div style="width: 100%">
             <el-collapse v-model="isClsActive">
                 <el-collapse-item name="1">
                     <template #title>
@@ -429,10 +429,12 @@ export default {
     }
 }
 </script>
+
 <style lang="scss" scoped>
 .collapse-title {
     display: flex;
     align-items: center;
+    font-weight: bold;
     color: rgb(0, 0, 0, 0.6);
     font-size: 16px;
     padding: 10px;

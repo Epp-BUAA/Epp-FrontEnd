@@ -351,6 +351,7 @@ export default {
     align-items: center;
     color: rgb(0, 0, 0, 0.6);
     font-size: 16px;
+    font-weight: 700;
     padding: 10px;
     .collapse-title-text {
         margin-left: 10px;
