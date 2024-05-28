@@ -93,7 +93,7 @@ export default {
   align-items: center;
   padding: 10px;
   cursor: pointer;
-  transition: box-shadow 0.3s, transform 0.3s; /* 添加border-color的过渡效果 */
+  transition: box-shadow 0.3s ease, transform 0.3s ease; /* 添加border-color的过渡效果 */
   border-radius: 12px;
 }
 

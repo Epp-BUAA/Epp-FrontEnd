@@ -146,7 +146,7 @@ export default {
 .navbar-item {
   margin-top: 2px;
   background-color: transparent; /* 设置背景颜色 */
-  transition: box-shadow 0.3s, transform 0.3s, color 0.3s, font-size 0.3s; /* 添加过渡效果 */
+  transition: box-shadow 0.3s ease, transform 0.3s ease, color 0.3s ease, font-size 0.3s ease; /* 添加过渡效果 */
   border-radius: 12px;
   text-decoration: none;
 }
