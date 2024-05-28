@@ -3,12 +3,14 @@
   <div id="personal-main">
     <sidebar @tabSelected="selectTab" />
     <div class="content">
-      <PersonalInfo v-if="selectedTab === 'personal'" />
-      <AiConversations v-else-if="selectedTab === 'ai'" />
-      <SearchRecords v-else-if="selectedTab === 'search'" />
-      <MyReports v-else-if="selectedTab === 'reports'" />
-      <CollectedPapers v-else-if="selectedTab === 'collections'" />
-      <Notifications v-else-if="selectedTab === 'notices'" />
+      <transition name="content-transition">
+        <PersonalInfo v-if="selectedTab === 'personal'" />
+        <AiConversations v-else-if="selectedTab === 'ai'" />
+        <SearchRecords v-else-if="selectedTab === 'search'" />
+        <MyReports v-else-if="selectedTab === 'reports'" />
+        <CollectedPapers v-else-if="selectedTab === 'collections'" />
+        <Notifications v-else-if="selectedTab === 'notices'" />
+      </transition>
     </div>
   </div>
 </div>
@@ -80,5 +82,18 @@ export default {
   background-repeat: no-repeat;
   background-position: center bottom;
   background-attachment: fixed;
+}
+
+.content-transition-enter-active, .content-transition-leave-active {
+  transition: opacity 0.3s ease-in-out, transform 0.5s ease-in-out;
+}
+.content-transition-enter {
+  opacity: 0;
+  transform: translateY(200px);
+}
+.content-transition-leave-to {
+  opacity: 0;
+  transform: scale(0.8);
+  position: absolute;
 }
 </style>

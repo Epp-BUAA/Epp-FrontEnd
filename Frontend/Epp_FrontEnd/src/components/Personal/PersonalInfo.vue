@@ -159,7 +159,7 @@ export default {
 
 <style scoped>
 .profile {
-  display: flex;
+  display: absolute;
   flex-direction: column;
   align-items: center;
 }
@@ -228,7 +228,7 @@ export default {
   -webkit-backdrop-filter: blur(5px);
   border: 0cap;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加阴影效果，提升层次感 */
-  margin-left: 10px;
+  margin-left: 50px;
   height: 160px;
   width: 900px;
   padding: 20px;
