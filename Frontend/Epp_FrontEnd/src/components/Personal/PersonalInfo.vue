@@ -58,6 +58,7 @@
 
 <script>
 import { fetchUserInfo } from '@/request/userRequest.js'
+import { EventBus } from '../../utils/eventBus'
 export default {
   data () {
     return {
@@ -86,11 +87,6 @@ export default {
         this.loginTime = res.registration_date
         this.favorites = res.collected_papers_cnt
         this.likes = res.liked_papers_cnt
-        localStorage.setItem('username', this.username)
-        localStorage.setItem('avatar', this.path)
-        localStorage.setItem('loginTime', this.loginTime)
-        localStorage.setItem('favorites', this.favorites)
-        localStorage.setItem('likes', this.likes)
         loading.close()
       } catch (error) {
         console.log(error)
@@ -109,6 +105,7 @@ export default {
       })
       localStorage.setItem('avatar', this.path)
       this.avatarUploadVisible = false
+      EventBus.$emit('updateAvatar', this.path)
     },
     beforeAvatarUpload (file) {
       const isPhoto = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg'

@@ -1,5 +1,5 @@
 <template>
-  <el-container style="height: calc(100vh - 70px);">
+  <el-container style="height: calc(100vh - 70px);" class="read-assistant">
     <el-header class="my-header">
       <h3>调研助手</h3>
       <div>
@@ -11,7 +11,7 @@
             style="margin-right: 10px;"></el-button>
         </el-tooltip>
         <el-dialog :visible.sync="showSummaryModal" width="70%">
-          <div v-html="markdownFile" style=""></div>
+            <div v-html="markdownFile" style=""></div>
         </el-dialog>
       </div>
     </el-header>
@@ -75,10 +75,11 @@ export default {
       answerFinished: false,
       probQuestions: [],
       showSummaryModal: false,
-      markdownFile: ''
+      markdownFile: '',
+      summaryFinished: false
     }
   },
-  created () {
+  mounted () {
     this.fileReadingID = this.fileReadingId
     if (this.fileReadingID > 0) {
       this.restorePaperStudy()
@@ -99,6 +100,13 @@ export default {
       }
     },
     createPaperStudy () {
+      const loadingInstance = this.$loading({
+        lock: true,
+        text: '正在创建知识库...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+        target: '.read-assistant' // 指定加载动画的目标
+      })
       axios.post(this.$BASE_API_URL + '/study/createPaperStudy', { 'paper_id': this.paperID, 'file_type': 2 })
         .then((response) => {
           if (response.status === 200) {
@@ -110,13 +118,22 @@ export default {
               message: '论文研读知识库创建成功！',
               type: 'success'
             })
+            loadingInstance.close()
           }
         })
         .catch((error) => {
           console.log('Error: ', error)
+          loadingInstance.close()
         })
     },
     restorePaperStudy () {
+      const loadingInstance = this.$loading({
+        lock: true,
+        text: '正在恢复研读对话...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+        target: '.read-assistant' // 指定加载动画的目标
+      })
       console.log('恢复研读对话的id, ', this.fileReadingID)
       axios.post(this.$BASE_API_URL + '/study/restorePaperStudy', { 'file_reading_id': this.fileReadingID })
         .then((response) => {
@@ -129,9 +146,11 @@ export default {
             message: '已恢复研读对话',
             type: 'success'
           })
+          loadingInstance.close()
         })
         .catch((error) => {
           console.error('恢复论文研读失败: ', error)
+          loadingInstance.close()
         })
     },
     async chatToAI () {
@@ -248,26 +267,18 @@ export default {
     },
     renderMarkdown () {
       const md = markdownIt()
-      const loadingInstance = this.$loading({
-        lock: true,
-        text: '正在帮您总结论文...',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
-      })
       axios.post(this.$BASE_API_URL + '/study/generateAbstractReport', { document_id: '', paper_id: this.paperID })
         .then((response) => {
           const summary = response.data.summary
           this.markdownFile = md.render(summary)
-          loadingInstance.close()
           this.showSummaryModal = true
         })
-        .catch((error) => {
-          console.error('摘要生成失败', error)
+        .catch(() => {
           this.$message({
-            message: '摘要生成失败',
-            type: 'error'
+            message: '正在为您生成摘要，请稍等...',
+            type: 'warning'
           })
-          loadingInstance.close()
+          this.summaryFinished = false
         })
     },
     clearHistory () {

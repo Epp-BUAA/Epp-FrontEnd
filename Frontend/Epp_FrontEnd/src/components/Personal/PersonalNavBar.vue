@@ -15,6 +15,9 @@
         <span class="label">{{ tab.label }}</span>
       </li>
       <li class="logout" @click="logout">
+        <span class="icon">
+          <img src="@/assets/icon/logout.svg" alt="icon" width="20" height="20" />
+        </span>
         <span class="label">退出登录</span>
       </li>
     </ul>

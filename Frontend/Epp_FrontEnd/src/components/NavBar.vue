@@ -12,7 +12,6 @@
           <span aria-hidden="true"></span>
         </a>
       </div>
-
       <div class="navbar-menu" :class="{ 'is-active': isMenuActive }">
         <div class="navbar-start">
           <router-link to="/search" class="navbar-item" :class="{ 'selected-tab': selectedTab === 'search'}" @click.native="selectTab('search', $event)">文献调研</router-link>
@@ -20,10 +19,23 @@
           <router-link to="/personal" class="navbar-item" :class="{ 'selected-tab': selectedTab === 'personal'}" @click.native="selectTab('personal', $event)">个人中心</router-link>
           <router-link to="/aboutus" class="navbar-item" :class="{ 'selected-tab': selectedTab === 'aboutus'}" @click.native="selectTab('aboutus', $event)">关于我们</router-link>
         </div>
-        <div class="navbar-end">
-          <div class="navbar-item">
-            <el-button type="text" @click="logout">退出登录</el-button>
-          </div>
+        <div class="navbar-end" v-if="selectedTab !== 'personal'">
+          <el-dropdown @command="handleCommand">
+            <span class="el-dropdown-link">
+              <img :src="avatar" alt="Profile Icon" class="profile-icon">
+            </span>
+            <el-dropdown-menu slot="dropdown" class="down-menu">
+              <el-dropdown-item disabled class="down-menu-item">
+                <div class="profile-details">
+                  <p class="username">用户名：{{ username }}</p>
+                </div>
+              </el-dropdown-item>
+              <el-dropdown-item command="logout" class="down-menu-item">
+                <img src="@/assets/icon/logout.svg" alt="Logout Icon" style="width: 18px; height: 18px; margin-right: 2px;">
+                退出登录
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
       </div>
     </div>
@@ -31,38 +43,69 @@
 </template>
 
 <script>
-import { logout } from '@/request/userRequest.js'
+import { logout, fetchUserInfo } from '@/request/userRequest.js'
+import { EventBus } from '../utils/eventBus'
 export default {
   name: 'NavBar',
   data () {
     return {
       isTop: true,
       selectedTab: '',
-      isMenuActive: false
+      isMenuActive: false,
+      avatar: '',
+      username: ''
     }
   },
   watch: {
     $route (to, from) {
-      if (to.path.includes('/search')) {
-        this.selectedTab = 'search'
-      } else if (to.path.includes('/upload')) {
-        this.selectedTab = 'upload'
-      } else if (to.path.includes('/personal')) {
-        this.selectedTab = 'personal'
-      } else if (to.path.includes('/aboutus')) {
-        this.selectedTab = 'aboutus'
-      } else {
-        this.selectedTab = ''
-      }
+      this.updateSelectedTab()
     }
+  },
+  created () {
+    this.updateSelectedTab()
+
+    var username = localStorage.getItem('username')
+    if (username) {
+      this.username = username
+    } else {
+      fetchUserInfo().then(res => {
+        this.username = res.data.username
+      })
+    }
+    var avatar = localStorage.getItem('avatar')
+    if (avatar) {
+      this.avatar = avatar
+    } else {
+      fetchUserInfo().then(res => {
+        this.avatar = res.data.avatar
+      })
+    }
+
+    EventBus.$on('updateAvatar', avatar => {
+      this.avatar = avatar
+    })
   },
   mounted () {
     window.addEventListener('scroll', this.handleScroll)
   },
   destroyed () {
     window.removeEventListener('scroll', this.handleScroll)
+    EventBus.$off('updateAvatar')
   },
   methods: {
+    updateSelectedTab () {
+      if (this.$route.path.includes('/search')) {
+        this.selectedTab = 'search'
+      } else if (this.$route.path.includes('/upload')) {
+        this.selectedTab = 'upload'
+      } else if (this.$route.path.includes('/personal')) {
+        this.selectedTab = 'personal'
+      } else if (this.$route.path.includes('/aboutus')) {
+        this.selectedTab = 'aboutus'
+      } else {
+        this.selectedTab = ''
+      }
+    },
     handleScroll () {
       this.isTop = window.scrollY === 0
     },
@@ -82,6 +125,11 @@ export default {
           type: 'success'
         })
       })
+    },
+    handleCommand (command) {
+      if (command === 'logout') {
+        this.logout()
+      }
     }
   }
 }
@@ -129,4 +177,27 @@ export default {
   }
 }
 
+.navbar-end {
+  display: flex;
+  align-items: center;
+}
+
+.profile-icon {
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  cursor: pointer;
+}
+
+.down-menu {
+  width: 150px;
+}
+
+.down-menu-item {
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.95rem;
+}
 </style>
