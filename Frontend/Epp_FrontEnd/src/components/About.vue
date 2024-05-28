@@ -55,7 +55,7 @@ export default {
         {
           id: 5,
           name: '黄一轩',
-          role: '运维总工程师，后端工程师',
+          role: '运维总工程师，前端工程师，后端工程师',
           description: '岂关名利分荣路，自有才华作庆霄。',
           image: require('@/assets/hyx.png')
         },

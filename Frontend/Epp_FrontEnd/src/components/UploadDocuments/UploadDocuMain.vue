@@ -1,7 +1,9 @@
 <template>
 <div class="uploadDocu">
   <div id="uploadDocu-main">
-    <Sidebar @tabSelected="selectTab" />
+    <transition name="sidebar-transition">
+      <Sidebar v-if="showSidebar" @tabSelected="selectTab" />
+    </transition>
     <div class="content">
       <Upload v-if="selectedTab === 'upload'" />
       <Documents v-else-if="selectedTab === 'documents'" />
@@ -24,7 +26,8 @@ export default {
   },
   data () {
     return {
-      selectedTab: 'upload' // 默认选中“我的信息”
+      selectedTab: 'upload',
+      showSidebar: false
     }
   },
   methods: {
@@ -37,6 +40,7 @@ export default {
     if (selectedTab) {
       this.selectedTab = selectedTab
     }
+    this.showSidebar = true
   }
 }
 </script>
@@ -63,5 +67,15 @@ export default {
   background-repeat: no-repeat;
   background-position: center bottom;
   background-attachment: fixed;
+}
+
+.sidebar-transition-enter-active, .sidebar-transition-leave-active {
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+.sidebar-transition-enter {
+  transform: translateX(-200px);
+}
+.sidebar-transition-leave-to {
+  opacity: 0;
 }
 </style>

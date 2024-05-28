@@ -1,7 +1,9 @@
 <template>
 <div class="personal">
   <div id="personal-main">
-    <sidebar @tabSelected="selectTab" />
+    <transition name="sidebar-transition">
+      <sidebar v-if="showSidebar" @tabSelected="selectTab" />
+    </transition>
     <div class="content">
       <transition name="content-transition">
         <PersonalInfo v-if="selectedTab === 'personal'" />
@@ -38,7 +40,8 @@ export default {
   },
   data () {
     return {
-      selectedTab: 'personal' // 默认选中“我的信息”
+      selectedTab: 'personal', // 默认选中“我的信息”
+      showSidebar: false
     }
   },
   methods: {
@@ -51,6 +54,9 @@ export default {
     if (selectedTab) {
       this.selectedTab = selectedTab
     }
+  },
+  mounted () {
+    this.showSidebar = true
   },
   destroyed () {
     localStorage.removeItem('loginTime')
@@ -95,5 +101,15 @@ export default {
   opacity: 0;
   transform: scale(0.8);
   position: absolute;
+}
+
+.sidebar-transition-enter-active, .sidebar-transition-leave-active {
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+.sidebar-transition-enter {
+  transform: translateX(-200px);
+}
+.sidebar-transition-leave-to {
+  opacity: 0;
 }
 </style>
