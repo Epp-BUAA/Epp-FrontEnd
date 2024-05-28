@@ -15,6 +15,7 @@ export const getUnhandledReportList = ({ date, page_num, page_size }) => {
 }
 
 export const getHandledReportList = ({ date, page_num, page_size }) => {
+    console.log(date, page_num, page_size)
     // 获取已处理举报列表
     return request({
         method: 'get',

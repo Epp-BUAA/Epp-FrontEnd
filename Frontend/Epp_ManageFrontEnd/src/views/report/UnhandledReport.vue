@@ -1,9 +1,21 @@
 <template>
     <div class="report-manage-table">
+        <!-- 搜索框 -->
+        <div class="report-manage-search">
+            <el-date-picker
+                v-model="searchDate"
+                type="date"
+                placeholder="选择日期"
+                format="YYYY-MM-DD"
+                value-format="YYYY-MM-DD"
+            />
+            <el-button type="primary" @click="handleSearch">搜索</el-button>
+        </div>
+        <!-- 表格内容 -->
         <el-table
             :data="reportData.reports"
             stripe
-            style="width: 100%; border-top: 1px solid #edebeb; font-size: 15px"
+            style="width: 96%; border-top: 1px solid #edebeb; font-size: 15px; margin: 0 auto"
             size="large"
             v-loading="isLoading"
             :header-cell-style="{ 'text-align': 'center' }"
@@ -11,7 +23,7 @@
             :default-sort="{ prop: 'date', order: 'descending' }"
         >
             <el-table-column label="序号" width="100" type="index"></el-table-column>
-            <el-table-column label="日期" prop="date" width="200" />
+            <el-table-column label="日期" prop="date" width="200" sortable />
             <el-table-column label="用户" width="150">
                 <template v-slot="scope">
                     <div class="table-text">
@@ -42,6 +54,15 @@
                 <el-empty description="没有数据" />
             </template>
         </el-table>
+        <!-- 分页组件 -->
+        <el-pagination
+            class="report-manage-pagination"
+            v-model:current-page="currentPage"
+            v-model:page-size="pageSize"
+            :page-sizes="[10, 25, 50]"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="reportData.total"
+        />
     </div>
 </template>
 
@@ -72,16 +93,18 @@ export default {
                         date: '2024-04-29 23:34:56',
                         content: '124'
                     }
-                ],
-                message: '举报信息获取成功'
-            }
+                ]
+            },
+            searchDate: '', // 搜索日期
+            currentPage: 1, // 分页当前页
+            pageSize: 10 // 分页大小
         }
     },
     methods: {
         async handleSearch() {
             this.isLoading = true
             await getUnhandledReportList({
-                date: '',
+                date: this.searchDate,
                 page_num: this.currentPage,
                 page_size: this.pageSize
             })
@@ -104,6 +127,17 @@ export default {
 <style lang="scss" scoped>
 .report-manage-table {
     width: 100%;
+    .report-manage-search {
+        float: right;
+        height: 8vh;
+        line-height: 8vh;
+        padding: 0 3%;
+    }
+    .report-manage-pagination {
+        height: 10vh;
+        margin-right: 2%;
+        float: right;
+    }
 }
 
 .table-text {

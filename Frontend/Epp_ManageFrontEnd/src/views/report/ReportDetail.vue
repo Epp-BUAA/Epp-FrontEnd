@@ -179,7 +179,7 @@ export default {
     }
 }
 
-::v-deep .el-descriptions__label {
+:deep(.el-descriptions__label) {
     width: 20% !important;
 }
 
