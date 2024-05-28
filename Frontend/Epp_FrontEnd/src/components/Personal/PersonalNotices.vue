@@ -17,7 +17,7 @@
               <el-radio-button label="2">未读</el-radio-button>
             </el-radio-group>
           </div>
-          <el-table :data="displayedNotifications" v-loading="loading" style="width: 100%" :default-sort = "{prop: 'date', order: 'descending'}">
+          <el-table :data="displayedNotifications" v-loading="loading" style="width: 100%; min-height: 400px;" :default-sort = "{prop: 'date', order: 'descending'}">
             <el-table-column prop="title" label="通知标题">
               <template slot-scope="scope">
                 <el-link class="notice-link" :underline="false" type="primary" @click="showModal(scope.row)">{{ scope.row.title }}</el-link>

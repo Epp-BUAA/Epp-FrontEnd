@@ -85,7 +85,7 @@ export default {
 }
 
 .content-transition-enter-active, .content-transition-leave-active {
-  transition: opacity 0.3s ease-in-out, transform 0.5s ease-in-out;
+  transition: opacity 0.3s ease-in-out, transform 0.4s ease-in-out;
 }
 .content-transition-enter {
   opacity: 0;

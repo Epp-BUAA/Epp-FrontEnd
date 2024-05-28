@@ -8,7 +8,7 @@
     <el-row>
       <el-col :span="24">
         <el-card class="table-card">
-          <el-table :data="displayedDocuments" v-loading="loading" style="width: 100%" :default-sort = "{prop: 'date', order: 'descending'}">
+          <el-table :data="displayedDocuments" v-loading="loading" style="width: 100%; min-height: 420px;" :default-sort = "{prop: 'date', order: 'descending'}">
             <el-table-column prop="title" label="报告标题" align="center">
               <template slot-scope="scope">
                 <el-link class="report-link" :underline="false" @click="viewReport(scope.row.report_id)" type="primary">{{ scope.row.title }}</el-link>
