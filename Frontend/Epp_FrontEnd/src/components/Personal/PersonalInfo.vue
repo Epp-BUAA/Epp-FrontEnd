@@ -77,9 +77,9 @@ export default {
       try {
         const loading = this.$loading({
           lock: true,
-          text: '客官别急，正在加载中...',
           spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0)'
+          background: 'rgba(255, 255, 255, 0.7)',
+          target: '.other-info'
         })
         var res = (await fetchUserInfo()).data
         this.path = 'https://epp.buaase.cn' + res.avatar
@@ -120,7 +120,7 @@ export default {
       return isPhoto && isLt2M
     }
   },
-  created () {
+  mounted () {
     if (localStorage.getItem('username')) {
       this.username = localStorage.getItem('username')
       this.path = localStorage.getItem('avatar')
