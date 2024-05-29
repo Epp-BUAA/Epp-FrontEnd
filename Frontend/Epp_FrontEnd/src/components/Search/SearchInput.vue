@@ -1,6 +1,6 @@
 <template>
   <div ref="searchContainer" class="search-container">
-    <el-input
+    <!-- <el-input
       v-model="searchContent"
       placeholder="请输入搜索内容"
       @focus="showHistory = true"
@@ -12,33 +12,41 @@
         <el-button type="primary" @click="submitSearch(searchContent)">搜索</el-button>
       </template>
       <i slot="prefix" class="el-input__icon el-icon-search"></i>
-    </el-input>
-    <div v-if="showHistory" class="history-box">
-      <div class="history">
-        <el-tag
-          v-for="(record, index) in search_records"
-          :key="index"
-          closable
-          @close="removeRecord(record.search_record_id, index)"
-          @click="searchFromHistory(record.search_record_id)"
-          id="record"
-        >
-          <div style="display: flex;">
-            {{ record.keyword }}
-            <div
-              style="
-                color: grey;
-                font-size: smaller;
-                margin-left: 10px;
-                justify-content: flex-start;
-              "
-            >
-              {{ record.date }}
+    </el-input> -->
+    <el-input
+  v-model="searchContent"
+  placeholder="请输入搜索内容"
+  @focus="showHistory = true"
+  @keyup.enter="submitSearch(searchContent)"
+  @input="updateInput"
+  class="custom-search-input"
+>
+  <template #append>
+    <span @click="submitSearch(searchContent)" class="custom-search-button">搜索</span>
+  </template>
+  <i slot="prefix" class="el-input_icon-el-icon-search"></i>
+</el-input>
+
+    <transition name="fade">
+      <div v-if="showHistory" class="history-box">
+        <div class="history">
+          <el-tag
+            v-for="(record, index) in search_records"
+            :key="index"
+            closable
+            @close="removeRecord(record.search_record_id, index)"
+            @click="searchFromHistory(record.search_record_id)"
+          >
+            <div style="display: flex; align-items: center;">
+              {{ record.keyword }}
+              <div class="record-date">
+                {{ record.date }}
+              </div>
             </div>
-          </div>
-        </el-tag>
+          </el-tag>
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -50,7 +58,6 @@ export default {
   data () {
     return {
       searchContent: '',
-      searchResults: [],
       search_records: [],
       showHistory: false
     }
@@ -67,8 +74,9 @@ export default {
   methods: {
     submitSearch (searchContent) {
       if (!searchContent) {
-        this.$message({
-          message: '请输入你的问题',
+        this.$notify({
+          title: '警告',
+          message: '请先输入查询内容',
           type: 'warning'
         })
         return
@@ -86,22 +94,21 @@ export default {
     },
     removeRecord (searchRecordId, index) {
       axios
-        .delete(this.$BASE_API_URL + '/userInfo/delSearchHistory', {
+        .delete(`${this.$BASE_API_URL}/userInfo/delSearchHistory`, {
           data: {
             search_record_id: searchRecordId
           }
         })
         .then(response => {
-          console.log(response.data.message)
+          this.search_records.splice(index, 1)
         })
         .catch(error => {
           console.error('删除历史记录失败', error)
         })
-      this.search_records.splice(index, 1)
     },
     fetchSearchRecords () {
       axios
-        .get(this.$BASE_API_URL + '/userInfo/searchHistory')
+        .get(`${this.$BASE_API_URL}/userInfo/searchHistory`)
         .then(response => {
           this.search_records = response.data.keywords
         })
@@ -124,56 +131,64 @@ export default {
 <style scoped>
 .search-container {
   border-radius: 25px;
-  border-color: #409EFE;
+  border: 1px solid #409EFE;
   width: 90%;
   position: relative;
+  margin: 0 auto;
+  padding: 10px; /* 为了更好的视觉效果 */
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1); /* 增加阴影效果 */
 }
-.custom-search-input.el-input_inner {
-  border-radius: 25px;
+/* .custom-search-input{
+  background-color: #409EFE;
+} */
+/* .el-input__inner {
+  background-color: #409EFE;
+} */
+.custom-search-button {
   width: 100%;
-  border-color: #409EFE ;
-  /* transition: border-color 0.3s; */
-   border-width: 20px; /* 调整边框粗细 */
+  color: #409EFE;
 }
-
-.custom-search-input.el-input_inner :focus {
-  border-color: #409EFE;
+.custom-search-button:hover {
+  color: rgb(13, 113, 228);
 }
-
+.el-input-group__append {
+  color: #409EFE;
+}
 .history .el-tag {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
   background: white;
-  box-sizing: border-box;
   border: none;
-  text-align: left;
   font-size: 14px;
   color: black;
-  align-items: center;
+  margin-bottom: 5px;
+  cursor: pointer;
 }
 
-.history .el-tag .el-tag__close {
-  margin-left: auto;
-  color: black;
-  background-color: white;
-  font-size: 18px;
+.record-date {
+  color: grey;
+  font-size: smaller;
+  margin-left: 10px;
 }
 
 .history-box {
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   position: absolute;
   z-index: 10;
-  width: 100%;
+  width: 90%;
   background: white;
   padding: 10px;
   border-radius: 4px;
   margin-top: 5px;
+  overflow-y: auto;
+  max-height: 200px;
 }
 
-.el-button {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s;
+}
+
+.fade-enter, .fade-leave-to {
+  opacity: 0;
 }
 </style>
