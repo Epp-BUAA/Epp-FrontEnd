@@ -142,19 +142,21 @@ export default {
       this.currentPage = page
     },
     showModal (notification) {
-      this.read(notification.notification_id)
       this.selectedNotification = notification
       this.toggleRead(notification)
       this.modalShow = true
     },
     toggleRead (notification) {
-      notification.is_read = true
+      if (notification.is_read) {
+        return
+      }
       this.read(notification.notification_id)
       this.$notify({
         title: '成功',
         message: '消息标记为已读！',
         type: 'success'
       })
+      notification.is_read = true
     },
     changeTable () {
       if (this.showMode === '1') {
