@@ -83,6 +83,7 @@ export default {
       })
     }
 
+    fetchUserInfo()
     EventBus.$on('updateAvatar', avatar => {
       this.avatar = avatar
     })

@@ -1,6 +1,8 @@
 // api.js
 import Vue from 'vue'
 import axios from 'axios'
+import router from '../router'
+import message from 'element-ui'
 // import { cat } from 'shelljs'
 axios.defaults.withCredentials = true
 
@@ -11,6 +13,31 @@ const api = axios.create({
   baseURL,
   timeout: 5000 // 设置超时时间
 })
+
+api.interceptors.response.use(
+  response => {
+    let res = response
+    return res
+  },
+  error => {
+    if (error.response && error.response.status === 400) {
+      return api.get('/testLogin').then(testLoginResponse => {
+        return Promise.reject(error)
+      }).catch(testLoginError => {
+        if (testLoginError.response.status === 403) {
+          document.cookie = 'userlogin=; expires=Thu, 01 Jan 1970 00:00:00 UTC'
+          router.push('/dashboard')
+          message.Message({
+            type: 'error',
+            message: '登录过期，请重新登录'
+          })
+        }
+        return Promise.reject(error)
+      })
+    }
+    return Promise.reject(error)
+  }
+)
 
 export const login = async (params) => {
   try {

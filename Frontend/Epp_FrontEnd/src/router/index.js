@@ -114,14 +114,14 @@ function getCookie (name) {
 
 router.beforeEach((to, from, next) => {
   const sessionID = getCookie('userlogin')
-  if (!sessionID && to.path !== '/' && to.path !== '/dashboard') {
-    next('/dashboard')
-  } else if (to.path === '/' || to.path === '/dashboard') {
-    if (sessionID) {
-      next('/search')
+  if (!sessionID) {
+    if (to.path !== '/dashboard') {
+      next('/dashboard')
     } else {
       next()
     }
+  } else if (to.path === '/' || to.path === '/dashboard') {
+    next('/search')
   } else {
     next()
   }
