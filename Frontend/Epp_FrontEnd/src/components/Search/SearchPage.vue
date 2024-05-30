@@ -11,7 +11,8 @@
         <search-input />
       </el-col>
       <div class="hot_title">
-        <h3>热门文献推荐</h3>
+        <!-- <h3>热门文献推荐</h3> -->
+         <img src="../../assets/hotpaper.png" alt="热门文献推荐" />
         </div>
       <!-- 推荐文献卡片滑动框 -->
       <el-carousel :interval="4000" arrow="none" indicator-position="none" class="recommend-container">
@@ -115,9 +116,9 @@ export default {
 }
 .el-carousel {
   margin-top: 0rem;
-  width: 80%;
+  width: 62%;
   height: 11rem;
-  margin-left: 10%;
+  margin-left: 19%;
   overflow-y: hidden;
 }
 .el-row {
@@ -142,7 +143,7 @@ export default {
    transition: transform 0.3s ease;
 }
 .hot_title{
-  margin-top: 7rem;
+  margin-top: 8.5rem;
   text-align: center;
   font-size: 2rem; /* 调整字体大小 */
   color: #cd5b4c;
@@ -151,6 +152,10 @@ export default {
   display: flex;
   justify-content: center;
   width: 100%;
+}
+
+.hot_title img{
+  width: 20%;
 }
 .hot_icon {
   width: 5rem;
