@@ -1,32 +1,20 @@
 <template>
-  <div ref="searchContainer" class="search-container">
-    <!-- <el-input
+  <div ref="searchContainer" class="search-container" :class="{ 'active': showHistory}">
+    <el-input
       v-model="searchContent"
-      placeholder="请输入搜索内容"
+      placeholder="搜你所想..."
       @focus="showHistory = true"
-      @keyup.enter="submitSearch(searchContent)"
+      @keyup.enter.native="submitSearch(searchContent)"
       @input="updateInput"
       class="custom-search-input"
-    >
+      >
       <template #append>
-        <el-button type="primary" @click="submitSearch(searchContent)">搜索</el-button>
+        <el-button v-if="showHistory" @click="submitSearch(searchContent)" class="custom-search-button">
+          <el-icon name="s-promotion" class="message-icon"></el-icon>
+        </el-button>
       </template>
-      <i slot="prefix" class="el-input__icon el-icon-search"></i>
-    </el-input> -->
-    <el-input
-  v-model="searchContent"
-  placeholder="请输入搜索内容"
-  @focus="showHistory = true"
-  @keyup.enter="submitSearch(searchContent)"
-  @input="updateInput"
-  class="custom-search-input"
->
-  <template #append>
-    <span @click="submitSearch(searchContent)" class="custom-search-button">搜索</span>
-  </template>
-  <i slot="prefix" class="el-input_icon-el-icon-search"></i>
-</el-input>
-
+      <i slot="prefix" class="el-input_icon-el-icon-search"></i>
+    </el-input>
     <transition name="fade">
       <div v-if="showHistory" class="history-box">
         <div class="history">
@@ -132,18 +120,19 @@ export default {
 .search-container {
   border-radius: 25px;
   border: 1px solid #409EFE;
-  width: 90%;
+  width: 70%;
   position: relative;
   margin: 0 auto;
-  padding: 10px; /* 为了更好的视觉效果 */
+  padding: 3px; /* 为了更好的视觉效果 */
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1); /* 增加阴影效果 */
+  transition: width 0.3s ease;
+  display: flex;
+  justify-content: center;
 }
-/* .custom-search-input{
-  background-color: #409EFE;
-} */
-/* .el-input__inner {
-  background-color: #409EFE;
-} */
+.search-container.active {
+  border-color: rgb(13, 113, 228);
+  width: 80%;
+}
 .custom-search-button {
   width: 100%;
   color: #409EFE;
@@ -170,18 +159,22 @@ export default {
   font-size: smaller;
   margin-left: 10px;
 }
-
+.history {
+  overflow-y: auto;
+  max-height: 250px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
 .history-box {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   position: absolute;
+  top: 60px;
   z-index: 10;
   width: 90%;
   background: white;
-  padding: 10px;
-  border-radius: 4px;
-  margin-top: 5px;
-  overflow-y: auto;
-  max-height: 200px;
+  border-radius: 12px;
 }
 
 .fade-enter-active, .fade-leave-active {
@@ -190,5 +183,22 @@ export default {
 
 .fade-enter, .fade-leave-to {
   opacity: 0;
+}
+
+/deep/ .el-input__inner {
+  border-radius: 25px;
+  border: none;
+  background: transparent;
+  color: #303133;
+}
+
+/deep/ .el-input-group__append {
+  border: none;
+  background: transparent;
+  color: #303133;
+}
+.message-icon {
+  color: #409EFE;
+  font-size: 24px;
 }
 </style>

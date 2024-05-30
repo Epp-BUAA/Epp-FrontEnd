@@ -14,15 +14,15 @@
         <h3>热门文献推荐</h3>
         </div>
       <!-- 推荐文献卡片滑动框 -->
-      <el-carousel :interval="4000" arrow="none" indicator-position="none">
+      <el-carousel :interval="4000" arrow="none" indicator-position="none" class="recommend-container">
         <el-carousel-item v-for="(item, index) in recommendations" :key="index">
           <div class="recommendation-card">
             <img class="hot_icon" src="../../assets/icon/hotpaper.svg" alt="icon" />
             <div class="content">
                <div class="title-container">
                 <router-link :to="{ name: 'paper-info', params: { paper_id: item.paper_id } }" class="title">
-          {{ item.title }}
-        </router-link>
+                    {{ item.title }}
+                </router-link>
                 <div class="subfield">{{ item.sub_classes[0] }}</div>
               </div>
               <div class="info">
@@ -277,5 +277,4 @@ export default {
     border-color: #409EFE; /* Blinking cursor */
   }
 }
-
 </style>
