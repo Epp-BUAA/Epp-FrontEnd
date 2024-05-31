@@ -12,6 +12,8 @@ import uploadDocuMain from '@/components/UploadDocuments/UploadDocuMain'
 import PaperReader from '@/components/PaperRead/PaperReader'
 import LocalPaperReader from '@/components/PaperRead/LocalPaperReader'
 
+import message from 'element-ui'
+
 Vue.use(Router)
 
 const router = new Router({
@@ -114,14 +116,18 @@ function getCookie (name) {
 
 router.beforeEach((to, from, next) => {
   const sessionID = getCookie('userlogin')
-  if (!sessionID && to.path !== '/' && to.path !== '/dashboard') {
-    next('/dashboard')
-  } else if (to.path === '/' || to.path === '/dashboard') {
-    if (sessionID) {
-      next('/search')
+  if (!sessionID) {
+    if (to.path !== '/dashboard') {
+      message.Message({
+        type: 'error',
+        message: '登录过期，请重新登录'
+      })
+      next('/dashboard')
     } else {
       next()
     }
+  } else if (to.path === '/' || to.path === '/dashboard') {
+    next('/search')
   } else {
     next()
   }

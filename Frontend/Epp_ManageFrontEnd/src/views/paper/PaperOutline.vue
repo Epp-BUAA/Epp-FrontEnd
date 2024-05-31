@@ -116,9 +116,7 @@ export default {
                     ElMessage.error(error.response.data.message)
                 })
         }
-    },
-    updated() {},
-    mounted() {}
+    }
 }
 </script>
 

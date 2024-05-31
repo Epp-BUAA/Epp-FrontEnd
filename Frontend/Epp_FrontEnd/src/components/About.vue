@@ -63,7 +63,7 @@ export default {
         {
           id: 5,
           name: '黄一轩',
-          role: '运维总工程师，后端工程师',
+          role: '运维总工程师，前端工程师，后端工程师',
           description: '山里灵活的狗',
           image: require('@/assets/hyx.png')
           // getMoneyPic: require('@/assets/paymentCode/hyx-money.jpg')

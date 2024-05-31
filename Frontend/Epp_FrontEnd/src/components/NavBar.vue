@@ -2,9 +2,9 @@
   <el-menu class="navbar has-shadow" :class="{ 'trans-menu': isTop }" role="navigation" aria-label="" style="position: fixed; width: 100%; top: 0;">
     <div class="container">
       <div class="navbar-brand">
-        <a href="" class="navbar-item">
-          <img src="../../static/favicon.png" alt="Epp" width="30" height="30">
-          <span style="margin-left: 10px">EPP</span>
+        <a href="" class="navbar-item-logo">
+          <img src="../../static/favicon.png" alt="Epp" width="42" height="42">
+          <img src="../assets/title.png" class="title" alt="title">
         </a>
         <a role="button" class="navbar-burger" :class="{ 'is-active': isMenuActive }" @click="toggleMenu">
           <span aria-hidden="true"></span>
@@ -19,24 +19,26 @@
           <router-link to="/personal" class="navbar-item" :class="{ 'selected-tab': selectedTab === 'personal'}" @click.native="selectTab('personal', $event)">个人中心</router-link>
           <router-link to="/aboutus" class="navbar-item" :class="{ 'selected-tab': selectedTab === 'aboutus'}" @click.native="selectTab('aboutus', $event)">关于我们</router-link>
         </div>
-        <div class="navbar-end" v-if="selectedTab !== 'personal'">
-          <el-dropdown @command="handleCommand">
-            <span class="el-dropdown-link">
-              <img :src="avatar" alt="Profile Icon" class="profile-icon">
-            </span>
-            <el-dropdown-menu slot="dropdown" class="down-menu">
-              <el-dropdown-item disabled class="down-menu-item">
-                <div class="profile-details">
-                  <p class="username">用户名：{{ username }}</p>
-                </div>
-              </el-dropdown-item>
-              <el-dropdown-item command="logout" class="down-menu-item">
-                <img src="@/assets/icon/logout.svg" alt="Logout Icon" style="width: 18px; height: 18px; margin-right: 2px;">
-                退出登录
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </div>
+        <transition name="fade-avatar">
+          <div class="navbar-end" v-if="selectedTab !== 'personal'">
+            <el-dropdown @command="handleCommand">
+              <span class="el-dropdown-link">
+                  <img :src="avatar" alt="Profile Icon" class="profile-icon">
+              </span>
+              <el-dropdown-menu slot="dropdown" class="down-menu">
+                <el-dropdown-item disabled class="down-menu-item">
+                  <div class="profile-details">
+                    <p class="username">用户名：{{ username }}</p>
+                  </div>
+                </el-dropdown-item>
+                <el-dropdown-item command="logout" class="down-menu-item">
+                  <img src="@/assets/icon/logout.svg" alt="Logout Icon" style="width: 18px; height: 18px; margin-right: 2px;">
+                  退出登录
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+      </transition>
       </div>
     </div>
   </el-menu>
@@ -81,6 +83,7 @@ export default {
       })
     }
 
+    fetchUserInfo()
     EventBus.$on('updateAvatar', avatar => {
       this.avatar = avatar
     })
@@ -144,7 +147,7 @@ export default {
 .navbar-item {
   margin-top: 2px;
   background-color: transparent; /* 设置背景颜色 */
-  transition: box-shadow 0.3s, transform 0.3s, color 0.3s, font-size 0.3s; /* 添加过渡效果 */
+  transition: box-shadow 0.3s ease, transform 0.3s ease, color 0.3s ease, font-size 0.3s ease; /* 添加过渡效果 */
   border-radius: 12px;
   text-decoration: none;
 }
@@ -154,6 +157,13 @@ export default {
   transform: translateY(-2px);
   position: relative;
   z-index: 1;
+}
+.navbar-item-logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #485fc7;
 }
 .selected-tab {
   color: #485fc7;
@@ -180,17 +190,19 @@ export default {
 .navbar-end {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .profile-icon {
   border-radius: 50%;
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   cursor: pointer;
 }
 
 .down-menu {
   width: 150px;
+  border-radius: 12px;
 }
 
 .down-menu-item {
@@ -199,5 +211,21 @@ export default {
   justify-content: center;
   align-items: center;
   font-size: 0.95rem;
+  border-radius: 12px;
+}
+
+.fade-avatar-enter-active, .fade-avatar-leave-active {
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+.fade-avatar-enter, .fade-avatar-leave-to {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.title {
+  margin-left: 0px;
+  padding-top: 1px;
+  width: 130px;
+  height: 42px;
 }
 </style>

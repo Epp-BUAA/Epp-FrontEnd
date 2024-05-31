@@ -8,7 +8,7 @@
     <el-row>
       <el-col :span="24">
         <el-card class="table-card">
-          <el-table :data="displayedDocuments" v-loading="loading" style="width: 100%" :default-sort = "{prop: 'publication_date', order: 'descending'}">
+          <el-table :data="displayedDocuments" v-loading="loading" style="width: 100%; min-height: 420px;" :default-sort = "{prop: 'publication_date', order: 'descending'}">
             <el-table-column prop="title" label="论文标题" width="300">
               <template slot-scope="scope">
                 <router-link class="collection-link" :to="{ name: 'paper-info', params: { paper_id: scope.row.paper_id }}">{{ scope.row.title }}</router-link>

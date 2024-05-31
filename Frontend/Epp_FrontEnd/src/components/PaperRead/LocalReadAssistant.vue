@@ -1,55 +1,58 @@
 <template>
-    <el-container style="height: calc(100vh - 70px); overflow: hidden;" class="local-read-assistant">
-      <el-header class="my-header">
-          <h3>调研助手</h3>
-          <div>
-            <el-tooltip class="item" effect="dark" content="一键总结" placement="top">
-              <el-button type="success" plain size="small" @click="renderMarkdown()" icon="fas fa-file-text"></el-button>
-            </el-tooltip>
-            <el-tooltip class="item" effect="dark" content="清除历史对话" placement="top">
-              <el-button type="primary" plain size="small" @click="clearHistory()" icon="fas fa-eraser"
-                style="margin-right: 10px;"></el-button>
-            </el-tooltip>
-            <el-dialog :visible.sync="showSummaryModal" width="70%">
-                <div v-html="markdownFile" style=""></div>
-            </el-dialog>
-          </div>
-      </el-header>
 
-      <el-main class="chat-content">
-          <div v-for="(message, index) in chatMessages" :key="index">
-              <div v-if="message.sender === 'ai'" class="message-bubble left">
-                  <div v-if="message.loading" v-loading="message.loading"
-                      element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" style="width: 100px; height: 40px;">
-                  </div>
-                  <div v-else>
-                      <p style="white-space: pre-wrap;">{{ message.text }}</p>
-                      <el-button type="text" @click="regenerateAnswer" v-show="index == chatMessages.length - 1 && answerFinished">
-                          <i class="fas fa-refresh"></i>
-                          重新生成
-                      </el-button>
-                      <el-button type="text" @click="findReplySource" v-show="index == chatMessages.length - 1 && answerFinished">
-                          <i class="fas fa-quote-right"></i>
-                          查询出处
-                      </el-button>
-                  </div>
-              </div>
-              <div v-else class="message-bubble right">
-                  <p style="white-space: pre-wrap;">{{ message.text }}</p>
-              </div>
-          </div>
-          <div style="margin-top: 10px;">
-            <div v-show="answerFinished" v-for="(question, index) in probQuestions" :key="index" class="prob-question" @click="sendProbQuestion(question)">
-              {{ question }}
-            </div>
-          </div>
-      </el-main>
+  <el-container style="height: calc(100vh - 70px);" class="read-assistant">
+    <el-header class="my-header">
+      <h3>调研助手</h3>
+      <div>
+        <el-tooltip class="item" effect="dark" content="一键总结" placement="top">
+          <el-button type="success" plain size="small" @click="renderMarkdown()" icon="fas fa-file-text"></el-button>
+        </el-tooltip>
+        <el-tooltip class="item" effect="dark" content="清除历史对话" placement="top">
+          <el-button type="primary" plain size="small" @click="clearHistory()" icon="fas fa-eraser"
+            style="margin-right: 10px;"></el-button>
+        </el-tooltip>
+        <el-dialog :visible.sync="showSummaryModal" width="70%">
+            <div v-html="markdownFile" style=""></div>
+        </el-dialog>
+      </div>
+    </el-header>
 
-      <el-footer>
-        <el-input v-model="chatInput" placeholder="输入你的消息..." @keyup.enter="chatToAI"></el-input>
-        <el-button type="primary" @click="chatToAI">发送</el-button>
-      </el-footer>
-    </el-container>
+    <el-main class="chat-content">
+      <div v-for="(message, index) in chatMessages" :key="index">
+        <div v-if="message.sender === 'ai'" class="message-bubble left">
+          <div v-if="message.loading" v-loading="message.loading" element-loading-text="拼命加载中"
+            element-loading-spinner="el-icon-loading" style="width: 100px; height: 40px;">
+          </div>
+          <div v-else>
+            <p style="white-space: pre-wrap;">{{ message.text }}</p>
+            <el-button type="text" @click="regenerateAnswer"
+              v-show="index == chatMessages.length - 1 && answerFinished">
+              <i class="fas fa-refresh"></i>
+              重新生成
+            </el-button>
+            <el-button type="text" @click="findReplySource" v-show="index == chatMessages.length - 1 && answerFinished">
+              <i class="fas fa-quote-right"></i>
+              查询出处
+            </el-button>
+          </div>
+        </div>
+        <div v-else class="message-bubble right">
+          <p style="white-space: pre-wrap;">{{ message.text }}</p>
+        </div>
+      </div>
+      <div style="margin-top: 10px;">
+        <div v-show="answerFinished" v-for="(question, index) in probQuestions" :key="index" class="prob-question"
+          @click="sendProbQuestion(question)">
+          {{ question }}
+        </div>
+      </div>
+    </el-main>
+
+    <el-footer>
+      <el-input v-model="chatInput" placeholder="输入你的消息..." @keyup.enter="chatToAI"></el-input>
+      <el-button type="primary" @click="chatToAI">发送</el-button>
+    </el-footer>
+  </el-container>
 </template>
 
 <script>
@@ -77,7 +80,7 @@ export default {
       fileReadingID: ''
     }
   },
-  created () {
+  mounted () {
     this.fileReadingID = this.fileReadingId
     this.initialize()
   },
@@ -92,10 +95,10 @@ export default {
     createPaperStudy () {
       const loadingInstance = this.$loading({
         lock: true,
-        text: '正在创建知识库...',
+        text: '正在初始化...',
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)',
-        target: '.local-read-assistant' // 指定加载动画的目标
+        target: '.read-assistant'
       })
       axios.post(this.$BASE_API_URL + '/study/createPaperStudy', {'document_id': this.paperID, 'file_type': 1})
         .then((response) => {
@@ -128,8 +131,18 @@ export default {
           })
           loadingInstance.close()
         })
+        .finally(() => {
+          loadingInstance.close()
+        })
     },
     restorePaperStudy () {
+      const loadingInstance = this.$loading({
+        lock: true,
+        text: '正在初始化...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+        target: '.read-assistant'
+      })
       console.log('研读对话的id, ', this.fileReadingID)
       const loadingInstance = this.$loading({
         lock: true,
@@ -157,6 +170,9 @@ export default {
             message: '恢复论文研读失败！',
             type: 'success'
           })
+          loadingInstance.close()
+        })
+        .finally(() => {
           loadingInstance.close()
         })
     },

@@ -1,14 +1,18 @@
 <template>
 <div class="personal">
   <div id="personal-main">
-    <sidebar @tabSelected="selectTab" />
+    <transition name="sidebar-transition">
+      <sidebar v-if="showSidebar" @tabSelected="selectTab" />
+    </transition>
     <div class="content">
-      <PersonalInfo v-if="selectedTab === 'personal'" />
-      <AiConversations v-else-if="selectedTab === 'ai'" />
-      <SearchRecords v-else-if="selectedTab === 'search'" />
-      <MyReports v-else-if="selectedTab === 'reports'" />
-      <CollectedPapers v-else-if="selectedTab === 'collections'" />
-      <Notifications v-else-if="selectedTab === 'notices'" />
+      <transition name="content-transition">
+        <PersonalInfo v-if="selectedTab === 'personal'" />
+        <AiConversations v-else-if="selectedTab === 'ai'" />
+        <SearchRecords v-else-if="selectedTab === 'search'" />
+        <MyReports v-else-if="selectedTab === 'reports'" />
+        <CollectedPapers v-else-if="selectedTab === 'collections'" />
+        <Notifications v-else-if="selectedTab === 'notices'" />
+      </transition>
     </div>
   </div>
 </div>
@@ -36,7 +40,8 @@ export default {
   },
   data () {
     return {
-      selectedTab: 'personal' // 默认选中“我的信息”
+      selectedTab: 'personal', // 默认选中“我的信息”
+      showSidebar: false
     }
   },
   methods: {
@@ -49,6 +54,9 @@ export default {
     if (selectedTab) {
       this.selectedTab = selectedTab
     }
+  },
+  mounted () {
+    this.showSidebar = true
   },
   destroyed () {
     localStorage.removeItem('loginTime')
@@ -80,5 +88,28 @@ export default {
   background-repeat: no-repeat;
   background-position: center bottom;
   background-attachment: fixed;
+}
+
+.content-transition-enter-active, .content-transition-leave-active {
+  transition: opacity 0.3s ease-in-out, transform 0.4s ease-in-out;
+}
+.content-transition-enter {
+  opacity: 0;
+  transform: translateY(200px);
+}
+.content-transition-leave-to {
+  opacity: 0;
+  transform: scale(0.8);
+  position: absolute;
+}
+
+.sidebar-transition-enter-active, .sidebar-transition-leave-active {
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+.sidebar-transition-enter {
+  transform: translateX(-200px);
+}
+.sidebar-transition-leave-to {
+  opacity: 0;
 }
 </style>

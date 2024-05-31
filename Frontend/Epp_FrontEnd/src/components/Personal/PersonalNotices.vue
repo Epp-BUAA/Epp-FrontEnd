@@ -17,7 +17,7 @@
               <el-radio-button label="2">未读</el-radio-button>
             </el-radio-group>
           </div>
-          <el-table :data="displayedNotifications" v-loading="loading" style="width: 100%" :default-sort = "{prop: 'date', order: 'descending'}">
+          <el-table :data="displayedNotifications" v-loading="loading" style="width: 100%; min-height: 400px;" :default-sort = "{prop: 'date', order: 'descending'}">
             <el-table-column prop="title" label="通知标题">
               <template slot-scope="scope">
                 <el-link class="notice-link" :underline="false" type="primary" @click="showModal(scope.row)">{{ scope.row.title }}</el-link>
@@ -142,19 +142,21 @@ export default {
       this.currentPage = page
     },
     showModal (notification) {
-      this.read(notification.notification_id)
       this.selectedNotification = notification
       this.toggleRead(notification)
       this.modalShow = true
     },
     toggleRead (notification) {
-      notification.is_read = true
+      if (notification.is_read) {
+        return
+      }
       this.read(notification.notification_id)
       this.$notify({
         title: '成功',
         message: '消息标记为已读！',
         type: 'success'
       })
+      notification.is_read = true
     },
     changeTable () {
       if (this.showMode === '1') {

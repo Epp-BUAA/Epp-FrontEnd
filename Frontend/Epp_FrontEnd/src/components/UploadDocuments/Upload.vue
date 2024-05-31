@@ -2,10 +2,13 @@
   <div class="documentMan">
     <div
       class="uploadCard"
-      :class="{ 'hovered': isHovered, 'clicked': isClicked }"
+      :class="{ 'hovered': isHovered, 'clicked': isClicked, 'dragover': isDragOver }"
       @click="handleCardClick"
       @mouseenter="isHovered = true"
       @mouseleave="isHovered = false"
+      @dragover.prevent="handleDragOver"
+      @dragleave.prevent="handleDragLeave"
+      @drop.prevent="handleDrop"
     >
       <img src="../../assets/icon/chooseFile.svg" alt="Upload Icon" class="upload-icon" />
       <div class="upload-text">选择文件</div>
@@ -28,7 +31,8 @@ export default {
       file: null,
       fileName: '未选择文件',
       isHovered: false,
-      isClicked: false
+      isClicked: false,
+      isDragOver: false
     }
   },
   methods: {
@@ -77,6 +81,20 @@ export default {
     handleCardClick () {
       this.isClicked = !this.isClicked
       this.$refs.fileInput.click()
+    },
+    handleDragOver (event) {
+      this.isDragOver = true
+    },
+    handleDragLeave (event) {
+      this.isDragOver = false
+    },
+    handleDrop (event) {
+      this.isDragOver = false
+      const files = event.dataTransfer.files
+      if (files.length > 0) {
+        this.file = files[0]
+        this.fileName = this.file ? this.file.name : '未选择文件'
+      }
     }
   }
 }
@@ -97,8 +115,8 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 40rem;
-  height: 20rem;
+  width: 44rem;
+  height: 22rem;
   border: 5px dashed #409EFE;
   border-radius: 12px;
   cursor: pointer;
@@ -150,5 +168,11 @@ export default {
 
 .el-button:hover {
   background-color: #0056b3;
+}
+
+.uploadCard.dragover {
+  border-color: #409EFE;
+  opacity: 0.9;
+  background: white;
 }
 </style>

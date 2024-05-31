@@ -1,8 +1,8 @@
 <template>
   <div class="collections">
     <div class="card" v-for="document in displayedDocuments" :key="document.document_id">
-      <router-link :to="'/paper/localReader/' + document.document_id">
-        <h3>{{ truncateTitle(document.title, 75) }}</h3>
+      <router-link :to="'/paper/localReader/' + document.document_id" class="document-link">
+        <h3>{{ truncateTitle(document.title, 20) }}</h3>
       </router-link>
       <div class="info-container">
         <div class="info-item">
@@ -24,6 +24,15 @@
       <button @click="prevPage" :disabled="currentPage === 1">
         <img src="../../assets/icon/left-off.svg" alt="Previous Page" class="page-icon">
       </button>
+      <span
+        class="page-box"
+        v-for="page in totalPages"
+        :key="page"
+        @click="changePage(page)"
+        :class="{ 'active': page === currentPage }"
+      >
+        {{ page }}
+      </span>
       <button @click="nextPage" :disabled="currentPage === totalPages">
         <img src="../../assets/icon/right-off.svg" alt="Next Page" class="page-icon">
       </button>
@@ -92,6 +101,9 @@ export default {
         this.currentPage--
       }
     },
+    changePage (page) {
+      this.currentPage = page
+    },
     nextPage () {
       if (this.currentPage < this.totalPages) {
         this.currentPage++
@@ -139,6 +151,7 @@ export default {
 .card:hover {
   transform: translateY(-0.625rem);
   box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+  opacity: 0.9;
 }
 
 .card h3 {
@@ -203,6 +216,9 @@ export default {
   text-align: center;
   width: 100%;
   margin-top: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pagination button {
@@ -233,5 +249,33 @@ export default {
 
 .pagination button.active {
   background-color: rgba(0, 0, 0, 0.1);
+}
+.document-link {
+  text-decoration: none; /* 取消下划线 */
+}
+
+.document-link:hover h3 {
+  opacity: 0.8;
+}
+.page-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin: 0 0.3125rem;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.page-box:hover {
+  background-color: #d0d0d0;
+}
+
+.page-box.active {
+  background-color: #409EFE;
+  color: white;
 }
 </style>

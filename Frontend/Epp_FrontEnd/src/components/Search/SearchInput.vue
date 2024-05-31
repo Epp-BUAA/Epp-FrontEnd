@@ -1,26 +1,42 @@
 <template>
-    <div ref="searchContainer" style="width: 100%; position: relative;">
-        <el-input v-model="searchContent" placeholder="请输入搜索内容" @focus="showHistory = true"
-            @keyup.enter="submitSearch(searchContent)" @input="updateInput">
-            <template #append>
-                <el-button type="primary" @click="submitSearch(searchContent)">搜索</el-button>
-            </template>
-            <i slot="prefix" class="el-input__icon el-icon-search"></i>
-        </el-input>
-        <div v-if="showHistory" class="history-box">
-            <div class="history">
-                <el-tag v-for="(record, index) in search_records" :key="index" closable
-                    @close="removeRecord(record.search_record_id, index)"
-                    @click="searchFromHistory(record.search_record_id)" id="record">
-                    <div style="display: flex;">
-                        {{ record.keyword }}
-                        <div style="color: grey; font-size: smaller; margin-left: 10px;
-                  justify-content: flex-start;"> {{ record.date }}</div>
-                    </div>
-                </el-tag>
+  <div ref="searchContainer" class="search-container" :class="{ 'active': focus}">
+    <el-input
+      v-model="searchContent"
+      placeholder="搜你所想..."
+      @focus="showHistory = true; focus = true"
+      @blur="focus = false"
+      @keyup.enter.native="submitSearch(searchContent)"
+      @input="updateInput"
+      class="custom-search-input"
+      >
+      <template #append>
+        <el-button v-if="focus" @click="submitSearch(searchContent)" class="custom-search-button">
+          <el-icon name="s-promotion" class="message-icon"></el-icon>
+        </el-button>
+      </template>
+      <i slot="prefix" class="el-input_icon-el-icon-search"></i>
+    </el-input>
+    <transition name="fade">
+      <div v-if="showHistory" class="history-box">
+        <div class="history">
+          <el-tag
+            v-for="(record, index) in search_records"
+            :key="index"
+            closable
+            @close="removeRecord(record.search_record_id, index)"
+            @click="searchFromHistory(record.search_record_id)"
+          >
+            <div style="display: flex; align-items: center;">
+              {{ record.keyword }}
+              <div class="record-date">
+                {{ record.date }}
+              </div>
             </div>
+          </el-tag>
         </div>
-    </div>
+      </div>
+    </transition>
+  </div>
 </template>
 
 <script>
@@ -31,9 +47,9 @@ export default {
   data () {
     return {
       searchContent: '',
-      searchResults: [],
       search_records: [],
-      showHistory: false
+      showHistory: false,
+      focus: false
     }
   },
   created () {
@@ -48,96 +64,143 @@ export default {
   methods: {
     submitSearch (searchContent) {
       if (!searchContent) {
-        this.$message({
-          message: '请输入你的问题',
+        this.$notify({
+          title: '警告',
+          message: '请先输入查询内容',
           type: 'warning'
         })
         return
       }
-      this.$router.push({ name: 'search-results', query: { search_content: searchContent, searchRecordID: '' } })
+      this.$router.push({
+        name: 'search-results',
+        query: { search_content: searchContent, searchRecordID: '' }
+      })
     },
     searchFromHistory (searchRecordID) {
-      this.$router.push({ name: 'search-results', query: { search_content: '', searchRecordID: searchRecordID } })
+      this.$router.push({
+        name: 'search-results',
+        query: { search_content: '', searchRecordID: searchRecordID }
+      })
     },
     removeRecord (searchRecordId, index) {
-      console.log(searchRecordId)
-      axios.delete(this.$BASE_API_URL + '/userInfo/delSearchHistory',
-        {
+      axios
+        .delete(`${this.$BASE_API_URL}/userInfo/delSearchHistory`, {
           data: {
-            'search_record_id': searchRecordId
+            search_record_id: searchRecordId
           }
         })
-        .then((response) => {
-          console.log(response.data.message)
+        .then(response => {
+          this.search_records.splice(index, 1)
         })
-        .catch((error) => {
+        .catch(error => {
           console.error('删除历史记录失败', error)
         })
-      this.search_records.splice(index, 1)
     },
     fetchSearchRecords () {
-      axios.get(this.$BASE_API_URL + '/userInfo/searchHistory')
-        .then((response) => {
+      axios
+        .get(`${this.$BASE_API_URL}/userInfo/searchHistory`)
+        .then(response => {
           this.search_records = response.data.keywords
         })
-        .catch((error) => {
+        .catch(error => {
           console.error('Error', error)
         })
     },
     handleOutsideClick (event) {
-      // 如果点击事件不是发生在搜索容器内部，隐藏搜索历史
       if (!this.$refs.searchContainer.contains(event.target)) {
         this.showHistory = false
       }
     },
     updateInput () {
-      if (this.searchContent) {
-        this.showHistory = false
-      } else {
-        this.showHistory = true
-      }
+      this.showHistory = this.searchContent === ''
     }
   }
 }
 </script>
 
 <style scoped>
+.search-container {
+  border-radius: 25px;
+  border: 1px solid #409EFE;
+  width: 70%;
+  position: relative;
+  margin: 0 auto;
+  padding: 3px; /* 为了更好的视觉效果 */
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1); /* 增加阴影效果 */
+  transition: width 0.3s ease;
+  display: flex;
+  justify-content: center;
+}
+.search-container.active {
+  border-color: rgb(13, 113, 228);
+  width: 80%;
+}
+.custom-search-button {
+  width: 100%;
+  color: #409EFE;
+}
+.custom-search-button:hover {
+  color: rgb(13, 113, 228);
+}
+.el-input-group__append {
+  color: #409EFE;
+}
 .history .el-tag {
   display: flex;
-  /* 启用flex布局 */
-  justify-content: space-between;
-  /* 两端对齐 */
-  background: white;
-  /* 充满容器 */
-  box-sizing: border-box;
-  /* 边距包含在宽度内 */
-  border: none;
-  /* 移除边框 */
-  /* flex-grow: 1; 让文本占据多余空间 */
-  text-align: left;
-  /* 文本左对齐 */
-  font-size: 14px;
-  /* 增大字体大小 */
-  color: black;
-  /* 字体颜色为黑色 */
   align-items: center;
-}
-
-.history .el-tag .el-tag__close {
-  margin-left: auto;
-  /* 推到右边 */
+  background: white;
+  border: none;
+  font-size: 14px;
   color: black;
-  /* 设置颜色为黑色 */
-  background-color: white;
-  font-size: 18px;
-  /* 设置更大的字体大小 */
-  /* cursor: pointer; 更明确的指示这是一个可点击的元素 */
+  margin-bottom: 5px;
+  cursor: pointer;
 }
 
+.record-date {
+  color: grey;
+  font-size: smaller;
+  margin-left: 10px;
+}
+.history {
+  overflow-y: auto;
+  max-height: 250px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
 .history-box {
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   position: absolute;
+  top: 60px;
   z-index: 10;
-  width: 100%;
+  width: 90%;
+  background: white;
+  border-radius: 12px;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s;
+}
+
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+
+/deep/ .el-input__inner {
+  border-radius: 25px;
+  border: none;
+  background: transparent;
+  color: #303133;
+}
+
+/deep/ .el-input-group__append {
+  border: none;
+  background: transparent;
+  color: #303133;
+}
+.message-icon {
+  color: #409EFE;
+  font-size: 24px;
 }
 </style>
