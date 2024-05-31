@@ -11,8 +11,12 @@
               <h3>{{ member.name }}</h3>
               <p>{{ member.role }}</p>
               <p><i>{{ member.description }}</i></p>
+              <el-button type="text">点我打赏</el-button>
             </div>
           </div>
+          <el-dialog :visible.sync="showModal" width="70%" @click="showPaymentCode">
+              <img src="member.getMoneyPic" alt="profile">
+          </el-dialog>
         </el-carousel-item>
       </el-carousel>
     </div>
@@ -28,8 +32,9 @@ export default {
           id: 1,
           name: '周靖宇',
           role: '项目经理，AI工程师，后端工程师',
-          description: '文章千古事，得失寸心知。',
-          image: require('@/assets/zjy.png')
+          description: '你们五个怎么什么都会',
+          image: require('@/assets/zjy.png'),
+          getMoneyPic: require('@/assets/paymentCode/zjy-money.jpg')
         },
         {
           id: 2,
@@ -37,6 +42,7 @@ export default {
           role: 'AI总工程师，后端工程师',
           description: '笔落惊风雨，诗成泣鬼神。',
           image: require('@/assets/ybw.png')
+          // getMoneyPic: require('@/assets/paymentCode/ybw-money.jpg')
         },
         {
           id: 3,
@@ -44,6 +50,7 @@ export default {
           role: '前端总工程师',
           description: '敏捷诗千首，飘零酒一杯。',
           image: require('@/assets/jkm.png')
+          // getMoneyPic: require('@/assets/paymentCode/jkm-money.jpg')
         },
         {
           id: 4,
@@ -51,13 +58,15 @@ export default {
           role: '后端总工程师',
           description: '文采承殊渥，流传必绝伦。',
           image: require('@/assets/cjh.png')
+          // getMoneyPic: require('@/assets/paymentCode/cjh-money.jpg')
         },
         {
           id: 5,
           name: '黄一轩',
           role: '运维总工程师，后端工程师',
-          description: '岂关名利分荣路，自有才华作庆霄。',
+          description: '山里灵活的狗',
           image: require('@/assets/hyx.png')
+          // getMoneyPic: require('@/assets/paymentCode/hyx-money.jpg')
         },
         {
           id: 6,
@@ -65,8 +74,15 @@ export default {
           role: '美工总设计，前端工程师',
           description: '文章本天成，妙手偶得之。',
           image: require('@/assets/lym.png')
+          // getMoneyPic: require('@/assets/paymentCode/lym-money.jpg')
         }
-      ]
+      ],
+      showModal: false
+    }
+  },
+  methods: {
+    showPaymentCode () {
+      this.showModal = true
     }
   }
 }

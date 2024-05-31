@@ -269,16 +269,24 @@ export default {
       const md = markdownIt()
       axios.post(this.$BASE_API_URL + '/study/generateAbstractReport', { document_id: '', paper_id: this.paperID })
         .then((response) => {
-          const summary = response.data.summary
-          this.markdownFile = md.render(summary)
-          this.showSummaryModal = true
+          if (response.data.summary) {
+            const summary = response.data.summary
+            this.markdownFile = md.render(summary)
+            this.showSummaryModal = true
+          } else {
+            this.$message({
+              message: '正在为您生成摘要，请稍等...',
+              type: 'warning'
+            })
+            this.summaryFinished = false
+          }
         })
         .catch(() => {
           this.$message({
-            message: '正在为您生成摘要，请稍等...',
-            type: 'warning'
+            message: '生成摘要失败！',
+            type: 'error'
           })
-          this.summaryFinished = false
+          this.summaryFinished = true
         })
     },
     clearHistory () {
