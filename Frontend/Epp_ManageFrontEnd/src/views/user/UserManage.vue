@@ -146,7 +146,7 @@
                 </el-table>
             </div>
             <!-- 用户资料 -->
-            <el-dialog v-model="userProfile.visible" width="42vw">
+            <el-dialog v-model="userProfile.visible" width="45vw">
                 <UserProfile :username="userProfile.username"></UserProfile>
             </el-dialog>
             <!-- 分页组件 -->
