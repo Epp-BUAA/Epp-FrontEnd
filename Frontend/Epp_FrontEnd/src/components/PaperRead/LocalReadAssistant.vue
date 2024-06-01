@@ -136,7 +136,7 @@ export default {
         })
     },
     restorePaperStudy () {
-      const loadingInstance = this.$loading({
+      let loadingInstance = this.$loading({
         lock: true,
         text: '正在初始化...',
         spinner: 'el-icon-loading',
@@ -144,7 +144,7 @@ export default {
         target: '.read-assistant'
       })
       console.log('研读对话的id, ', this.fileReadingID)
-      const loadingInstance = this.$loading({
+      loadingInstance = this.$loading({
         lock: true,
         text: '正在恢复知识库...',
         spinner: 'el-icon-loading',

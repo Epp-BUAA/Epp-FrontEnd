@@ -253,3 +253,12 @@ export const fetchReportContent = async (params) => {
     throw new Error(error.response.data.message)
   }
 }
+
+export const userVisitRecord = async () => {
+  try {
+    const response = await api.post('manage/recordVisit')
+    return response
+  } catch (error) {
+    throw new Error(error.response.data.message)
+  }
+}

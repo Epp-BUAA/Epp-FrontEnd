@@ -14,6 +14,8 @@ import LocalPaperReader from '@/components/PaperRead/LocalPaperReader'
 
 import message from 'element-ui'
 
+import { userVisitRecord } from '../request/userRequest'
+
 Vue.use(Router)
 
 const router = new Router({
@@ -127,8 +129,10 @@ router.beforeEach((to, from, next) => {
       next()
     }
   } else if (to.path === '/' || to.path === '/dashboard') {
+    userVisitRecord() // 用户访问登记
     next('/search')
   } else {
+    userVisitRecord() // 用户访问登记
     next()
   }
 })
