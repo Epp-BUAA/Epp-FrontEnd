@@ -1,7 +1,7 @@
 <template>
     <el-container class="layout-container">
         <!-- 侧边栏 -->
-        <el-aside width="12vw">
+        <el-aside style="width: 10vw; min-width: 160px">
             <el-menu
                 active-text-color="#ffd04b"
                 background-color="#2c2c2c"

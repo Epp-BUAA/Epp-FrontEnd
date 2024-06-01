@@ -22,10 +22,6 @@ export default {
 .home-page {
     width: 100%;
     height: 100%;
-    .test {
-        width: 20vw;
-        height: 30vh;
-        background-color: white;
-    }
+    background-color: white;
 }
 </style>

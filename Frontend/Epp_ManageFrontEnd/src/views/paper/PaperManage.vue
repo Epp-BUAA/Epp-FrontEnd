@@ -113,7 +113,7 @@
                         :default-sort="{ prop: 'publication_date', order: 'descending' }"
                     >
                         <el-table-column label="序号" width="100" type="index"></el-table-column>
-                        <el-table-column label="标题" width="300">
+                        <el-table-column label="标题">
                             <template v-slot="scope">
                                 <el-tooltip class="item" effect="light" :content="scope.row.title" placement="bottom">
                                     <div class="text-left" style="color: #409efe; cursor: pointer">
@@ -122,7 +122,7 @@
                                 </el-tooltip>
                             </template>
                         </el-table-column>
-                        <el-table-column label="作者" width="250">
+                        <el-table-column label="作者" width="220">
                             <template v-slot="scope">
                                 <el-tooltip effect="light" :content="scope.row.authors.join(', ')" placement="bottom">
                                     <div class="text-left" style="cursor: pointer">
@@ -145,7 +145,7 @@
                                 </div>
                             </template>
                         </el-table-column>
-                        <el-table-column label="操作">
+                        <el-table-column label="操作" width="80">
                             <template v-slot="scope">
                                 <el-button circle plain type="success" @click="handleView(scope.row)">
                                     <el-icon><i-ep-view></i-ep-view></el-icon>
