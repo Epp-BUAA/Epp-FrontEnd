@@ -29,7 +29,37 @@
         <div class="module-server">
             <div class="header">模型服务器</div>
             <div class="container">
-                <div class="hardware-left">1</div>
+                <div class="hardware-left">
+                    <el-card v-for="gpu in moduleServerInfo.gpu_info" :key="gpu.id" class="gpu-card" shadow="hover">
+                        <div class="gpu-card-content">
+                            <h3>{{ gpu.name }}</h3>
+                            <el-row>
+                                <el-col :span="8" class="info-item">
+                                    <el-icon><i-ep-cpu></i-ep-cpu></el-icon>
+                                    <strong>Load:</strong> {{ gpu.load }}%
+                                </el-col>
+                                <el-col :span="8" class="info-item">
+                                    <el-icon><i-ep-sunrise></i-ep-sunrise></el-icon>
+                                    <strong>Temp:</strong> {{ gpu.temperature }}°C
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8" class="info-item">
+                                    <el-icon><i-ep-files></i-ep-files></el-icon>
+                                    <strong>Total:</strong> {{ gpu.memory_total }} MB
+                                </el-col>
+                                <el-col :span="8" class="info-item">
+                                    <el-icon><i-ep-box></i-ep-box></el-icon>
+                                    <strong>Used:</strong> {{ gpu.memory_used }} MB ({{ usedMemoryPercentage(gpu) }}%)
+                                </el-col>
+                                <el-col :span="8" class="info-item">
+                                    <el-icon><i-ep-check></i-ep-check></el-icon>
+                                    <strong>Free:</strong> {{ gpu.memory_free }} MB
+                                </el-col>
+                            </el-row>
+                        </div>
+                    </el-card>
+                </div>
                 <div class="hardware-right">
                     <div class="cpu-info">
                         <div id="module-server-cpu" style="height: 80%"></div>
@@ -40,7 +70,7 @@
                             style="width: 90%; margin: 5% auto; height: 10%"
                             :text-inside="true"
                             :stroke-width="18"
-                            :percentage="80.5"
+                            :percentage="30.5"
                             status="warning"
                         />
                         <div style="text-align: center">内存使用情况：12MB/10GB</div>
@@ -58,12 +88,64 @@ export default {
     components: {},
     props: {},
     data() {
-        return {}
+        return {
+            moduleServerInfo: {
+                cpu_info: {
+                    cpu_usage: [3.9, 1],
+                    cpu_count: 1,
+                    cpu_count_logical: 1
+                },
+                memory_info: {
+                    total_memory: 100990857216,
+                    used_memory: 14107742208,
+                    available_memory: 86082969600,
+                    total_swap: 2147479552,
+                    used_swap: 114556928,
+                    free_swap: 2032922624
+                },
+                gpu_info: [
+                    {
+                        id: 0,
+                        name: 'NVIDIA GeForce RTX 3090',
+                        load: 0,
+                        memory_total: 24576,
+                        memory_used: 8,
+                        memory_free: 24251,
+                        temperature: 36
+                    },
+                    {
+                        id: 1,
+                        name: 'NVIDIA GeForce RTX 3090',
+                        load: 0,
+                        memory_total: 24576,
+                        memory_used: 6034,
+                        memory_free: 18225,
+                        temperature: 36
+                    },
+                    {
+                        id: 2,
+                        name: 'NVIDIA GeForce RTX 3090',
+                        load: 0,
+                        memory_total: 24576,
+                        memory_used: 14672,
+                        memory_free: 9587,
+                        temperature: 37
+                    }
+                ],
+                message: '模型服务器硬件信息获取成功'
+            }
+        }
     },
-    watch: {},
-    computed: {},
-    methods: {},
-    created() {},
+    computed: {
+        gpuInfo() {
+            return this.moduleServerInfo.gpu_info
+        }
+    },
+    methods: {
+        usedMemoryPercentage(gpu) {
+            return ((gpu.memory_used / gpu.memory_total) * 100).toFixed(2)
+        }
+    },
     mounted() {
         let internalInstance = getCurrentInstance()
         let echarts = internalInstance.appContext.config.globalProperties.$echarts
@@ -176,9 +258,12 @@ export default {
                 {
                     name: 'Pressure',
                     type: 'gauge',
-                    radius: '90%', // 增加仪表盘的半径以填充更多空间
+                    radius: '90%',
                     progress: {
-                        show: true
+                        show: true,
+                        itemStyle: {
+                            color: '#B22222'
+                        }
                     },
                     detail: {
                         valueAnimation: true,
@@ -194,7 +279,10 @@ export default {
                     },
                     data: [
                         {
-                            value: 67.8
+                            value: 20.1,
+                            itemStyle: {
+                                color: '#B22222'
+                            }
                         }
                     ]
                 }
@@ -277,8 +365,35 @@ export default {
         flex-direction: row;
         .hardware-left {
             flex: 7;
-            background-color: #303133;
             border-right: solid 1px rgba(0, 0, 0, 0.2);
+            .gpu-card {
+                width: 100%;
+                transition: all 0.3s;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+            }
+
+            .gpu-card-content {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .gpu-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .info-item {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+            .el-icon {
+                font-size: 18px;
+                color: #b22222;
+            }
         }
 
         .hardware-right {
