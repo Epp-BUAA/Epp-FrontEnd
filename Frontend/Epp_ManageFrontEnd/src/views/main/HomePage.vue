@@ -26,13 +26,33 @@
         </div>
 
         <!-- 大模型服务器相关信息 -->
-        <div class="module-server">1</div>
+        <div class="module-server">
+            <div class="header">模型服务器</div>
+            <div class="container">
+                <div class="hardware-left">1</div>
+                <div class="hardware-right">
+                    <div class="cpu-info">
+                        <div id="module-server-cpu" style="height: 80%"></div>
+                        <div style="height: 15%; text-align: center">CPU 使用情况</div>
+                    </div>
+                    <div class="memory-info">
+                        <el-progress
+                            style="width: 90%; margin: 5% auto; height: 10%"
+                            :text-inside="true"
+                            :stroke-width="18"
+                            :percentage="80.5"
+                            status="warning"
+                        />
+                        <div style="text-align: center">内存使用情况：12MB/10GB</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import { getCurrentInstance } from 'vue'
-import { ElMessage } from 'element-plus'
 
 export default {
     components: {},
@@ -121,7 +141,7 @@ export default {
                 {
                     start: 0,
                     end: 20,
-                    height: 15,
+                    height: 18,
                     handleSize: '80%', // 缩放手柄的大小
                     handleStyle: {
                         color: '#6AB1D7'
@@ -146,6 +166,42 @@ export default {
         }
         webServerVisitOption && webServerVisitChart.setOption(webServerVisitOption)
 
+        // 模型服务器 CPU
+        const moduleServerCPUChart = echarts.init(document.getElementById('module-server-cpu'))
+        const moduleServerCPUOption = {
+            tooltip: {
+                formatter: '{a} <br/>{b} : {c}%'
+            },
+            series: [
+                {
+                    name: 'Pressure',
+                    type: 'gauge',
+                    radius: '90%', // 增加仪表盘的半径以填充更多空间
+                    progress: {
+                        show: true
+                    },
+                    detail: {
+                        valueAnimation: true,
+                        formatter: '{value}%',
+                        // 修改字体大小
+                        fontSize: 13
+                    },
+                    axisLabel: {
+                        fontSize: 10
+                    },
+                    title: {
+                        fontSize: 13
+                    },
+                    data: [
+                        {
+                            value: 67.8
+                        }
+                    ]
+                }
+            ]
+        }
+        moduleServerCPUOption && moduleServerCPUChart.setOption(moduleServerCPUOption)
+
         // 页面适应
         window.addEventListener('resize', function () {
             webServerCPUChart.resize()
@@ -157,7 +213,6 @@ export default {
 <style lang="scss" scoped>
 .home-page {
     width: 100%;
-    height: 100%;
     background-color: white;
 }
 .web-server {
@@ -167,21 +222,24 @@ export default {
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    padding: 10px 10px;
+    background-color: rgb(249, 240, 227, 0.3);
     .visit-record {
         flex: 7;
-        height: 100%;
+        height: 50vh;
+        border-right: solid 1px rgba(0, 0, 0, 0.2);
+        padding-right: 10px;
         .title {
-            padding-top: 20px;
             text-align: center;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
-            color: rgba(0, 0, 0, 0.6);
+            color: #303133;
         }
     }
 
     .hardware {
         flex: 2;
-        height: 100%;
+        height: 50vh;
         font-size: 14px;
         font-weight: bold;
         display: flex;
@@ -190,9 +248,8 @@ export default {
         .title {
             flex: 1;
             text-align: center;
-            padding-top: 20px;
-            font-size: 18px;
-            color: rgba(0, 0, 0, 0.6);
+            font-size: 20px;
+            color: #303133;
         }
         .cpu-info {
             flex: 6;
@@ -205,7 +262,47 @@ export default {
 
 .module-server {
     height: 50vh;
-    min-height: 0px;
-    background-color: pink;
+    min-height: 250px;
+    padding: 20px 10px;
+    background-color: white;
+    .header {
+        font-size: 20px;
+        font-weight: bold;
+        color: #303133;
+        text-align: center;
+    }
+    .container {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: row;
+        .hardware-left {
+            flex: 7;
+            background-color: #303133;
+            border-right: solid 1px rgba(0, 0, 0, 0.2);
+        }
+
+        .hardware-right {
+            flex: 2;
+            height: 45vh;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            color: rgba(0, 0, 0, 0.5);
+            flex-direction: column;
+
+            .title {
+                flex: 1;
+                text-align: center;
+                font-size: 20px;
+                color: #303133;
+            }
+            .cpu-info {
+                flex: 3;
+            }
+            .memory-info {
+                flex: 1;
+            }
+        }
+    }
 }
 </style>

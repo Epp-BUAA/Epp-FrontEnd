@@ -384,7 +384,7 @@ export default {
 
         .number-box-title {
             flex: 2;
-            font-size: 21px;
+            font-size: 20px;
             font-weight: bold;
             padding: 5%;
             border-bottom: 1px solid black;
