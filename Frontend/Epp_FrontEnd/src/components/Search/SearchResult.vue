@@ -79,7 +79,8 @@
               <div v-for="paper in filteredPapers" :key="paper.paper_id" style="margin-top: 30px;">
                 <div class="columns is-mobile">
                   <div class="column is-narrow checkbox">
-                    <el-checkbox @change="handleCheckboxChange(paper.paper_id)"></el-checkbox>
+                    <el-checkbox v-model="checkedPapers[paper.paper_id]"
+                    @change="handleCheckboxChange(paper.paper_id)"></el-checkbox>
                   </div>
                   <paper-card :paper="paper" />
                 </div>
@@ -133,7 +134,8 @@ export default {
       paperIds: [],
       searchRecordID: '',
       restoreHistory: false,
-      selectedPapers: []
+      selectedPapers: [],
+      checkedPapers: {}
     }
   },
   methods: {
@@ -227,6 +229,16 @@ export default {
         this.selectedPapers.push(paperId)
       }
     },
+    resetCheckboxes () {
+      Object.keys(this.checkedPapers).forEach(key => {
+        this.checkedPapers[key] = false
+      })
+    },
+    initializeCheckboxes () {
+      this.papers.forEach(paper => {
+        this.$set(this.checkedPapers, paper.paper_id, false)
+      })
+    },
     generateSummaryReport () {
       if (this.selectedPapers.length === 0) {
         this.$message({
@@ -254,6 +266,7 @@ export default {
           })
         })
       this.selectedPapers = []
+      this.resetCheckboxes()
     },
     getSummaryReportStatus (reportID) {
       console.log('报告ID是', reportID)
@@ -302,6 +315,7 @@ export default {
           console.error('Error:', error)
         })
       this.selectedPapers = []
+      this.resetCheckboxes()
     },
     searchPaperByAssistant (papers) {
       console.log('循征之后的论文', papers)
@@ -328,6 +342,7 @@ export default {
       await this.fetchPapers()
     }
     this.applyFilter()
+    this.initializeCheckboxes()
   }
 }
 </script>
