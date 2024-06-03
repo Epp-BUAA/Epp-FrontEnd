@@ -95,7 +95,7 @@ export default {
     align-items: center;
     height: 60%;
     .avatar-box {
-        flex: 2;
+        flex: 1.8;
         display: flex;
         justify-content: center;
         align-items: center;

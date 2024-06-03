@@ -184,11 +184,11 @@ export default {
             ]
         }
         webServerCPUOption && webServerCPUChart.setOption(webServerCPUOption)
-        // Web 服务器访问了统计
-        let base = +new Date(1988, 9, 3)
+        // Web 服务器访问统计
+        let base = +new Date(2024, 4, 20)
         let oneDay = 24 * 3600 * 1000
         let data = [[base, Math.random() * 300]]
-        for (let i = 1; i < 20000; i++) {
+        for (let i = 1; i < 40; i++) {
             let now = new Date((base += oneDay))
             data.push([+now, Math.round((Math.random() - 0.5) * 20 + data[i - 1][1])])
         }
