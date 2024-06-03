@@ -1,5 +1,5 @@
 <template>
-    <el-row :gutter="20">
+    <el-row style="overflow: hidden; height: 100vh;">
       <el-col :span="16" style="margin-top: 60px;">
         <iframe :src="pdfUrl" style="width: 100%; height: 755px;" frameborder="0">
         </iframe>
