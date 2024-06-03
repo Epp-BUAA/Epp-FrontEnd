@@ -11,45 +11,72 @@
         <search-input />
       </el-col>
       <div class="hot_title">
-        <!-- <h3>热门文献推荐</h3> -->
-         <img src="../../assets/hotpaper.png" alt="热门文献推荐" />
-        </div>
-      <!-- 推荐文献卡片滑动框 -->
-      <el-carousel :interval="4000" arrow="none" indicator-position="none" class="recommend-container">
-        <el-carousel-item v-for="(item, index) in recommendations" :key="index">
-          <div class="recommendation-card">
-            <img class="hot_icon" src="../../assets/icon/hotpaper.svg" alt="icon" />
-            <div class="content">
-               <div class="title-container">
-                <router-link :to="{ name: 'paper-info', params: { paper_id: item.paper_id } }" class="title">
-                    {{ item.title }}
-                </router-link>
-                <div class="subfield">{{ item.sub_classes[0] }}</div>
-              </div>
-              <div class="info">
-                <div class="info-item">
-                  <img src="../../assets/icon/citate.svg" alt="citate" class="info-icon">
-                  引用数: {{ item.citation_count }}
-                </div>
-                <div class="info-item">
-                  <img src="../../assets/icon/read.svg" alt="read" class="info-icon">
-                  阅读量: {{ item.read_count }}
-                </div>
-                <div class="info-item">
-                  <img src="../../assets/icon/collect.svg" alt="collect" class="info-icon">
-                  收藏数: {{ item.collect_count }}
-                </div>
-                <div class="info-item">
-                  <img src="../../assets/icon/good.svg" alt="good" class="info-icon">
-                  点赞数: {{ item.like_count }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </el-carousel-item>
-      </el-carousel>
-
+        <img src="../../assets/hotpaper.png" alt="热门文献推荐" />
+      </div>
+      <!-- 推荐文献表格 -->
+     <el-row>
+      <el-col :span="24">
+        <el-card class="table-card">
+          <el-table :data="displayRecommendations" v-loading="loading" style="width: 100%;">
+            <el-table-column prop="title" label="文献标题" align="center" class-name="title-column">
+                <template slot-scope="scope">
+                  <router-link :to="{ name: 'paper-info', params: { paper_id: scope.row.paper_id } }" class="title">
+                    {{ truncateTitle(scope.row.title, 28) }}
+                  </router-link>
+                </template>
+              </el-table-column>
+              <el-table-column prop="subfield" label="分类" align="center" class-name="subfield-column">
+                <template slot-scope="scope">
+                  <span class="subfield">{{ scope.row.sub_classes[0] }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="引用数" align="center" class-name="citation-column">
+                <template slot-scope="scope">
+                  <div class="info-item1">
+                    <img src="../../assets/icon/citate.svg" alt="citate" class="info-icon">
+                    {{ scope.row.citation_count }}
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="阅读量" align="center" class-name="read-column">
+                <template slot-scope="scope">
+                  <div class="info-item2">
+                    <img src="../../assets/icon/read.svg" alt="read" class="info-icon">
+                    {{ scope.row.read_count }}
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="收藏数" align="center" class-name="collect-column">
+                <template slot-scope="scope">
+                  <div class="info-item3">
+                    <img src="../../assets/icon/collect.svg" alt="collect" class="info-icon">
+                    {{ scope.row.collect_count }}
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="点赞数" align="center" class-name="like-column">
+                <template slot-scope="scope">
+                  <div class="info-item4">
+                    <img src="../../assets/icon/good.svg" alt="good" class="info-icon">
+                    {{ scope.row.like_count }}
+                  </div>
+                </template>
+              </el-table-column>
+          </el-table>
+        </el-card>
+      </el-col>
     </el-row>
+    <el-pagination
+      v-if="totalPages > 1"
+      background
+      style="margin-top: 10px;"
+      @current-change="changePage"
+      :current-page="currentPage"
+      :page-size="itemsPerPage"
+      layout="prev, pager, next"
+      :total="totalRecords">
+    </el-pagination>
+     </el-row>
   </div>
 </template>
 
@@ -63,7 +90,23 @@ export default {
   },
   data () {
     return {
-      recommendations: []
+      recommendations: [],
+      loading: true,
+      currentPage: 1,
+      itemsPerPage: 5
+    }
+  },
+  computed: {
+    totalPages () {
+      return Math.ceil(this.recommendations.length / this.itemsPerPage)
+    },
+    totalRecords () {
+      return this.recommendations.length
+    },
+    displayRecommendations () {
+      const start = (this.currentPage - 1) * this.itemsPerPage
+      const end = start + this.itemsPerPage
+      return this.recommendations.slice(start, end)
     }
   },
   created () {
@@ -75,6 +118,7 @@ export default {
         .get(this.$BASE_API_URL + '/paperRecommend')
         .then(response => {
           this.recommendations = response.data.papers
+          this.loading = false
         })
         .catch(error => {
           console.error('Error', error)
@@ -86,11 +130,8 @@ export default {
       }
       return abstract
     },
-    prev () {
-      this.$refs.carousel.prev()
-    },
-    next () {
-      this.$refs.carousel.next()
+    changePage (page) {
+      this.currentPage = page
     }
   }
 }
@@ -103,7 +144,7 @@ export default {
   right: 0;
   bottom: 0;
   padding: 20px;
-   padding-top: 2.5rem;
+  padding-top: 2.5rem;
   min-height: 100vh;
   background-image: url('../../assets/dashboardBack2.png');
   background-size: cover;
@@ -114,13 +155,7 @@ export default {
   justify-content: center;
   align-items: flex-start;
 }
-.el-carousel {
-  margin-top: 0rem;
-  width: 62%;
-  height: 11rem;
-  margin-left: 19%;
-  overflow-y: hidden;
-}
+
 .el-row {
   width: 100%;
 }
@@ -131,21 +166,11 @@ export default {
   align-items: center;
 }
 
-.recommendation-card {
-  display: flex;
-  align-self: center;
-  background: rgba(255, 255, 255, 0.2);
-  padding: 1.6rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  text-align: left;
-  position: relative;
-   transition: transform 0.3s ease;
-}
-.hot_title{
+.hot_title {
   margin-top: 8.5rem;
+  margin-bottom: 1rem;
   text-align: center;
-  font-size: 2rem; /* 调整字体大小 */
+  font-size: 2rem;
   color: #cd5b4c;
   font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
   font-weight: bold;
@@ -154,132 +179,123 @@ export default {
   width: 100%;
 }
 
-.hot_title img{
+.hot_title img {
   width: 20%;
-}
-.hot_icon {
-  width: 5rem;
-  height: 5rem;
-  margin-right: 20px;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.title-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.subfield {
-  background-image: url('../../assets/dashboardBack3.jpg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center bottom;
-  background-attachment: fixed;
-  padding: 1rem 1rem;
-  border-radius: 3px;
-  font-size: 1rem;
-  text-align: center;
-  width: 30%;
-  color: rgb(97, 93, 93);
-}
-
-.title {
-  color: #409EFE;
-  margin: 0;
-  /* width: 80%; */
-  font-size: 16px;
-}
-
-.title:hover {
-  color: #0056b3; /* Change the color to a darker shade on hover */
-}
-
-.info {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 0.2rem;
-}
-
-.info-item {
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  color: #606266;
-}
-
-.info-item i {
-  margin-right: 0.2rem;
-}
-
-.carousel-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-}
-
-.el-carousel__arrow {
-  margin: 0 10px;
-}
-
-.el-carousel-indicator {
-  margin: 0 5px;
-}
-
-.info-item .info-icon {
-  width: 1rem; /* Set the width of the icon */
-  height: 1rem; /* Set the height of the icon */
-  margin-right: 0.2rem; /* Add some spacing between the icon and the text */
 }
 
 .typewriter {
   margin-top: 5rem;
   display: flex;
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
-  height: 2.5rem; /* Full viewport height to center vertically */
+  justify-content: center;
+  align-items: center;
+  height: 2.5rem;
   margin-bottom: 2rem;
 }
 
 .typewriter h2 {
   color: #409EFE;
-   font-family: '微软雅黑', 'Microsoft YaHei', sans-serif; /* Sets the font to 微软雅黑 */
-  font-weight: bold; /* Sets the font weight to bold */
-  overflow: hidden; /* Ensures the text is not visible outside its containing element */
-  border-right: 0.15em solid #409EFE; /* Creates the typewriter cursor effect */
-  white-space: nowrap; /* Prevents the text from wrapping */
+  font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
+  font-weight: bold;
+  overflow: hidden;
+  border-right: 0.15em solid #409EFE;
+  white-space: nowrap;
   margin-left: 35%;
   margin-right: 35%;
-  animation: typing 4s steps(40, end) infinite, blink-caret 0.75s step-end infinite; /* Typing animation with infinite loop */
-  animation-fill-mode: forwards; /* Ensures element retains final state after animation */
+  animation: typing 4s steps(40, end) infinite, blink-caret 0.75s step-end infinite;
+  animation-fill-mode: forwards;
 }
 
 @keyframes typing {
   0% {
-    width: 0; /* Start with no width (text is invisible) */
+    width: 0;
   }
   50% {
-    width: 100%; /* Text is fully visible */
+    width: 100%;
   }
   100% {
-    width: 0; /* Text disappears again */
+    width: 0;
   }
 }
 
 @keyframes blink-caret {
   from,
   to {
-    border-color: transparent; /* Start and end with invisible cursor (no border color) */
+    border-color: transparent;
   }
   50% {
-    border-color: #409EFE; /* Blinking cursor */
+    border-color: #409EFE;
   }
+}
+
+.table-card {
+  width: 70%;
+  border-radius: 12px;
+  margin: 0 auto;
+}
+
+.recommendations-table {
+  width: 100%;
+}
+
+.title-column {
+  /* width: 35%; */
+  text-align: justify;
+}
+
+/*.subfield-column,
+.citation-column,
+.read-column,
+.collect-column,
+.like-column {
+  width: 13%;
+  text-align: center;
+} */
+
+.el-table .cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.el-table .title-column .cell {
+  justify-content: flex-start;
+}
+.title {
+  color: #409EFE;
+  margin: 0;
+  width: 100%;
+  font-size: 14px;
+  text-align: justify;
+   word-break: break-all; /* Add this line */
+}
+.title:hover {
+  color: #0056b3;
+}
+
+.info-item1,
+.info-item2
+{
+  display: flex;
+  align-self: center;
+  align-items: center;
+  font-size: 14px;
+  color: #606266;
+  margin-left: 2.4rem;
+}
+
+.info-item3,
+.info-item4
+{
+  display: flex;
+  align-self: center;
+  align-items: center;
+  font-size: 14px;
+  color: #606266;
+  margin-left: 2.6rem;
+}
+
+.info-icon {
+  width: 1rem;
+  height: 1rem;
 }
 </style>
