@@ -48,7 +48,7 @@
     </el-main>
 
     <el-footer>
-      <el-input v-model="chatInput" placeholder="输入你的消息..." @keyup.enter="chatToAI"></el-input>
+      <el-input v-model="chatInput" placeholder="输入你的消息..." @keyup.enter.native="chatToAI"></el-input>
       <el-button type="primary" @click="chatToAI">发送</el-button>
     </el-footer>
   </el-container>
