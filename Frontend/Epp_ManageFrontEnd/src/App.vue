@@ -3,11 +3,8 @@
 </template>
 
 <script>
-// import LoginRegister from './views/login/index.vue'
 export default {
-    components: {
-        // LoginRegiste
-    }
+    components: {}
 }
 </script>
 
