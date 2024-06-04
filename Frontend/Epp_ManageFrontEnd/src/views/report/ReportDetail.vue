@@ -1,73 +1,82 @@
 <template>
-    <div class="report-card">
-        <el-card class="report-content" shadow="never">
-            <div>
-                <el-descriptions title="评论信息" :column="1" border>
-                    <el-descriptions-item label="评论用户">
-                        {{ reportData.comment.user.user_name }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="评论日期">
-                        {{ reportData.comment.date }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="评论内容">
-                        {{ reportData.comment.content }}
-                    </el-descriptions-item>
-                </el-descriptions>
-                <el-divider></el-divider>
-                <el-descriptions title="相关论文" :column="1" border>
-                    <el-descriptions-item label="论文ID">
-                        {{ reportData.comment.paper.paper_id }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="论文标题">
-                        {{ reportData.comment.paper.title }}
-                    </el-descriptions-item>
-                </el-descriptions>
-                <el-divider></el-divider>
-                <el-descriptions title="举报信息" :column="1" border>
-                    <el-descriptions-item label="举报用户">
-                        {{ reportData.user.user_name }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="举报日期">
-                        {{ reportData.date }}
-                    </el-descriptions-item>
-                    <el-descriptions-item label="举报内容">{{ reportData.content }} </el-descriptions-item>
-                </el-descriptions>
-            </div>
-        </el-card>
-        <div class="report-judge">
-            <div class="report-judge-header">举报审核</div>
-            <div style="padding: 16px">
-                <el-input
-                    v-model="judgment.text"
-                    style="width: 100%; min-height: 50%"
-                    :autosize="{ minRows: 10, maxRows: 20 }"
-                    type="textarea"
-                    placeholder="请输入反馈意见"
-                    maxlength="200"
-                    show-word-limit
-                />
-                <div style="margin-top: 20px">
-                    <span>屏蔽评论</span>
-                    <el-switch
-                        v-model="judgment.unvisibility"
-                        style="margin-left: 10px; --el-switch-on-color: #13ce66; --el-switch-off-color: #d0d0d0"
-                    />
+    <div style="padding: 5px">
+        <div class="report-card">
+            <el-card class="report-content" shadow="hover">
+                <div>
+                    <el-descriptions title="评论信息" :column="1" border>
+                        <el-descriptions-item label="评论用户">
+                            {{ reportData.comment.user.user_name }}
+                        </el-descriptions-item>
+                        <el-descriptions-item label="评论日期">
+                            {{ reportData.comment.date }}
+                        </el-descriptions-item>
+                        <el-descriptions-item label="评论内容">
+                            {{ reportData.comment.content }}
+                        </el-descriptions-item>
+                    </el-descriptions>
+                    <el-divider></el-divider>
+                    <el-descriptions title="相关论文" :column="1" border>
+                        <el-descriptions-item label="论文ID">
+                            {{ reportData.comment.paper.paper_id }}
+                        </el-descriptions-item>
+                        <el-descriptions-item label="论文标题">
+                            {{ reportData.comment.paper.title }}
+                        </el-descriptions-item>
+                    </el-descriptions>
+                    <el-divider></el-divider>
+                    <el-descriptions title="举报信息" :column="1" border>
+                        <el-descriptions-item label="举报用户">
+                            {{ reportData.user.user_name }}
+                        </el-descriptions-item>
+                        <el-descriptions-item label="举报日期">
+                            {{ reportData.date }}
+                        </el-descriptions-item>
+                        <el-descriptions-item label="举报内容">{{ reportData.content }} </el-descriptions-item>
+                    </el-descriptions>
                 </div>
+            </el-card>
+            <div class="report-judge">
+                <div class="report-judge-header">举报审核</div>
+                <div style="padding: 16px">
+                    <el-input
+                        v-model="judgment.text"
+                        style="width: 100%; min-height: 50%"
+                        :autosize="{ minRows: 10, maxRows: 20 }"
+                        type="textarea"
+                        placeholder="请输入反馈意见"
+                        maxlength="200"
+                        show-word-limit
+                    />
+                    <div style="margin-top: 20px">
+                        <span>屏蔽评论</span>
+                        <el-switch
+                            v-model="judgment.unvisibility"
+                            style="margin-left: 10px; --el-switch-on-color: #13ce66; --el-switch-off-color: #d0d0d0"
+                        />
+                    </div>
 
-                <div style="margin-top: 20px">
-                    <el-button
-                        v-if="reportData.processed"
-                        class="button"
-                        type="primary"
-                        round
-                        style="margin: 0 auto"
-                        @click="handleSubmit"
-                    >
-                        确认修改
-                    </el-button>
-                    <el-button v-else class="button" type="primary" round style="margin: 0 auto" @click="handleSubmit">
-                        确认提交
-                    </el-button>
+                    <div style="margin-top: 20px">
+                        <el-button
+                            v-if="reportData.processed"
+                            class="button"
+                            type="primary"
+                            round
+                            style="margin: 0 auto"
+                            @click="handleSubmit"
+                        >
+                            确认修改
+                        </el-button>
+                        <el-button
+                            v-else
+                            class="button"
+                            type="primary"
+                            round
+                            style="margin: 0 auto"
+                            @click="handleSubmit"
+                        >
+                            确认提交
+                        </el-button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -158,7 +167,6 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    // align-items: center;
     .report-content {
         width: 60%;
         padding: 20px;

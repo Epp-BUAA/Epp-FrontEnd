@@ -3,7 +3,7 @@
         <!-- Web 服务器相关信息 -->
         <div class="web-server">
             <div class="visit-record">
-                <div class="title">网站访问统计</div>
+                <div class="title">网站访问统计(近五天)</div>
                 <div style="height: 85%" id="web-server-visit"></div>
             </div>
             <div class="hardware">
@@ -17,10 +17,14 @@
                         style="width: 90%; margin: 5% auto; height: 10%"
                         :text-inside="true"
                         :stroke-width="18"
-                        :percentage="80.5"
+                        :percentage="webServerMemUtilization"
                         status="warning"
                     />
-                    <div style="text-align: center">内存使用情况：12MB/10GB</div>
+                    <div style="text-align: center">
+                        内存使用情况：
+                        {{ (webServerInfo.memory_info.used_memory / (1024 * 1024 * 1024)).toFixed(2) }}GB /
+                        {{ (webServerInfo.memory_info.total_memory / (1024 * 1024 * 1024)).toFixed(2) }}GB
+                    </div>
                 </div>
             </div>
         </div>
@@ -36,25 +40,27 @@
                             <el-row>
                                 <el-col :span="8" class="info-item">
                                     <el-icon><i-ep-cpu></i-ep-cpu></el-icon>
-                                    <strong>Load:</strong> {{ gpu.load }}%
+                                    <strong>负载：</strong> {{ gpu.load }}%
                                 </el-col>
                                 <el-col :span="8" class="info-item">
                                     <el-icon><i-ep-sunrise></i-ep-sunrise></el-icon>
-                                    <strong>Temp:</strong> {{ gpu.temperature }}°C
+                                    <strong>温度：</strong> {{ gpu.temperature }}°C
                                 </el-col>
                             </el-row>
                             <el-row>
                                 <el-col :span="8" class="info-item">
                                     <el-icon><i-ep-files></i-ep-files></el-icon>
-                                    <strong>Total:</strong> {{ gpu.memory_total }} MB
-                                </el-col>
-                                <el-col :span="8" class="info-item">
-                                    <el-icon><i-ep-box></i-ep-box></el-icon>
-                                    <strong>Used:</strong> {{ gpu.memory_used }} MB ({{ usedMemoryPercentage(gpu) }}%)
+                                    <strong>显存总量：</strong> {{ gpu.memory_total }} MB
                                 </el-col>
                                 <el-col :span="8" class="info-item">
                                     <el-icon><i-ep-check></i-ep-check></el-icon>
-                                    <strong>Free:</strong> {{ gpu.memory_free }} MB
+                                    <strong>可使用显存：</strong> {{ gpu.memory_free }} MB
+                                </el-col>
+                                <el-col :span="8" class="info-item">
+                                    <el-icon><i-ep-box></i-ep-box></el-icon>
+                                    <strong>已使用显存：</strong> {{ gpu.memory_used }} MB ({{
+                                        usedMemoryPercentage(gpu)
+                                    }}%)
                                 </el-col>
                             </el-row>
                         </div>
@@ -70,10 +76,14 @@
                             style="width: 90%; margin: 5% auto; height: 10%"
                             :text-inside="true"
                             :stroke-width="18"
-                            :percentage="30.5"
+                            :percentage="moduleServerMemUtilization"
                             status="warning"
                         />
-                        <div style="text-align: center">内存使用情况：12MB/10GB</div>
+                        <div style="text-align: center">
+                            内存使用情况：
+                            {{ (moduleServerInfo.memory_info.used_memory / (1024 * 1024 * 1024)).toFixed(2) }}GB /
+                            {{ (moduleServerInfo.memory_info.total_memory / (1024 * 1024 * 1024)).toFixed(2) }}GB
+                        </div>
                     </div>
                 </div>
             </div>
@@ -82,63 +92,99 @@
 </template>
 
 <script>
+import { ElMessage } from 'element-plus'
 import { getCurrentInstance } from 'vue'
+import { getWebServerStatus, getModuleServerStatus, getVisitStatistic } from '@/api/server'
 
 export default {
     components: {},
-    props: {},
     data() {
         return {
-            moduleServerInfo: {
+            webServerInfo: {
                 cpu_info: {
-                    cpu_usage: [3.9, 1],
+                    cpu_usage: [],
                     cpu_count: 1,
                     cpu_count_logical: 1
                 },
                 memory_info: {
-                    total_memory: 100990857216,
-                    used_memory: 14107742208,
-                    available_memory: 86082969600,
-                    total_swap: 2147479552,
-                    used_swap: 114556928,
-                    free_swap: 2032922624
+                    total_memory: 1,
+                    used_memory: 1,
+                    available_memory: 1,
+                    total_swap: 1,
+                    used_swap: 1,
+                    free_swap: 1
                 },
                 gpu_info: [
                     {
-                        id: 0,
-                        name: 'NVIDIA GeForce RTX 3090',
-                        load: 0,
-                        memory_total: 24576,
-                        memory_used: 8,
-                        memory_free: 24251,
-                        temperature: 36
-                    },
+                        id: 1,
+                        name: '',
+                        load: 1,
+                        memory_total: 1,
+                        memory_used: 1,
+                        memory_free: 1,
+                        temperature: 1
+                    }
+                ]
+            },
+            moduleServerInfo: {
+                cpu_info: {
+                    cpu_usage: [],
+                    cpu_count: 1,
+                    cpu_count_logical: 1
+                },
+                memory_info: {
+                    total_memory: 1,
+                    used_memory: 1,
+                    available_memory: 1,
+                    total_swap: 1,
+                    used_swap: 1,
+                    free_swap: 1
+                },
+                gpu_info: [
                     {
                         id: 1,
-                        name: 'NVIDIA GeForce RTX 3090',
-                        load: 0,
-                        memory_total: 24576,
-                        memory_used: 6034,
-                        memory_free: 18225,
-                        temperature: 36
-                    },
-                    {
-                        id: 2,
-                        name: 'NVIDIA GeForce RTX 3090',
-                        load: 0,
-                        memory_total: 24576,
-                        memory_used: 14672,
-                        memory_free: 9587,
-                        temperature: 37
+                        name: '',
+                        load: 1,
+                        memory_total: 1,
+                        memory_used: 1,
+                        memory_free: 1,
+                        temperature: 1
                     }
-                ],
-                message: '模型服务器硬件信息获取成功'
+                ]
             }
         }
     },
     computed: {
-        gpuInfo() {
-            return this.moduleServerInfo.gpu_info
+        webServerCPUUtilization() {
+            // web服务器CPU平均使用率
+            let utilization = 0.0
+            for (let use of this.webServerInfo.cpu_info.cpu_usage) {
+                utilization += use
+            }
+
+            return (utilization / this.webServerInfo.cpu_info.cpu_count_logical).toFixed(2)
+        },
+        webServerMemUtilization() {
+            // web 服务器内存使用
+            return (
+                (this.webServerInfo.memory_info.used_memory / this.webServerInfo.memory_info.total_memory) *
+                100
+            ).toFixed(2)
+        },
+        moduleServerCPUUtilization() {
+            // 模型服务器CPU平均使用率
+            let utilization = 0.0
+            for (var use of this.webServerInfo.cpu_info.cpu_usage) {
+                utilization += use
+            }
+            return (utilization / this.moduleServerInfo.cpu_info.cpu_count_logical).toFixed(2)
+        },
+        moduleServerMemUtilization() {
+            // 模型服务器内存使用
+            return (
+                (this.moduleServerInfo.memory_info.used_memory / this.moduleServerInfo.memory_info.total_memory) *
+                100
+            ).toFixed(2)
         }
     },
     methods: {
@@ -146,9 +192,76 @@ export default {
             return ((gpu.memory_used / gpu.memory_total) * 100).toFixed(2)
         }
     },
-    mounted() {
+    async mounted() {
         let internalInstance = getCurrentInstance()
         let echarts = internalInstance.appContext.config.globalProperties.$echarts
+        // Web 服务器访问统计
+        let visitData = []
+        await getVisitStatistic()
+            .then((response) => {
+                visitData = response.data.hours.map((hour, index) => {
+                    return [new Date(hour).getTime(), response.data.data[index]]
+                })
+            })
+            .catch((error) => {
+                ElMessage.error(error.response.data.message)
+            })
+        const webServerVisitChart = echarts.init(document.getElementById('web-server-visit'))
+        const webServerVisitOption = {
+            tooltip: {
+                trigger: 'axis',
+                position: function (pt) {
+                    return [pt[0], '10%']
+                }
+            },
+            toolbox: {
+                feature: {
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'time',
+                boundaryGap: false
+            },
+            yAxis: {
+                type: 'value',
+                boundaryGap: [0, '100%']
+            },
+            dataZoom: [
+                {
+                    type: 'inside',
+                    start: 0,
+                    end: 100
+                },
+                {
+                    start: 0,
+                    end: 20,
+                    height: 20,
+                    handleSize: '80%', // 缩放手柄的大小
+                    handleStyle: {
+                        color: '#6AB1D7'
+                    }
+                }
+            ],
+            series: [
+                {
+                    name: '用户访问量',
+                    type: 'line',
+                    smooth: true,
+                    symbol: 'none',
+                    areaStyle: {
+                        color: 'rgba(144,238,144,0.2)'
+                    },
+                    lineStyle: {
+                        color: 'rgba(100,200,140)'
+                    },
+                    data: visitData
+                }
+            ]
+        }
+        webServerVisitOption && webServerVisitChart.setOption(webServerVisitOption)
+
         // Web 服务器 CPU
         const webServerCPUChart = echarts.init(document.getElementById('web-server-cpu'))
         const webServerCPUOption = {
@@ -177,76 +290,21 @@ export default {
                     },
                     data: [
                         {
-                            value: 67.8
+                            value: 0
                         }
                     ]
                 }
             ]
         }
+        await getWebServerStatus()
+            .then((response) => {
+                this.webServerInfo = response.data
+                webServerCPUOption.series[0].data[0].value = this.webServerCPUUtilization
+            })
+            .catch((error) => {
+                ElMessage.error(error.response.data.message)
+            })
         webServerCPUOption && webServerCPUChart.setOption(webServerCPUOption)
-        // Web 服务器访问统计
-        let base = +new Date(2024, 4, 20)
-        let oneDay = 24 * 3600 * 1000
-        let data = [[base, Math.random() * 300]]
-        for (let i = 1; i < 40; i++) {
-            let now = new Date((base += oneDay))
-            data.push([+now, Math.round((Math.random() - 0.5) * 20 + data[i - 1][1])])
-        }
-        const webServerVisitChart = echarts.init(document.getElementById('web-server-visit'))
-        const webServerVisitOption = {
-            tooltip: {
-                trigger: 'axis',
-                position: function (pt) {
-                    return [pt[0], '10%']
-                }
-            },
-            toolbox: {
-                feature: {
-                    restore: {},
-                    saveAsImage: {}
-                }
-            },
-            xAxis: {
-                type: 'time',
-                boundaryGap: false
-            },
-            yAxis: {
-                type: 'value',
-                boundaryGap: [0, '100%']
-            },
-            dataZoom: [
-                {
-                    type: 'inside',
-                    start: 0,
-                    end: 20
-                },
-                {
-                    start: 0,
-                    end: 20,
-                    height: 18,
-                    handleSize: '80%', // 缩放手柄的大小
-                    handleStyle: {
-                        color: '#6AB1D7'
-                    }
-                }
-            ],
-            series: [
-                {
-                    name: 'Fake Data',
-                    type: 'line',
-                    smooth: true,
-                    symbol: 'none',
-                    areaStyle: {
-                        color: 'rgba(144,238,144,0.2)'
-                    },
-                    lineStyle: {
-                        color: 'rgba(100,200,140)' // 设置线的颜色为浅绿
-                    },
-                    data: data
-                }
-            ]
-        }
-        webServerVisitOption && webServerVisitChart.setOption(webServerVisitOption)
 
         // 模型服务器 CPU
         const moduleServerCPUChart = echarts.init(document.getElementById('module-server-cpu'))
@@ -279,7 +337,7 @@ export default {
                     },
                     data: [
                         {
-                            value: 20.1,
+                            value: 0,
                             itemStyle: {
                                 color: '#B22222'
                             }
@@ -288,12 +346,21 @@ export default {
                 }
             ]
         }
+        await getModuleServerStatus()
+            .then((response) => {
+                this.moduleServerInfo = response.data
+                moduleServerCPUOption.series[0].data[0].value = this.moduleServerCPUUtilization
+            })
+            .catch((error) => {
+                ElMessage.error(error.response.data.message)
+            })
         moduleServerCPUOption && moduleServerCPUChart.setOption(moduleServerCPUOption)
 
         // 页面适应
         window.addEventListener('resize', function () {
             webServerCPUChart.resize()
             webServerVisitChart.resize()
+            moduleServerCPUChart.resize()
         })
     }
 }
@@ -352,7 +419,7 @@ export default {
     height: 50vh;
     min-height: 250px;
     padding: 20px 10px;
-    background-color: white;
+    background-color: rgb(245, 249, 240);
     .header {
         font-size: 20px;
         font-weight: bold;
@@ -367,6 +434,7 @@ export default {
             flex: 7;
             border-right: solid 1px rgba(0, 0, 0, 0.2);
             .gpu-card {
+                background-color: rgb(241, 248, 252);
                 width: 100%;
                 transition: all 0.3s;
                 border: 1px solid #e0e0e0;

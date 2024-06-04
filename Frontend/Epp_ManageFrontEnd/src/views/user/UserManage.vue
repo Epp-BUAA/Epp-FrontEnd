@@ -122,7 +122,7 @@
                     <el-table-column label="序号" width="100" type="index"> </el-table-column>
                     <el-table-column label="用户名">
                         <template v-slot="scope">
-                            <el-tooltip class="item" effect="light" :content="scope.row.username" placement="bottom">
+                            <el-tooltip effect="light" :content="scope.row.username" placement="bottom">
                                 <div style="color: #409efe; cursor: pointer">
                                     {{ scope.row.username }}
                                 </div>
