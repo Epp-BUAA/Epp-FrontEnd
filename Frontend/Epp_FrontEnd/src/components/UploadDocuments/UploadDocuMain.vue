@@ -67,7 +67,6 @@ export default {
   background-repeat: no-repeat;
   background-position: center bottom;
   background-attachment: fixed;
-  overflow: hidden;
 }
 
 .sidebar-transition-enter-active, .sidebar-transition-leave-active {
