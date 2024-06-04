@@ -2,7 +2,7 @@
   <div class="collections">
     <div class="card" v-for="document in displayedDocuments" :key="document.document_id">
       <router-link :to="'/paper/localReader/' + document.document_id" class="document-link">
-        <h3>{{ truncateTitle(document.title, 20) }}</h3>
+        <h3>{{ truncateTitle(document.title, 15) }}</h3>
       </router-link>
       <div class="info-container">
         <div class="info-item">
@@ -49,7 +49,7 @@ export default {
     return {
       documents: [],
       currentPage: 1,
-      itemsPerPage: 3
+      itemsPerPage: 6
     }
   },
   created () {
@@ -146,6 +146,7 @@ export default {
   display: flex;
   flex-direction: column;
   margin-left: 0.25rem;
+  height: 300px;
 }
 
 .card:hover {
@@ -215,7 +216,7 @@ export default {
 .pagination {
   text-align: center;
   width: 100%;
-  margin-top: 1.25rem;
+  /* margin-top: 1.25rem; */
   display: flex;
   align-items: center;
   justify-content: center;
