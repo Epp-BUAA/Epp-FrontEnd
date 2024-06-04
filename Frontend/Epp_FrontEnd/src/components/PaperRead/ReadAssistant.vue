@@ -1,5 +1,5 @@
 <template>
-  <el-container style="height: calc(100vh - 70px);" class="read-assistant">
+  <el-container style="height: calc(100vh - 60px);" class="read-assistant">
     <el-header class="my-header">
       <h3>调研助手</h3>
       <div>
@@ -23,7 +23,7 @@
             element-loading-spinner="el-icon-loading" style="width: 100px; height: 40px;">
           </div>
           <div v-else>
-            <p style="white-space: pre-wrap;">{{ message.text }}</p>
+            <p style="white-space: pre-wrap;" v-html="message.text"></p>
             <el-button type="text" @click="regenerateAnswer"
               v-show="index == chatMessages.length - 1 && answerFinished">
               <i class="fas fa-refresh"></i>
@@ -48,7 +48,7 @@
     </el-main>
 
     <el-footer>
-      <el-input v-model="chatInput" placeholder="输入你的消息..." @keyup.enter="chatToAI"></el-input>
+      <el-input v-model="chatInput" placeholder="输入你的消息..." @keyup.enter.native="chatToAI"></el-input>
       <el-button type="primary" @click="chatToAI">发送</el-button>
     </el-footer>
   </el-container>
@@ -57,6 +57,9 @@
 <script>
 import axios from 'axios'
 import markdownIt from 'markdown-it'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/github.css' // 选择你喜欢的样式
+
 export default {
   props: {
     paperID: {
@@ -80,6 +83,18 @@ export default {
     }
   },
   mounted () {
+    this.md = markdownIt({
+      highlight: function (str, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          try {
+            return '<pre class="hljs"><code class="code-block">' +
+                    hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
+                    '</code></pre>'
+          } catch (__) {}
+        }
+        return '<pre class="hljs"><code class="code-block">' + this.md.utils.escapeHtml(str) + '</code></pre>'
+      }
+    })
     this.fileReadingID = this.fileReadingId
     if (this.fileReadingID > 0) {
       this.restorePaperStudy()
@@ -140,7 +155,8 @@ export default {
           const history = response.data.conversation_history.conversation
           for (const message of history) {
             const sender = message.role === 'user' ? 'user' : 'ai'
-            this.chatMessages.push({ sender: sender, text: message.content, loading: false })
+            const text = message.role === 'user' ? message.content : this.md.render(message.content)
+            this.chatMessages.push({ sender: sender, text: text, loading: false })
           }
           this.$message({
             message: '已恢复研读对话',
@@ -203,8 +219,9 @@ export default {
         while (cur < answer.length) {
           loadingMessage.text += answer.charAt(cur)
           cur++
-          await this.delay(50)
+          await this.delay(10)
         }
+        loadingMessage.text = this.md.render(loadingMessage.text)
         this.answerFinished = true
       }
     },
@@ -266,12 +283,11 @@ export default {
       this.chatInput = question
     },
     renderMarkdown () {
-      const md = markdownIt()
       axios.post(this.$BASE_API_URL + '/study/generateAbstractReport', { document_id: '', paper_id: this.paperID })
         .then((response) => {
           if (response.data.summary) {
             const summary = response.data.summary
-            this.markdownFile = md.render(summary)
+            this.markdownFile = this.md.render(summary)
             this.showSummaryModal = true
           } else {
             this.$message({
@@ -380,5 +396,23 @@ export default {
   font-size: small;
   max-width: 90%;
   cursor: pointer
+}
+
+.code-block {
+  width: 20px;
+  white-space: pre-wrap !important; /* 允许内容在必要时自动换行 */
+  word-wrap: break-word !important; /* 在长单词或 URL 内部进行换行 */
+  overflow-wrap: break-word !important; /* 确保在必要时可以断开单词 */
+  overflow-x: auto !important; /* 允许横向滚动，如果需要的话 */
+}
+
+.hljs {
+    white-space: pre-wrap; /* 允许代码换行 */
+    word-break: break-word; /* 在长单词或 URL 地址内部进行换行 */
+}
+
+.read-assistant pre code hljs {
+    word-break: break-word !important;
+    white-space: pre-wrap;
 }
 </style>
