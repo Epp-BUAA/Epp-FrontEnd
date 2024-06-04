@@ -4,7 +4,6 @@
       v-model="searchContent"
       placeholder="搜你所想..."
       @focus="showHistory = true; focus = true"
-      @blur="focus = false"
       @keyup.enter.native="submitSearch(searchContent)"
       @input="updateInput"
       class="custom-search-input"
@@ -109,6 +108,7 @@ export default {
     handleOutsideClick (event) {
       if (!this.$refs.searchContainer.contains(event.target)) {
         this.showHistory = false
+        this.focus = false
       }
     },
     updateInput () {
