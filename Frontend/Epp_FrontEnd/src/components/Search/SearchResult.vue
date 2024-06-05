@@ -111,15 +111,10 @@ export default {
   },
   props: ['searchForm'],
   watch: {
-    '$route' (to, from) {
+    async '$route' (to, from) {
       console.log('to query\'s search record id...', to.query.searchRecordID)
       console.log('to query\'s search content...', to.query.search_content)
       this.papers = []
-      if (to.query.searchRecordID.length > 0) {
-        this.fetchPapersFromHistory()
-      } else {
-        this.fetchPapers()
-      }
       window.location.reload()
     }
   },
@@ -335,9 +330,10 @@ export default {
     }
   },
   async mounted () {
+    console.log('mount is called!!!!!!!!')
     if (this.$route.query.searchRecordID) {
       this.searchRecordID = this.$route.query.searchRecordID
-      // await this.fetchPapersFromHistory()
+      await this.fetchPapersFromHistory()
     } else {
       await this.fetchPapers()
     }

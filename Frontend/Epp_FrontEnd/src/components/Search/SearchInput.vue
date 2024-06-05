@@ -3,7 +3,7 @@
     <el-input
       v-model="searchContent"
       placeholder="搜你所想..."
-      @focus="showHistory = true; focus = true"
+      @focus="focusInput"
       @keyup.enter.native="submitSearch(searchContent)"
       @input="updateInput"
       class="custom-search-input"
@@ -50,9 +50,6 @@ export default {
       showHistory: false,
       focus: false
     }
-  },
-  created () {
-    this.fetchSearchRecords()
   },
   mounted () {
     document.addEventListener('click', this.handleOutsideClick)
@@ -113,6 +110,11 @@ export default {
     },
     updateInput () {
       this.showHistory = this.searchContent === ''
+    },
+    focusInput () {
+      this.showHistory = true
+      this.focus = true
+      this.fetchSearchRecords()
     }
   }
 }
