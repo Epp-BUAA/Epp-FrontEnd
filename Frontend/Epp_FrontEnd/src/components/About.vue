@@ -11,11 +11,11 @@
               <h3>{{ member.name }}</h3>
               <p>{{ member.role }}</p>
               <p><i>{{ member.description }}</i></p>
-              <el-button type="text">点我打赏</el-button>
+              <el-button type="text" @click="showModal = true">点我打赏</el-button>
             </div>
           </div>
-          <el-dialog :visible.sync="showModal" width="70%" @click="showPaymentCode">
-              <img src="member.getMoneyPic" alt="profile">
+          <el-dialog :visible.sync="showModal" :modal="false">
+              <img :src="member.getMoneyPic" alt="profile" class="payment-code">
           </el-dialog>
         </el-carousel-item>
       </el-carousel>
@@ -40,41 +40,41 @@ export default {
           id: 2,
           name: '杨博文',
           role: 'AI总工程师，后端工程师',
-          description: '笔落惊风雨，诗成泣鬼神。',
-          image: require('@/assets/ybw.png')
-          // getMoneyPic: require('@/assets/paymentCode/ybw-money.jpg')
+          description: '原神，鸣潮，明日方舟，崩坏3，星穹铁道，启动！',
+          image: require('@/assets/ybw.png'),
+          getMoneyPic: require('@/assets/paymentCode/jkm-money.jpg')
         },
         {
           id: 3,
           name: '金楷茗',
           role: '前端总工程师',
-          description: '敏捷诗千首，飘零酒一杯。',
-          image: require('@/assets/jkm.png')
-          // getMoneyPic: require('@/assets/paymentCode/jkm-money.jpg')
+          description: '给大家拜个早年',
+          image: require('@/assets/jkm.png'),
+          getMoneyPic: require('@/assets/paymentCode/jkm-money.jpg')
         },
         {
           id: 4,
           name: '陈俊华',
           role: '后端总工程师',
           description: '文采承殊渥，流传必绝伦。',
-          image: require('@/assets/cjh.png')
-          // getMoneyPic: require('@/assets/paymentCode/cjh-money.jpg')
+          image: require('@/assets/cjh.png'),
+          getMoneyPic: require('@/assets/paymentCode/jkm-money.jpg')
         },
         {
           id: 5,
           name: '黄一轩',
           role: '运维总工程师，前端工程师，后端工程师',
           description: '山里灵活的狗',
-          image: require('@/assets/hyx.png')
-          // getMoneyPic: require('@/assets/paymentCode/hyx-money.jpg')
+          image: require('@/assets/hyx.png'),
+          getMoneyPic: require('@/assets/paymentCode/jkm-money.jpg')
         },
         {
           id: 6,
           name: '李雨萌',
-          role: '美工总设计，前端工程师',
-          description: '文章本天成，妙手偶得之。',
-          image: require('@/assets/lym.png')
-          // getMoneyPic: require('@/assets/paymentCode/lym-money.jpg')
+          role: '前端工程师',
+          description: '打赏3块，买个菠萝',
+          image: require('@/assets/lym.png'),
+          getMoneyPic: require('@/assets/paymentCode/jkm-money.jpg')
         }
       ],
       showModal: false
@@ -82,7 +82,7 @@ export default {
   },
   methods: {
     showPaymentCode () {
-      this.showModal = true
+      this.showModal = !this.showModal
     }
   }
 }
@@ -95,6 +95,7 @@ export default {
   align-items: center;
   height: 100vh; /* 使用视口高度来使容器全屏 */
   width: 100vw; /* 使用视口宽度来确保容器宽度为全屏 */
+  background-image: url('../assets/personal-back.png');
 }
 
 .carousel-container {
@@ -129,5 +130,12 @@ export default {
   object-fit: cover;  /* 缩放图像以覆盖整个容器，可能会裁剪 */
   object-position: center; /* 图像在容器中居中 */
   padding: 70px;
+}
+
+.payment-code {
+  width: 20vw;
+  height: 50vh;
+  display: block;
+  margin: 0 auto;
 }
 </style>

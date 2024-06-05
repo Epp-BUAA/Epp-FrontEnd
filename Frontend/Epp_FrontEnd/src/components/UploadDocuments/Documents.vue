@@ -146,7 +146,7 @@ export default {
   display: flex;
   flex-direction: column;
   margin-left: 0.25rem;
-  height: 300px;
+  height: 280px;
 }
 
 .card:hover {
@@ -156,9 +156,9 @@ export default {
 }
 
 .card h3 {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: bold;
-  margin-bottom: 0.625rem;
+  margin-bottom: 0.5rem;
   color: #409EFE;
 }
 
@@ -216,7 +216,7 @@ export default {
 .pagination {
   text-align: center;
   width: 100%;
-  /* margin-top: 1.25rem; */
+  /* margin-top: 2.25rem; */
   display: flex;
   align-items: center;
   justify-content: center;

@@ -61,13 +61,12 @@ export default {
   bottom: 0;
   padding: 20px;
   padding-top: 50px;
-  height: 100vh;
+  min-height: 100vh;
   background-image: url('../../assets/personal-back.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center bottom;
   background-attachment: fixed;
-  overflow: hidden;
 }
 
 .sidebar-transition-enter-active, .sidebar-transition-leave-active {

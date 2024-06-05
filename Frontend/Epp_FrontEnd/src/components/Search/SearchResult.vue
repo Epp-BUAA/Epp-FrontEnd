@@ -111,15 +111,10 @@ export default {
   },
   props: ['searchForm'],
   watch: {
-    '$route' (to, from) {
+    async '$route' (to, from) {
       console.log('to query\'s search record id...', to.query.searchRecordID)
       console.log('to query\'s search content...', to.query.search_content)
       this.papers = []
-      if (to.query.searchRecordID.length > 0) {
-        this.fetchPapersFromHistory()
-      } else {
-        this.fetchPapers()
-      }
       window.location.reload()
     }
   },
@@ -192,7 +187,7 @@ export default {
           this.papers = response.data.paper_infos
           // 添加ai回答的逻辑
           this.aiReply.push({ sender: 'ai', text: response.data.ai_reply, loading: false, type: 'dialog' })
-          console.log('ai的回复: ', this.aiReply)
+          // console.log('ai的回复: ', this.aiReply)
           this.paperIds = this.papers.map(paper => paper.paper_id)
           this.searchRecordID = response.data.search_record_id
           loadingInstance.close()
@@ -203,7 +198,7 @@ export default {
     },
     async fetchPapersFromHistory () {
       console.log('search record ID: ', this.$route.query.searchRecordID)
-      await axios.get(this.$BASE_API_URL + '/search/restoreSearchRecord?search_record_id=' + this.$route.query.searchRecordID, { timeout: 1000 * 60 * 5 })
+      await axios.get(this.$BASE_API_URL + '/search/restoreSearchRecord?search_record_id=' + this.$route.query.searchRecordID)
         .then((response) => {
           this.papers = response.data.paper_infos
           console.log('历史记录的论文', this.papers)
@@ -211,7 +206,7 @@ export default {
             const sender = message.role === 'user' ? 'user' : 'ai'
             this.aiReply.push({ sender: sender, text: message.content, loading: false, type: 'dialog' })
           }
-          console.log('历史记录对话信息 ', this.aiReply)
+          // console.log('历史记录对话信息 ', this.aiReply)
           this.paperIds = this.papers.map(paper => paper.paper_id)
           this.restoreHistory = true
         })
@@ -335,6 +330,7 @@ export default {
     }
   },
   async mounted () {
+    console.log('mount is called!!!!!!!!')
     if (this.$route.query.searchRecordID) {
       this.searchRecordID = this.$route.query.searchRecordID
       await this.fetchPapersFromHistory()

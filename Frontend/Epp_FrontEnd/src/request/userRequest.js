@@ -20,6 +20,11 @@ api.interceptors.response.use(
     return res
   },
   error => {
+    // 对于登录接口，直接返回错误
+    const skipUrls = ['login', 'sign', 'logout']
+    if (error.response.config.url && skipUrls.some(url => error.response.config.url.includes(url))) {
+      return Promise.reject(error)
+    }
     if (error.response && error.response.status === 400) {
       return api.get('/testLogin').then(testLoginResponse => {
         return Promise.reject(error)
@@ -29,7 +34,7 @@ api.interceptors.response.use(
           router.push('/dashboard')
           message.Message({
             type: 'error',
-            message: '登录过期，请重新登录'
+            message: '未登录或登录过期，请重新登录！'
           })
         }
         return Promise.reject(error)
