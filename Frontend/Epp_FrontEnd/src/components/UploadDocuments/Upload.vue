@@ -12,8 +12,8 @@
     >
       <img src="../../assets/icon/chooseFile.svg" alt="Upload Icon" class="upload-icon" />
       <div class="upload-text">选择文件</div>
-      <div class="upload-support">支持pdf、doc、docx、txt、md等格式</div>
-      <input id="file-upload" type="file" @change="handleFileUpload" accept=".pdf,.doc,.docx,.txt,.md" ref="fileInput" style="display: none;">
+      <div class="upload-support">仅支持pdf格式，文件大小不得超过5MB</div>
+      <input id="file-upload" type="file" @change="handleFileUpload" accept=".pdf" ref="fileInput" style="display: none;">
       <span class="filename">{{ fileName }}</span>
       <el-button type="primary" @click.stop="uploadDocumentClick">
         上传<i class="el-icon-upload el-icon-right"></i>
@@ -37,6 +37,16 @@ export default {
   },
   methods: {
     handleFileUpload (event) {
+      const file = event.target.files[0]
+      const maxSizeInMB = 5
+      const maxSizeInBytes = maxSizeInMB * 1024 * 1024
+
+      if (file.size > maxSizeInBytes) {
+        this.$message.error('文件大小不得超过5MB')
+        this.$refs.fileInput.value = '' // 清空文件输入
+        return
+      }
+
       this.file = event.target.files[0]
       this.fileName = this.file ? this.file.name : '未选择文件'
     },
@@ -61,7 +71,7 @@ export default {
         })
         this.resetFileState()
       } catch (error) {
-        console.error(error)
+        console.log(error)
         this.$notify({
           title: '失败',
           message: '本地文件上传失败！',
@@ -92,6 +102,14 @@ export default {
       this.isDragOver = false
       const files = event.dataTransfer.files
       if (files.length > 0) {
+        const file = files[0]
+        const maxSizeInMB = 5
+        const maxSizeInBytes = maxSizeInMB * 1024 * 1024
+        if (file.size > maxSizeInBytes) {
+          this.$message.error('文件大小不得超过5MB')
+          this.$refs.fileInput.value = '' // 清空文件输入
+          return
+        }
         this.file = files[0]
         this.fileName = this.file ? this.file.name : '未选择文件'
       }

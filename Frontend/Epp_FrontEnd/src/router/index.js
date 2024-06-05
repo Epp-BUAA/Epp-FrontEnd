@@ -122,7 +122,7 @@ router.beforeEach((to, from, next) => {
     if (to.path !== '/dashboard') {
       message.Message({
         type: 'error',
-        message: '登录过期，请重新登录'
+        message: '未登录或登录过期，请重新登录！'
       })
       next('/dashboard')
     } else {
