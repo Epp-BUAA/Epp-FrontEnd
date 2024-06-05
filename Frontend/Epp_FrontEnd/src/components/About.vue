@@ -71,8 +71,8 @@ export default {
         {
           id: 6,
           name: '李雨萌',
-          role: '美工总设计，前端工程师',
-          description: '文章本天成，妙手偶得之。',
+          role: '前端工程师',
+          description: '打赏3块，买个菠萝',
           image: require('@/assets/lym.png'),
           getMoneyPic: require('@/assets/paymentCode/jkm-money.jpg')
         }
