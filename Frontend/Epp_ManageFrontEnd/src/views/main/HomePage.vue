@@ -1,7 +1,7 @@
 <template>
     <div class="home-page">
         <!-- Web 服务器相关信息 -->
-        <div class="web-server">
+        <div class="web-server" v-loading="loading.webServerLoading">
             <div class="visit-record">
                 <div class="title">网站访问统计(近五天)</div>
                 <div style="height: 85%" id="web-server-visit"></div>
@@ -30,7 +30,7 @@
         </div>
 
         <!-- 大模型服务器相关信息 -->
-        <div class="module-server">
+        <div class="module-server" v-loading="loading.moduleServerLoading">
             <div class="header">模型服务器</div>
             <div class="container">
                 <div class="hardware-left">
@@ -69,6 +69,7 @@
                 <div class="hardware-right">
                     <div class="cpu-info">
                         <div id="module-server-cpu" style="height: 80%"></div>
+
                         <div style="height: 15%; text-align: center">CPU 使用情况</div>
                     </div>
                     <div class="memory-info">
@@ -151,6 +152,10 @@ export default {
                         temperature: 1
                     }
                 ]
+            },
+            loading: {
+                webServerLoading: false,
+                moduleServerLoading: false
             }
         }
     },
@@ -195,6 +200,9 @@ export default {
     async mounted() {
         let internalInstance = getCurrentInstance()
         let echarts = internalInstance.appContext.config.globalProperties.$echarts
+        // loading 效果
+        this.loading.webServerLoading = true
+        this.loading.moduleServerLoading = true
         // Web 服务器访问统计
         let visitData = []
         await getVisitStatistic()
@@ -300,6 +308,7 @@ export default {
             .then((response) => {
                 this.webServerInfo = response.data
                 webServerCPUOption.series[0].data[0].value = this.webServerCPUUtilization
+                this.loading.webServerLoading = false
             })
             .catch((error) => {
                 ElMessage.error(error.response.data.message)
@@ -350,6 +359,7 @@ export default {
             .then((response) => {
                 this.moduleServerInfo = response.data
                 moduleServerCPUOption.series[0].data[0].value = this.moduleServerCPUUtilization
+                this.loading.moduleServerLoading = false
             })
             .catch((error) => {
                 ElMessage.error(error.response.data.message)
@@ -487,5 +497,9 @@ export default {
             }
         }
     }
+}
+
+.loading-card {
+    background-color: transparent;
 }
 </style>
