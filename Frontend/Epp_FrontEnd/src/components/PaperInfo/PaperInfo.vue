@@ -193,6 +193,7 @@ export default {
       paper: {},
       liked: false,
       collected: false,
+      scored: false,
       newComment: '',
       comments: [],
       showCommentModal: false,
@@ -221,6 +222,7 @@ export default {
         .then((response) => {
           this.liked = response.data.liked
           this.collected = response.data.collected
+          this.scored = response.data.score !== 0
           this.newScore = response.data.score
         })
         .catch((error) => {
@@ -418,6 +420,13 @@ export default {
     },
     submitScore () {
       console.log('提交的评分内容：', this.newScore)
+      if (this.scored) {
+        this.$message({
+          message: '暂不支持修改评分哦～',
+          type: 'error'
+        })
+        return
+      }
       // 这里可以添加评论提交的逻辑
       axios.post(this.$BASE_API_URL + '/userScoring', {'paper_id': this.paper_id, 'score': this.newScore})
         .then((response) => {
@@ -437,7 +446,7 @@ export default {
         })
         .finally(() => {
           this.showScoreModal = false // 关闭对话框
-          // window.location.reload()
+          window.location.reload()
         })
     },
     fetchComments2 (commentId) {
