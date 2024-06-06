@@ -6,7 +6,8 @@
           <el-switch v-model="isDialogSearch" active-text="语义匹配" inactive-text="精确匹配">
           </el-switch>
           <div style="width: 80%;">
-            <search-input :searchType="isDialogSearch ? 'dialogue' : 'string'"/>
+            <search-input :searchType="isDialogSearch ? 'dialogue' : 'string'"
+            :searchContent="defaultSearchContent"/>
           </div>
         </el-col>
       </el-row>
@@ -139,7 +140,8 @@ export default {
       restoreHistory: false,
       selectedPapers: [],
       checkedPapers: {},
-      isDialogSearch: true
+      isDialogSearch: true,
+      defaultSearchContent: ''
     }
   },
   methods: {
@@ -199,6 +201,7 @@ export default {
           // console.log('ai的回复: ', this.aiReply)
           this.paperIds = this.papers.map(paper => paper.paper_id)
           this.searchRecordID = response.data.search_record_id
+          this.defaultSearchContent = this.$route.query.search_content
           loadingInstance.close()
         })
         .catch((error) => {
@@ -211,6 +214,8 @@ export default {
         .then((response) => {
           this.papers = response.data.paper_infos
           console.log('历史记录的论文', this.papers)
+          this.defaultSearchContent = response.data.conversation[0].content
+          console.log('first message is ', this.defaultSearchContent)
           for (const message of response.data.conversation) {
             const sender = message.role === 'user' ? 'user' : 'ai'
             this.aiReply.push({ sender: sender, text: message.content, loading: false, type: 'dialog' })
