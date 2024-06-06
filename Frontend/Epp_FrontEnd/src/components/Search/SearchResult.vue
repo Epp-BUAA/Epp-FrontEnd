@@ -68,28 +68,32 @@
         </el-col>
         <el-col :span="20">
           <el-main>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              共检索出 {{ filteredPapers.length }} 篇论文
-              <div>
-                <el-button type="success" icon="el-icon-download" @click="downloadPapers" size="small">
-                  下载文献
-                </el-button>
-                <el-button type="primary" icon="el-icon-document-copy" @click="generateSummaryReport" size="small">
-                  生成综述
-                </el-button>
-              </div>
-            </div>
-            <div style="overflow: scroll; height: 100vh">
-              <div v-for="paper in filteredPapers" :key="paper.paper_id" style="margin-top: 30px;">
-                <div class="columns is-mobile">
-                  <div class="column is-narrow checkbox">
-                    <el-checkbox v-model="checkedPapers[paper.paper_id]"
-                    @change="handleCheckboxChange(paper.paper_id)"></el-checkbox>
-                  </div>
-                  <paper-card :paper="paper" />
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                共检索出 {{ filteredPapers.length }} 篇论文
+                <div>
+                  <el-button type="success" icon="el-icon-download" @click="downloadPapers" size="small">
+                    下载文献
+                  </el-button>
+                  <el-button type="primary" icon="el-icon-document-copy" @click="generateSummaryReport" size="small">
+                    生成综述
+                  </el-button>
                 </div>
               </div>
-            </div>
+              <div style="overflow: scroll; height: 100vh" v-if="papers && papers.length > 0">
+                <div v-for="paper in filteredPapers" :key="paper.paper_id" style="margin-top: 30px;">
+                  <div class="columns is-mobile">
+                    <div class="column is-narrow checkbox">
+                      <el-checkbox v-model="checkedPapers[paper.paper_id]"
+                      @change="handleCheckboxChange(paper.paper_id)"></el-checkbox>
+                    </div>
+                    <paper-card :paper="paper" />
+                  </div>
+                </div>
+              </div>
+              <div v-else-if="papers && papers.length == 0">
+                <img src="@/assets/userAvatar/ybw.jpg" alt="" width="30%" height="30%" style="border-radius: 50%; margin-top: 3rem;">
+                <img src="@/assets/前面的区域以后再来探索吧.jpg" alt="">
+              </div>
             <el-backtop :visibility-height="100"></el-backtop>
           </el-main>
         </el-col>
@@ -124,7 +128,7 @@ export default {
   },
   data () {
     return {
-      papers: [],
+      papers: null,
       filterYear: 0,
       sortOrder: '',
       filterSubclass: '',
