@@ -2,7 +2,7 @@
   <div style="width: 100%;">
       <div ref="searchContainer" class="search-container" :class="{ 'active': focus }">
         <el-input v-model="searchContent" placeholder="搜你所想..." @focus="focusInput"
-          @keyup.enter.native="submitSearch(searchContent)" @input="updateInput" class="custom-search-input">
+          @keyup.enter.native="submitSearch(searchContent)" @input="updateInput">
           <template #append>
             <el-button v-if="focus" @click="submitSearch(searchContent)" class="custom-search-button">
               <el-icon name="s-promotion" class="message-icon"></el-icon>

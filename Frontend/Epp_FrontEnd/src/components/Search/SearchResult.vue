@@ -80,7 +80,7 @@
                   </el-button>
                 </div>
               </div>
-              <div style="overflow: scroll; height: 100vh" v-if="papers && papers.length > 0">
+              <div class="papers-container" v-if="papers && papers.length > 0">
                 <div v-for="paper in filteredPapers" :key="paper.paper_id" style="margin-top: 30px;">
                   <div class="columns is-mobile">
                     <div class="column is-narrow checkbox">
@@ -344,7 +344,6 @@ export default {
     }
   },
   async mounted () {
-    console.log('mount is called!!!!!!!!')
     if (this.$route.query.searchRecordID) {
       this.searchRecordID = this.$route.query.searchRecordID
       await this.fetchPapersFromHistory()
@@ -379,6 +378,10 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.papers-container {
+  height: 100vh;
 }
 
 /* 对话式检索部分 */
