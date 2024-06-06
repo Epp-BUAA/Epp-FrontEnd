@@ -33,7 +33,7 @@ export default {
           name: '周靖宇',
           role: '项目经理，AI工程师，后端工程师',
           description: '你们五个怎么什么都会',
-          image: require('@/assets/zjy.png'),
+          image: require('@/assets/userAvatar/zjy.png'),
           getMoneyPic: require('@/assets/paymentCode/zjy-money.jpg')
         },
         {
@@ -41,7 +41,7 @@ export default {
           name: '杨博文',
           role: 'AI总工程师，后端工程师',
           description: '原神，鸣潮，明日方舟，崩坏3，星穹铁道，启动！',
-          image: require('@/assets/ybw.png'),
+          image: require('@/assets/userAvatar/ybw.jpg'),
           getMoneyPic: require('@/assets/paymentCode/jkm-money.jpg')
         },
         {
@@ -49,15 +49,15 @@ export default {
           name: '金楷茗',
           role: '前端总工程师',
           description: '给大家拜个早年',
-          image: require('@/assets/jkm.png'),
+          image: require('@/assets/userAvatar/jkm.png'),
           getMoneyPic: require('@/assets/paymentCode/jkm-money.jpg')
         },
         {
           id: 4,
           name: '陈俊华',
           role: '后端总工程师',
-          description: '文采承殊渥，流传必绝伦。',
-          image: require('@/assets/cjh.png'),
+          description: 'stay hungry, stay foolish',
+          image: require('@/assets/userAvatar/cjh.png'),
           getMoneyPic: require('@/assets/paymentCode/jkm-money.jpg')
         },
         {
@@ -65,7 +65,7 @@ export default {
           name: '黄一轩',
           role: '运维总工程师，前端工程师，后端工程师',
           description: '山里灵活的狗',
-          image: require('@/assets/hyx.png'),
+          image: require('@/assets/userAvatar/hyx.jpg'),
           getMoneyPic: require('@/assets/paymentCode/jkm-money.jpg')
         },
         {
@@ -73,7 +73,7 @@ export default {
           name: '李雨萌',
           role: '前端工程师',
           description: '打赏3块，买个菠萝',
-          image: require('@/assets/lym.png'),
+          image: require('@/assets/userAvatar/lym.png'),
           getMoneyPic: require('@/assets/paymentCode/jkm-money.jpg')
         }
       ],
