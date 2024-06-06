@@ -39,11 +39,14 @@ export default {
     searchType: {
       type: String,
       default: 'dialogue'
+    },
+    searchContent: {
+      type: String,
+      default: ''
     }
   },
   data () {
     return {
-      searchContent: '',
       search_records: [],
       showHistory: false,
       focus: false,
