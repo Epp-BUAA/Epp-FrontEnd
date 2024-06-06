@@ -54,6 +54,7 @@ export default {
   display: block;
   padding: 1.25rem;
   margin-bottom: 20px;
+  margin-right: 0.25rem;
   /* word-break: break-word; */
 }
 

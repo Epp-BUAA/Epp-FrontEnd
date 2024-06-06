@@ -17,11 +17,6 @@
                             <paper-card :paper="paper" />
                           </div>
                         </div>
-                        <!-- <el-button type="text" v-show="answerFinished && index == chatMessages.length - 1"
-                        @click="regenerateAnswer">
-                            <i class="fas fa-refresh"></i>
-                            重新生成
-                        </el-button> -->
                         <el-button v-show="message.type === 'query' && answerFinished && chatMessages.length - 1"
                         type="text" @click="searchPaperByAssistant">
                           <i class="fas fa-compass"></i>
@@ -36,7 +31,7 @@
         </el-main>
 
         <el-footer>
-          <el-input v-model="chatInput" placeholder="输入你的消息..." @keyup.enter="chatToAI"></el-input>
+          <el-input v-model="chatInput" placeholder="输入你的消息..." @keyup.enter.native="chatToAI" clearable></el-input>
           <el-button type="primary" @click="chatToAI">发送</el-button>
         </el-footer>
     </el-container>
