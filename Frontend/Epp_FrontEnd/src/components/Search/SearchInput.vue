@@ -1,40 +1,32 @@
 <template>
-  <div ref="searchContainer" class="search-container" :class="{ 'active': focus}">
-    <el-input
-      v-model="searchContent"
-      placeholder="搜你所想..."
-      @focus="focusInput"
-      @keyup.enter.native="submitSearch(searchContent)"
-      @input="updateInput"
-      class="custom-search-input"
-      >
-      <template #append>
-        <el-button v-if="focus" @click="submitSearch(searchContent)" class="custom-search-button">
-          <el-icon name="s-promotion" class="message-icon"></el-icon>
-        </el-button>
-      </template>
-      <i slot="prefix" class="el-input_icon-el-icon-search"></i>
-    </el-input>
-    <transition name="fade">
-      <div v-if="showHistory" class="history-box">
-        <div class="history">
-          <el-tag
-            v-for="(record, index) in search_records"
-            :key="index"
-            closable
-            @close="removeRecord(record.search_record_id, index)"
-            @click="searchFromHistory(record.search_record_id)"
-          >
-            <div style="display: flex; align-items: center;">
-              {{ record.keyword }}
-              <div class="record-date">
-                {{ record.date }}
-              </div>
+  <div style="width: 100%;">
+      <div ref="searchContainer" class="search-container" :class="{ 'active': focus }">
+        <el-input v-model="searchContent" placeholder="搜你所想..." @focus="focusInput"
+          @keyup.enter.native="submitSearch(searchContent)" @input="updateInput" class="custom-search-input">
+          <template #append>
+            <el-button v-if="focus" @click="submitSearch(searchContent)" class="custom-search-button">
+              <el-icon name="s-promotion" class="message-icon"></el-icon>
+            </el-button>
+          </template>
+          <i slot="prefix" class="el-input_icon-el-icon-search"></i>
+        </el-input>
+        <transition name="fade">
+          <div v-if="showHistory" class="history-box">
+            <div class="history">
+              <el-tag v-for="(record, index) in search_records" :key="index" closable
+                @close="removeRecord(record.search_record_id, index)"
+                @click="searchFromHistory(record.search_record_id)">
+                <div style="display: flex; align-items: center;">
+                  {{ record.keyword }}
+                  <div class="record-date">
+                    {{ record.date }}
+                  </div>
+                </div>
+              </el-tag>
             </div>
-          </el-tag>
-        </div>
+          </div>
+        </transition>
       </div>
-    </transition>
   </div>
 </template>
 
@@ -43,12 +35,19 @@ import axios from 'axios'
 
 export default {
   name: 'SearchInput',
+  props: {
+    searchType: {
+      type: String,
+      default: 'dialogue'
+    }
+  },
   data () {
     return {
       searchContent: '',
       search_records: [],
       showHistory: false,
-      focus: false
+      focus: false,
+      isDialogSearch: true
     }
   },
   mounted () {
@@ -69,7 +68,7 @@ export default {
       }
       this.$router.push({
         name: 'search-results',
-        query: { search_content: searchContent, searchRecordID: '' }
+        query: { search_content: searchContent, searchRecordID: '', searchType: this.searchType }
       })
     },
     searchFromHistory (searchRecordID) {
@@ -127,26 +126,33 @@ export default {
   width: 70%;
   position: relative;
   margin: 0 auto;
-  padding: 3px; /* 为了更好的视觉效果 */
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1); /* 增加阴影效果 */
+  padding: 3px;
+  /* 为了更好的视觉效果 */
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  /* 增加阴影效果 */
   transition: width 0.3s ease;
   display: flex;
   justify-content: center;
 }
+
 .search-container.active {
   border-color: rgb(13, 113, 228);
   width: 80%;
 }
+
 .custom-search-button {
   width: 100%;
   color: #409EFE;
 }
+
 .custom-search-button:hover {
   color: rgb(13, 113, 228);
 }
+
 .el-input-group__append {
   color: #409EFE;
 }
+
 .history .el-tag {
   display: flex;
   align-items: center;
@@ -163,6 +169,7 @@ export default {
   font-size: smaller;
   margin-left: 10px;
 }
+
 .history {
   overflow-y: auto;
   max-height: 250px;
@@ -171,6 +178,7 @@ export default {
   margin-top: 3px;
   margin-bottom: 3px;
 }
+
 .history-box {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   position: absolute;
@@ -181,11 +189,13 @@ export default {
   border-radius: 12px;
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.3s;
 }
 
-.fade-enter, .fade-leave-to {
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
 }
 
@@ -201,6 +211,7 @@ export default {
   background: transparent;
   color: #303133;
 }
+
 .message-icon {
   color: #409EFE;
   font-size: 24px;

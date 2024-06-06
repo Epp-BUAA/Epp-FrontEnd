@@ -2,8 +2,12 @@
   <el-col style="overflow: hidden; height: 100vh">
     <el-col :span="16" style="margin-top: 80px;" type="flex">
       <el-row>
-        <el-col :span="18" :offset="1">
-          <search-input />
+        <el-col :span="22" :offset="1" style="display: flex; align-items: center;">
+          <el-switch v-model="isDialogSearch" active-text="语义匹配" inactive-text="精确匹配">
+          </el-switch>
+          <div style="width: 80%;">
+            <search-input :searchType="isDialogSearch ? 'dialogue' : 'string'"/>
+          </div>
         </el-col>
       </el-row>
       <el-row>
@@ -130,7 +134,8 @@ export default {
       searchRecordID: '',
       restoreHistory: false,
       selectedPapers: [],
-      checkedPapers: {}
+      checkedPapers: {},
+      isDialogSearch: true
     }
   },
   methods: {
@@ -181,7 +186,7 @@ export default {
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       })
-      await axios.post(this.$BASE_API_URL + '/search/vectorQuery', { 'search_content': this.$route.query.search_content })
+      await axios.post(this.$BASE_API_URL + '/search/vectorQuery', { 'search_content': this.$route.query.search_content, 'search_type': this.$route.query.searchType })
         .then((response) => {
           console.log('response is ...')
           this.papers = response.data.paper_infos

@@ -7,18 +7,24 @@
       </div>
 
       <!-- 搜索框 -->
-      <el-col :span="20" :offset="2">
-        <search-input />
+      <el-col :span="20" :offset="2" style="display: block;">
+        <el-row class="switch-row">
+          <el-switch v-model="isDialogSearch" active-text="语义匹配" inactive-text="精确匹配">
+          </el-switch>
+        </el-row>
+        <el-row>
+          <search-input :searchType="isDialogSearch ? 'dialogue' : 'string'"/>
+        </el-row>
       </el-col>
       <div class="hot_title">
         <img src="../../assets/hotpaper.png" alt="热门文献推荐" />
       </div>
       <!-- 推荐文献表格 -->
-     <el-row>
-      <el-col :span="24">
-        <el-card class="table-card">
-          <el-table :data="displayRecommendations" v-loading="loading" style="width: 100%;">
-            <el-table-column prop="title" label="文献标题" align="center" class-name="title-column">
+      <el-row>
+        <el-col :span="24">
+          <el-card class="table-card">
+            <el-table :data="displayRecommendations" v-loading="loading" style="width: 100%;">
+              <el-table-column prop="title" label="文献标题" align="center" class-name="title-column">
                 <template slot-scope="scope">
                   <router-link :to="{ name: 'paper-info', params: { paper_id: scope.row.paper_id } }" class="title">
                     {{ truncateTitle(scope.row.title, 28) }}
@@ -62,21 +68,14 @@
                   </div>
                 </template>
               </el-table-column>
-          </el-table>
-        </el-card>
-      </el-col>
+            </el-table>
+          </el-card>
+        </el-col>
+      </el-row>
+      <el-pagination v-if="totalPages > 1" background style="margin-top: 10px;" @current-change="changePage"
+        :current-page="currentPage" :page-size="itemsPerPage" layout="prev, pager, next" :total="totalRecords">
+      </el-pagination>
     </el-row>
-    <el-pagination
-      v-if="totalPages > 1"
-      background
-      style="margin-top: 10px;"
-      @current-change="changePage"
-      :current-page="currentPage"
-      :page-size="itemsPerPage"
-      layout="prev, pager, next"
-      :total="totalRecords">
-    </el-pagination>
-     </el-row>
   </div>
 </template>
 
@@ -93,7 +92,8 @@ export default {
       recommendations: [],
       loading: true,
       currentPage: 1,
-      itemsPerPage: 5
+      itemsPerPage: 5,
+      isDialogSearch: true
     }
   },
   computed: {
@@ -209,19 +209,23 @@ export default {
   0% {
     width: 0;
   }
+
   50% {
     width: 100%;
   }
+
   100% {
     width: 0;
   }
 }
 
 @keyframes blink-caret {
+
   from,
   to {
     border-color: transparent;
   }
+
   50% {
     border-color: #409EFE;
   }
@@ -260,21 +264,23 @@ export default {
 .el-table .title-column .cell {
   justify-content: flex-start;
 }
+
 .title {
   color: #409EFE;
   margin: 0;
   width: 100%;
   font-size: 14px;
   text-align: justify;
-   word-break: break-all; /* Add this line */
+  word-break: break-all;
+  /* Add this line */
 }
+
 .title:hover {
   color: #0056b3;
 }
 
 .info-item1,
-.info-item2
-{
+.info-item2 {
   display: flex;
   align-self: center;
   align-items: center;
@@ -284,8 +290,7 @@ export default {
 }
 
 .info-item3,
-.info-item4
-{
+.info-item4 {
   display: flex;
   align-self: center;
   align-items: center;
@@ -297,5 +302,22 @@ export default {
 .info-icon {
   width: 1rem;
   height: 1rem;
+}
+
+.switch-row {
+  width: 70%;
+  /* 设置第一行的宽度为70% */
+  margin: 0 auto;
+  /* 居中第一行 */
+  display: flex;
+  /* 使用flex布局 */
+  align-items: center;
+  /* 垂直居中 */
+  padding: 10px;
+}
+
+.switch-row>* {
+  margin-right: auto;
+  /* 将el-switch推向左边 */
 }
 </style>
